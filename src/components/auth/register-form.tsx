@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
-import { registerSchema } from "../../../schema"
+import { registerSchema } from "@/schema"
 import { z } from "zod"
 
 export default function RegisterForm(): JSX.Element {
@@ -28,8 +28,11 @@ export default function RegisterForm(): JSX.Element {
         },
     })
 
-    const onSubmit = (values: z.infer<typeof registerSchema>): void => {
+    const onSubmit = async (values: z.infer<typeof registerSchema>): Promise<void> => {
         console.log(values)
+
+        
+        
     }
 
     return (
