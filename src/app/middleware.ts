@@ -2,18 +2,49 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-/**
- * Middleware function to handle authentication using Supabase.
- *
- * @param {NextRequest} req - The incoming request object.
- * @returns {Promise<NextResponse>} - The response object after processing the middleware.
- *
- * This middleware function creates a Supabase client using the request and response objects,
- * retrieves the current session, and then returns the response.
- */
+// Define public routes that don't require authentication
+const publicRoutes = ['/login', '/register']
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
-  await supabase.auth.getSession()
+  
+  // Get session
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+
+  const path = req.nextUrl.pathname
+  console.log('Middleware - Path:', path, 'Session:', !!session)
+
+  // If trying to access public route while logged in, redirect to home
+  if (publicRoutes.includes(path)) {
+    if (session) {
+      return NextResponse.redirect(new URL('/', req.url))
+    }
+    return res
+  }
+
+  // For non-public routes, redirect to login if no session
+  if (!session) {
+    const redirectUrl = new URL('/login', req.url)
+    console.log('Redirecting to:', redirectUrl.toString())
+    return NextResponse.redirect(redirectUrl)
+  }
+
   return res
+}
+
+// Match all routes
+export const config = {
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  ],
 }
