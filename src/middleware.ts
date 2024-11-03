@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Define public routes that don't require authentication
-const publicRoutes = ['/login', '/register']
+const publicRoutes = ['/auth/login', '/auth/register']
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
 
   // For non-public routes, redirect to login if no session
   if (!session) {
-    const redirectUrl = new URL('/login', req.url)
+    const redirectUrl = new URL('/auth/login', req.url)
     console.log('Redirecting to:', redirectUrl.toString())
     return NextResponse.redirect(redirectUrl)
   }
