@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { registerSchema } from "@/schema"
 import { supabase } from "@/lib/supabase"
+import { AuthResponse } from '@supabase/supabase-js'
 
 export async function POST(request: Request) {
     const body = await request.json()
@@ -13,20 +14,20 @@ export async function POST(request: Request) {
 
     const { email, username, password, confirmPassword } = result.data
 
-    // Check if user already exists by email
+    // check if the email already exists in profiles table
     const { data: existingUserByEmail } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id')
         .eq('email', email)
         .single()
 
     if (existingUserByEmail) {
-        return NextResponse.json({ error: 'User already exists' }, { status: 400 })
+        return NextResponse.json({ error: 'Email already taken' }, { status: 400 })
     }
 
     // Check if username is unique
     const { data: existingUserByUsername } = await supabase
-        .from('users')
+        .from('profiles')
         .select('id')
         .eq('username', username)
         .single()
@@ -47,10 +48,15 @@ export async function POST(request: Request) {
     }
 
     // Create new user
-    const { error } = await supabase.auth.signUp({
+    const { error }: AuthResponse = await supabase.auth.signUp({
         email,
         password,
-    }) 
+        options: {
+            data: {
+                username: username,
+            },
+        },
+    })
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 })
