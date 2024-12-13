@@ -37,6 +37,7 @@ export async function POST(request: Request) {
 
     const email_domain = email.split('@')[1]
 
+    // Check if email is a PUP Webmail Account
     if (email_domain !== 'iskolarngbayan.pup.edu.ph') {
         return NextResponse.json({ error: 'Enter your PUP Webmail Account' }, { status: 400 })
     }
