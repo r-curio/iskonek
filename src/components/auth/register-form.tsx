@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,8 +15,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { registerSchema } from "@/schema"
 import { z } from "zod"
+import { useToast } from "@/hooks/use-toast"
 
 export default function RegisterForm(): JSX.Element {
+    
+    const { toast } = useToast()
     const form = useForm({
         resolver: zodResolver(registerSchema),
         defaultValues: {
@@ -29,10 +31,32 @@ export default function RegisterForm(): JSX.Element {
     })
 
     const onSubmit = async (values: z.infer<typeof registerSchema>): Promise<void> => {
-        console.log(values)
+        
+        const response = await fetch("/api/auth/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(values),
+        })
 
-        
-        
+        if (response.ok) {
+            const data = await response.json()
+            console.log(data)
+            toast({
+                title: "Success",
+                description: "You have successfully registered.",
+                variant: "default",
+            })
+        } else {
+            const error = await response.json()
+            toast({
+                title: "Error",
+                description: error.error,
+                variant: "destructive",
+            })
+            console.error(error)
+        }
     }
 
     return (
@@ -51,7 +75,7 @@ export default function RegisterForm(): JSX.Element {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="email@example.com" {...field} />
+                                    <Input type="email" placeholder="email@example.com" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
