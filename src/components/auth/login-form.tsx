@@ -15,11 +15,9 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { loginSchema } from "@/schema"
 import { z } from "zod"
-import { useToast } from "@/hooks/use-toast"
 
 export default function LoginForm(): JSX.Element {
 
-    const { toast } = useToast()
     const form = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
