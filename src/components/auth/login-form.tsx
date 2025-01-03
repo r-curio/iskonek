@@ -50,6 +50,7 @@ export default function LoginForm(): JSX.Element {
                 });
     
                 await new Promise(resolve => setTimeout(resolve, 100));
+
                 router.push("/chat");
                 router.refresh();
             } else {
