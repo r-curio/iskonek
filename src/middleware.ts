@@ -9,27 +9,23 @@ export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const supabase = createMiddlewareClient({ req, res })
   
-  // Get session
   const {
-    data: { session },
+      data: { session },
   } = await supabase.auth.getSession()
 
   const path = req.nextUrl.pathname
-  console.log('Middleware - Path:', path, 'Session:', !!session)
+  console.log('Auth Check:', {
+      path,
+      hasSession: !!session,
+      sessionData: session
+  })
 
-  // If trying to access public route while logged in, redirect to home
-  if (publicRoutes.includes(path)) {
-    if (session) {
-      return NextResponse.redirect(new URL('/', req.url))
-    }
-    return res
+  if (!session && !publicRoutes.includes(path)) {
+      return NextResponse.redirect(new URL('/auth/login', req.url))
   }
 
-  // For non-public routes, redirect to login if no session
-  if (!session) {
-    const redirectUrl = new URL('/auth/login', req.url)
-    console.log('Redirecting to:', redirectUrl.toString())
-    return NextResponse.redirect(redirectUrl)
+  if (session && publicRoutes.includes(path)) {
+      return NextResponse.redirect(new URL('/chat', req.url))
   }
 
   return res

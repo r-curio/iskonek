@@ -1,8 +1,13 @@
 import { NextResponse } from "next/server";
 import { loginSchema } from "@/schema";
-import { supabase } from "@/lib/supabase";
+import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
+import { cookies } from "next/headers"
 
 export async function POST(request: Request) {
+
+    const cookieStore = cookies()
+    const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+    
     const body = await request.json();
 
     // Validate request body against schema
@@ -20,14 +25,21 @@ export async function POST(request: Request) {
     }
 
     // Sign in user
-    const { error } = await supabase.auth.signIn({
-        email,
-        password,
-    });
-    
+    const { data: { session }, error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+    })
+
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    return NextResponse.json({ message: "User logged in successfully" }, { status: 200 });
+    if (!session) {
+        return NextResponse.json({ error: "Authentication failed" }, { status: 401 });
+    }
+
+    return NextResponse.json({
+        message: "User logged in successfully",
+        session
+    }, { status: 200 });
 }
