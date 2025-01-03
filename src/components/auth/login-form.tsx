@@ -14,10 +14,14 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { loginSchema } from "@/schema"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 import { z } from "zod"
 
 export default function LoginForm(): JSX.Element {
 
+    const { toast } = useToast()
+    const router = useRouter()
     const form = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -27,7 +31,42 @@ export default function LoginForm(): JSX.Element {
     })
 
     const onSubmit = async(values: z.infer<typeof loginSchema>): Promise<void> => {
-        console.log(values)
+        try {
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(values),
+            });
+    
+            const data = await response.json();
+            
+            if (response.ok) {
+                toast({
+                    title: "Success",
+                    description: "You have successfully logged in.",
+                    variant: "default",
+                });
+    
+                await new Promise(resolve => setTimeout(resolve, 100));
+                router.push("/chat");
+                router.refresh();
+            } else {
+                toast({
+                    title: "Error",
+                    description: data.error,
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            toast({
+                title: "Error",
+                description: "An unexpected error occurred",
+                variant: "destructive",
+            });
+        }
     };
 
     return (

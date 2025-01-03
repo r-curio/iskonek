@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }): JSX
     return (
         <ToastProvider>
             <div>
-                <div className="w-full h-screen flex justify-center items-center">
+                <div className="w-full h-screen flex justify-center items-center bg-[url('@/images/bg.svg')] bg-cover bg-gray-100">
                     {children}
                 </div>
                 <Toaster />
