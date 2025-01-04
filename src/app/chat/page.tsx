@@ -1,8 +1,14 @@
 
+
 export default function Chat() {
+
+
     return (
-        <div>
-            Chat
+        <div className='flex'>
+            <div>
+                <h1>Chat</h1>
+            </div>
         </div>
+        
     )
 }
