@@ -14,11 +14,13 @@ import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { registerSchema } from "@/schema"
-import { z } from "zod"
 import { useToast } from "@/hooks/use-toast"
+import { signup } from "@/app/auth/register/actions"
+import { useRouter } from "next/navigation"
 
 export default function RegisterForm(): JSX.Element {
     
+    const router = useRouter()
     const { toast } = useToast()
     const form = useForm({
         resolver: zodResolver(registerSchema),
@@ -30,33 +32,26 @@ export default function RegisterForm(): JSX.Element {
         },
     })
 
-    const onSubmit = async (values: z.infer<typeof registerSchema>): Promise<void> => {
-        
-        const response = await fetch("/api/auth/register", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(values),
-        })
+    async function onSubmit(formData: FormData) {        
+        const response = await signup(formData)
 
-        if (response.ok) {
-            const data = await response.json()
-            console.log(data)
-            toast({
-                title: "Success",
-                description: "You have successfully registered.",
-                variant: "default",
-            })
-        } else {
-            const error = await response.json()
+        if (response?.error) {
             toast({
                 title: "Error",
-                description: error.error,
+                description: response.error.toString(),
                 variant: "destructive",
             })
-            console.error(error)
+            return
         }
+
+        toast({
+            title: "Success",
+            description: "Please check your email to verify your account",
+        })
+        
+        setTimeout(() => {
+            router.push('/auth/login?verified=false')
+        }, 3000)
     }
 
     return (
@@ -67,7 +62,7 @@ export default function RegisterForm(): JSX.Element {
             backButtonPath="/auth/login"
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form action={onSubmit} className="space-y-8">
                     <FormField
                         control={form.control}
                         name="email"
