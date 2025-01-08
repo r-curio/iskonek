@@ -31,7 +31,7 @@ export default function Sidebar() {
     }, [selectedContact])
 
     return (
-        <div className="w-1/5 max-w-1/5 bg-[#FAF9F6] min-h-screen border-r-2 border-black border-opacity-20 flex flex-col justify-between">
+        <div className="w-1/5 max-w-1/5 bg-white min-h-screen border-r-2 border-black border-opacity-20 flex flex-col justify-between">
             <div>
                 <div className='flex items-center z-10 shadow-lg  bor max-h-16'>
                     <Image src={Logo} alt='logo' width={100} height={100}/>
