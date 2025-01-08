@@ -46,7 +46,8 @@ export default function LoginForm(): JSX.Element {
         <CardWrapper 
             label="Sign In"
             title="Sign in to an account"
-            backButtonText="Don't have an account? Register Here" 
+            footerText="Don't have an account? "
+            backButtonText="Register here." 
             backButtonPath="/auth/register"
         >
             <Form {...form}>
@@ -56,9 +57,9 @@ export default function LoginForm(): JSX.Element {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>PUP WebMail</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="johndoe@iskolarngbayan.ph" {...field} />
+                                    <Input type="email" placeholder="johndoe@iskolarngbayan.pup.edu.ph" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
