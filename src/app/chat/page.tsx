@@ -1,20 +1,3 @@
-'use client'
-import { Button } from "@/components/ui/button"
-
-
-
-// export default function Chat() {
-
-
-//     return (
-//         <div className='flex'>
-//             <div>
-//                 <h1>Chat</h1>
-//             </div>
-//         </div>
-
-//     )
-// }
 
 "use client";
 import ChatWindow from '@/components/chat/chat-window';
