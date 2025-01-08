@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import ChatHeader from './chat-header';
 import MessageBubble from './bubble';
 import ChatInput from './message-box';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface Message {
     text: string;
@@ -38,7 +39,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 recipientName={recipientName}
                 recipientProfilePic={recipientProfilePic}
             />
-            <div className="flex-1 overflow-y-auto p-4">
+            <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
                         key={index}
@@ -48,7 +49,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                     />
                 ))}
                 <div ref={messagesEndRef} />
-            </div>
+            </ScrollArea>
             <ChatInput onSendMessage={onSendMessage} />
         </div>
     );
