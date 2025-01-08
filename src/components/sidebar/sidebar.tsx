@@ -5,7 +5,6 @@ import { BsChatLeftFill, BsFillPeopleFill, BsSearch} from "react-icons/bs";
 import { CustomInput } from './custom-input';
 import { SectionDivider } from '../ui/section-divider';
 import { ContactsList } from './contacts-list';
-import { Separator } from '../ui/separator';
 import { useEffect, useState } from 'react';
 import UserProfile from './user-profile';
 
@@ -31,7 +30,7 @@ export default function Sidebar() {
     }, [selectedContact])
 
     return (
-        <div className="w-1/5 max-w-1/5 bg-white min-h-screen border-r-2 border-black border-opacity-20 flex flex-col justify-between">
+        <div className="w-1/5 max-w-1/5 bg-[#FAF9F6] min-h-screen flex flex-col justify-between">
             <div>
                 <div className='flex items-center z-10 shadow-lg  bor max-h-16'>
                     <Image src={Logo} alt='logo' width={100} height={100}/>
@@ -54,8 +53,7 @@ export default function Sidebar() {
                 <ContactsList contacts={contacts} onSelectContact={setSelectedContact}/>
             </div>
 
-            <div>
-                <Separator className='bg-black'/>
+            <div className='h-20 border-t'>
                 <UserProfile avatarUrl={currentUser.avatarUrl} name={currentUser.name}/>
             </div>
         </div>
