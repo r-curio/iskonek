@@ -15,13 +15,11 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { loginSchema } from "@/schema"
 import { useToast } from "@/hooks/use-toast"
-import { useRouter } from "next/navigation"
-import { z } from "zod"
+import { login } from "@/app/auth/login/actions"
 
 export default function LoginForm(): JSX.Element {
 
     const { toast } = useToast()
-    const router = useRouter()
     const form = useForm({
         resolver: zodResolver(loginSchema),
         defaultValues: {
@@ -30,45 +28,19 @@ export default function LoginForm(): JSX.Element {
         },
     })
 
-    const onSubmit = async(values: z.infer<typeof loginSchema>): Promise<void> => {
-        try {
-            const response = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(values),
-            });
-    
-            const data = await response.json();
-            
-            if (response.ok) {
-                toast({
-                    title: "Success",
-                    description: "You have successfully logged in.",
-                    variant: "default",
-                });
-    
-                await new Promise(resolve => setTimeout(resolve, 100));
+    async function onSubmit(formData: FormData) {
+        const response = await login(formData)
 
-                router.push("/chat");
-                router.refresh();
-            } else {
-                toast({
-                    title: "Error",
-                    description: data.error,
-                    variant: "destructive",
-                });
-            }
-        } catch (error) {
-            console.error("Login error:", error);
+        if (response?.error) {
             toast({
                 title: "Error",
-                description: "An unexpected error occurred",
+                description: response.error.toString(),
                 variant: "destructive",
-            });
+            })
+            return
         }
-    };
+
+    }
 
     return (
         <CardWrapper 
@@ -78,7 +50,7 @@ export default function LoginForm(): JSX.Element {
             backButtonPath="/auth/register"
         >
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <form action={onSubmit} className="space-y-8">
                     <FormField 
                         control={form.control}
                         name="email"
@@ -86,7 +58,7 @@ export default function LoginForm(): JSX.Element {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="@example.com" {...field} />
+                                    <Input type="email" placeholder="johndoe@iskolarngbayan.ph" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
