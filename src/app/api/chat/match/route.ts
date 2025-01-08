@@ -46,7 +46,7 @@ export async function POST() {
         .single();
 
     if (existingQueue) {
-        // Find potential match
+        // Find a potential match
         const { data: matchQueue, error: matchQueueError } = await supabase
             .from('matching_queue')
             .select('user_id')
@@ -60,70 +60,16 @@ export async function POST() {
             return NextResponse.json({ status: 'waiting' });
         }
 
-        // Check if a room already exists between these users
-        const { data: existingRoomBetweenUsers } = await supabase
-            .from('chat_rooms')
-            .select('*')
-            .or(`and(user1_id.eq.${user.id},user2_id.eq.${matchQueue.user_id}),and(user1_id.eq.${matchQueue.user_id},user2_id.eq.${user.id})`)
-            .eq('status', 'active')
-            .single();
-
-        if (existingRoomBetweenUsers) {
-            // Remove both users from queue as they're already matched
-            await supabase
-                .from('matching_queue')
-                .delete()
-                .in('user_id', [user.id, matchQueue.user_id]);
-
-            return NextResponse.json({
-                status: 'matched',
-                room_id: existingRoomBetweenUsers.id,
-                matchedUser: {
-                    id: matchQueue.user_id
-                }
-            });
-        }
-
-        // Create chat room for both users
-        const { data: room, error: roomError } = await supabase
-            .from('chat_rooms')
-            .insert({
+        // Use the Postgres function to create the match
+        const { data: matchResult, error: matchError } = await supabase
+            .rpc('create_match', {
                 user1_id: user.id,
                 user2_id: matchQueue.user_id,
-                status: 'active'
-            })
-            .select()
-            .single();
+            });
 
-        if (roomError) {
-            console.error('Room creation error:', roomError);
-            return NextResponse.json({ error: 'Failed to create chat room' }, { status: 500 });
-        }
-
-        // Update both users' status to matched first
-        const { error: updateError } = await supabase
-            .from('matching_queue')
-            .update({ status: 'matched' })
-            .in('user_id', [user.id, matchQueue.user_id]);
-
-        if (updateError) {
-            console.error('Status update error:', updateError);
-            return NextResponse.json({ error: 'Failed to update match status' }, { status: 500 });
-        }
-
-        // Then remove both users from queue
-        const { error: deleteError } = await supabase
-            .from('matching_queue')
-            .delete()
-            .in('user_id', [user.id, matchQueue.user_id])
-
-        if (deleteError) {
-            console.error('Queue deletion error:', deleteError);
-            await supabase
-                .from('chat_rooms')
-                .delete()
-                .eq('id', room.id);
-            return NextResponse.json({ error: 'Failed to remove from queue' }, { status: 500 });
+        if (matchError) {
+            console.error('Match creation error:', matchError);
+            return NextResponse.json({ error: 'Failed to create match' }, { status: 500 });
         }
 
         // Get matched user's profile
@@ -135,14 +81,14 @@ export async function POST() {
 
         return NextResponse.json({
             status: 'matched',
-            room_id: room.id,
+            room_id: matchResult[0].room_id,
             matchedUser: {
                 id: matchQueue.user_id,
                 username: profile?.username
             }
         });
     } else {
-        // Insert new user into queue
+        // Insert user into queue
         const { error: insertError } = await supabase
             .from('matching_queue')
             .insert([{ 
