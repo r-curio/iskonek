@@ -1,3 +1,22 @@
+
+"use client";
+import ChatWindow from '@/components/chat/chat-window';
+import React, { useState } from 'react';
+
+interface Message {
+    text: string;
+    isUser: boolean;
+}
+
+const ChatPage = () => {
+    const [messages, setMessages] = useState<Message[]>([
+        { text: 'Hello!', isUser: false },
+        { text: 'Hi there!', isUser: true },
+    ]);
+
+    const handleSendMessage = (newMessage: string) => {
+        setMessages([...messages, { text: newMessage, isUser: true }]);
+    };
 'use client'
 import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
@@ -72,31 +91,15 @@ export default function Chat() {
     }
 
     return (
-        <div className='flex'>
-        <div>
-            <h1>Chat</h1>
-            {!isSearching ? (
-                <Button 
-                    onClick={handleConnect}
-                    disabled={isSearching}
-                >
-                    Connect
-                </Button>
-            ) : (
-                <Button 
-                    onClick={handleCancelSearch}
-                    variant="destructive"
-                >
-                    Cancel Search
-                </Button>
-            )}
-            <div>
-                <Button onClick={handleSignOut}>SignOut</Button>
-            </div>
-            <div>
-                {matchUser && <p>Matched with: {matchUser}</p>}
-            </div>
-        </div>
-    </div>
-    )
-}
+        <ChatWindow
+            recipientName="John Doe"
+            recipientProfilePic="https://placekitten.com/64/64"
+            messages={messages}
+            onSendMessage={handleSendMessage}
+        />
+    );
+};
+
+export default ChatPage;
+
+
