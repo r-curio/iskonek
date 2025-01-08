@@ -10,6 +10,7 @@ import {
 interface CardWrapperProps {
     label: string
     title: string
+    footerText: string
     backButtonText: string
     backButtonPath: string
     children: React.ReactNode
@@ -32,7 +33,10 @@ export default function CardWrapper(props: CardWrapperProps): JSX.Element {
                 {props.children}
             </CardContent>
             <CardFooter className="flex justify-center">
-                <Link href={props.backButtonPath}>{props.backButtonText}</Link>
+                <span>
+                    {props.footerText}
+                    <Link href={props.backButtonPath} className="text-[#682A43] hover:underline">{props.backButtonText}</Link>
+                </span>
             </CardFooter>
         </Card>
     )
