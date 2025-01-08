@@ -4,9 +4,7 @@ export default function Layout({ children }: { children: React.ReactNode }): JSX
     return (
         <div className='flex'>
             <Sidebar />
-            <div>
-                {children}
-            </div>
+            {children}
         </div>
     )
 }
