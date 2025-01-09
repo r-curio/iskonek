@@ -1,166 +1,191 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { BsFillSendFill } from 'react-icons/bs';
-import { BsSkipEndFill } from 'react-icons/bs';
-import { BsFillLightbulbFill } from 'react-icons/bs';
-import { createClient } from '@/utils/supabase/client'
-import { Textarea } from '../ui/textarea';
-import { ActionModal } from './actionModal';
+"use client";
+import React, { useState, useRef, useEffect } from "react";
+import {
+  BsFillSendFill,
+  BsSkipEndFill,
+  BsFillLightbulbFill,
+} from "react-icons/bs";
+import { createClient } from "@/utils/supabase/client";
+import { Textarea } from "../ui/textarea";
+import { ActionModal } from "./actionModal";
+import { ConvoStarters } from "../convostarters/convostarters";
+import { Button } from "../ui/button";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 
 interface Message {
-    id: string
-    content: string
-    created_at: string
-    sender_id: string
-    room_id: string
+  id: string;
+  content: string;
+  created_at: string;
+  sender_id: string;
+  room_id: string;
 }
 
 interface ChatInputProps {
-    roomId: string
-    onMessageSent: (message: Message) => void
-    recipientName?: string
+  roomId: string;
+  onMessageSent: (message: Message) => void;
+  recipientName?: string;
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent, recipientName }) => {
-    const [message, setMessage] = useState('')
-    const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false)
-    const [isLoading, setIsLoading] = useState(false)
-    const [userId, setUserId] = useState<string | null>(null)
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const supabase = createClient()
+const useChatInput = (
+  roomId: string,
+  onMessageSent: (message: Message) => void
+) => {
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const supabase = createClient();
 
-    const adjustHeight = () => {
-        const textarea = textareaRef.current;
-        if (textarea) {
-            textarea.style.height = 'auto';
-            const scrollHeight = Math.min(textarea.scrollHeight, 150);
-            textarea.style.height = `${scrollHeight}px`;
-        }
+  useEffect(() => {
+    const getUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) setUserId(user.id);
+    };
+    getUser();
+  }, []);
+
+  const sendMessage = async () => {
+    if (!message.trim() || isLoading || !userId) return false;
+    setIsLoading(true);
+
+    const optimisticMessage = {
+      id: Date.now().toString(),
+      content: message.trim(),
+      created_at: new Date().toISOString(),
+      sender_id: userId,
+      room_id: roomId,
     };
 
-    useEffect(() => {
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (user) setUserId(user.id)
-        }
-        getUser()
-    }, [])
+    try {
+      onMessageSent(optimisticMessage);
+      setMessage("");
 
-    const handleSendMessage = async () => {
-        if (!message.trim() || isLoading || !userId) return
-        setIsLoading(true)
+      const response = await fetch("/api/chat/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message.trim(), roomId }),
+      });
 
-        const optimisticMessage = {
-            id: Date.now().toString(),
-            content: message.trim(),
-            created_at: new Date().toISOString(),
-            sender_id: userId,
-            room_id: roomId
-        }
-
-        if (textareaRef.current) {
-            textareaRef.current.style.height = '40px';
-        }
-        
-        try {
-            onMessageSent(optimisticMessage)
-            setMessage('')
-            
-            const response = await fetch('/api/chat/messages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    content: message.trim(), 
-                    roomId 
-                })
-            })
-
-            if (!response.ok) throw new Error('Failed to send message')
-        } catch (error) {
-            console.error('Send message error:', error)
-        } finally {
-            setIsLoading(false)
-        }
+      if (!response.ok) throw new Error("Failed to send message");
+      return true;
+    } catch (error) {
+      console.error("Send message error:", error);
+      return false;
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const handleSkip = async () => {
+  return { message, setMessage, sendMessage, isLoading };
+};
 
-        console.log('Skip button clicked')
-        try {
-            const response = await fetch('/api/chat/end_convo', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ roomId })
-            })
+const ChatInput: React.FC<ChatInputProps> = ({
+  roomId,
+  onMessageSent,
+  recipientName,
+}) => {
+  const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { message, setMessage, sendMessage, isLoading } = useChatInput(
+    roomId,
+    onMessageSent
+  );
 
-            if (!response.ok) throw new Error('Failed to end conversation')
-            
-        } catch (error) {
-            console.error('End conversation error:', error)
-        }
+  const adjustHeight = () => {
+    if (!textareaRef.current) return;
+    textareaRef.current.style.height = "auto";
+    textareaRef.current.style.height = `${Math.min(
+      textareaRef.current.scrollHeight,
+      150
+    )}px`;
+  };
+
+  const handleSkip = async () => {
+    try {
+      const response = await fetch("/api/chat/end_convo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ roomId }),
+      });
+      if (!response.ok) throw new Error("Failed to end conversation");
+    } catch (error) {
+      console.error("End conversation error:", error);
     }
+  };
 
-    const handleMessageChange = (
-        e: React.ChangeEvent<HTMLTextAreaElement>
-    ) => {
-        setMessage(e.target.value);
-        adjustHeight();
-    };
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    adjustHeight();
+  };
 
-    return (
-        <div className="flex items-end p-4 border-t min-h-[5rem] gap-2">
-            <div className="flex gap-2">
-                <button
-                    className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
-                    onClick={() => setIsConfirmEndOpen(true)}
-                >
-                    <span className="flex items-center gap-x-2">
-                        <BsSkipEndFill /> Skip
-                    </span>
-                </button>
+  const handleConvoStarterSelect = (question: string) => {
+    setMessage(question);
+    setIsDialogOpen(false);
+  };
 
-                <button
-                    className="bg-[#C6980F] text-white rounded-md p-2 focus:outline-none"
-                    onClick={() => { }}
-                >
-                    <span className="flex items-center gap-x-2">
-                        <BsFillLightbulbFill />
-                        ConvoStarters
-                    </span>
-                </button>
-            </div>
+  return (
+    <div className="flex items-end p-4 border-t min-h-[5rem] gap-2">
+      <div className="flex gap-2">
+        <Button
+          className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
+          onClick={() => setIsConfirmEndOpen(true)}
+        >
+          <span className="flex items-center gap-x-2">
+            <BsSkipEndFill /> Skip
+          </span>
+        </Button>
 
-            <div className="flex-1 flex items-end">
-                <Textarea
-                    ref={textareaRef}
-                    className="flex-1 border rounded-l-md p-2 focus:outline-none resize-none overflow-y-auto"
-                    placeholder="Type a message..."
-                    value={message}
-                    rows={1}
-                    style={{ minHeight: '40px', maxHeight: '150px' }}
-                    onChange={handleMessageChange}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                        }
-                    }}
-                />
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-[#C6980F] text-white rounded-md p-2 focus:outline-none">
+              <span className="flex items-center gap-x-2">
+                <BsFillLightbulbFill />
+                ConvoStarters
+              </span>
+            </Button>
+          </DialogTrigger>
+          <ConvoStarters
+            open={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            onSelect={handleConvoStarterSelect}
+          />
+        </Dialog>
+      </div>
 
-                <button
-                    className="bg-[#682A43] text-white rounded-r-md p-3 focus:outline-none"
-                    onClick={handleSendMessage}
-                >
-                    <BsFillSendFill />
-                </button>
-            </div>
-            <ActionModal
-                isOpen={isConfirmEndOpen}
-                onClose={() => setIsConfirmEndOpen(false)}
-                onEndChat={handleSkip}
-                username={recipientName || ''}
-            />
-        </div>
-    )
-}
+      <div className="flex-1 flex items-end">
+        <Textarea
+          ref={textareaRef}
+          className="flex-1 border rounded-l-md p-2 focus:outline-none resize-none overflow-y-auto"
+          placeholder="Type a message..."
+          value={message}
+          rows={1}
+          style={{ minHeight: "40px", maxHeight: "150px" }}
+          onChange={handleMessageChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendMessage();
+            }
+          }}
+        />
 
-export default ChatInput
+        <button
+          className="bg-[#682A43] text-white rounded-r-md p-3 focus:outline-none"
+          onClick={sendMessage}
+        >
+          <BsFillSendFill />
+        </button>
+      </div>
+      <ActionModal
+        isOpen={isConfirmEndOpen}
+        onClose={() => setIsConfirmEndOpen(false)}
+        onEndChat={handleSkip}
+        username={recipientName || ""}
+      />
+    </div>
+  );
+};
+
+export default ChatInput;
