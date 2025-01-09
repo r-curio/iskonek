@@ -88,7 +88,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { message, setMessage, sendMessage, isLoading } = useChatInput(
+  const { message, setMessage, sendMessage, } = useChatInput(
     roomId,
     onMessageSent
   );

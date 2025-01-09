@@ -6,6 +6,7 @@ import { CustomInput } from './custom-input';
 import { SectionDivider } from '../ui/section-divider';
 import { ContactsList } from './contacts-list';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import UserProfile from './user-profile';
 
 const contacts = [
@@ -23,11 +24,15 @@ const contacts = [
 
 export default function Sidebar() {
 
+    const router = useRouter()
+
     const [selectedContact, setSelectedContact] = useState <{id: string, name: string, avatarUrl: string} | null>(null)
 
     useEffect(() => {
-        console.log(selectedContact)
-    }, [selectedContact])
+        if(selectedContact) {
+            router.push(`/chat/${selectedContact.id}`)
+        }
+    }, [selectedContact, router])
 
     return (
         <div className="w-1/5 max-w-1/5 bg-[#FAF9F6] min-h-screen flex flex-col justify-between">
