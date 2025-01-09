@@ -1,6 +1,5 @@
 import ChatWindow from '@/components/chat/chat-window';
 import { createClient } from '@/utils/supabase/server';
-
 interface PageProps {
     params: { id?: string };
     searchParams: { username?: string };
@@ -41,7 +40,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
         return (
             <ChatWindow
                 recipientName={username}
-                recipientProfilePic="https://placekitten.com/64/64"
+                recipientProfilePic=""
                 messages={messages || []}
                 roomId={id}
             />
