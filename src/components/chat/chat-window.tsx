@@ -1,11 +1,11 @@
 'use client'
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import ChatHeader from './chat-header';
 import MessageBubble from './bubble';
 import ChatInput from './message-box';
 import { createClient } from '@/utils/supabase/client';
-import { useEffect, useState } from 'react';
-import { ScrollArea } from '../ui/scroll-area';
+import { useEffect, useState, useRef } from 'react';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface ChatWindowProps {
     recipientName: string | undefined
@@ -20,23 +20,7 @@ interface ChatWindowProps {
     roomId: string 
 }
 
-
-const ChatWindow: React.FC<ChatWindowProps> = ({
-    recipientName,
-    recipientProfilePic,
-    messages,
-    onSendMessage,
-}) => {
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
-
+interface Message {
     id: string
     content: string
     sender_id: string
@@ -86,24 +70,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         }
     }
 
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
     return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader
-                recipientName={recipientName}
-                recipientProfilePic={recipientProfilePic}
-            />
+            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} />
             <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
                         key={index}
-                        text={message.text}
-                        isUser={message.isUser}
-                        timestamp={message.timestamp}
+                        text={message.content}
+                        isUser={message.sender_id === userId}
+                        timestamp={message.created_at ? new Date(message.created_at) : undefined}
                     />
                 ))}
                 <div ref={messagesEndRef} />
             </ScrollArea>
-            <ChatInput onSendMessage={onSendMessage} />
+            <ChatInput roomId={roomId} onMessageSent={addNewMessage} />
+
         </div>
     )
 }
