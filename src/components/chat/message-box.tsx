@@ -3,6 +3,7 @@ import { BsFillSendFill } from 'react-icons/bs';
 import { BsSkipEndFill } from 'react-icons/bs';
 import { BsFillLightbulbFill } from 'react-icons/bs';
 import { createClient } from '@/utils/supabase/client'
+import { Textarea } from '../ui/textarea';
 
 interface Message {
     id: string
@@ -78,6 +79,23 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
         }
     }
 
+    const handleSkip = async () => {
+
+        console.log('Skip button clicked')
+        try {
+            const response = await fetch('/api/chat/end_convo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ roomId })
+            })
+
+            if (!response.ok) throw new Error('Failed to end conversation')
+            
+        } catch (error) {
+            console.error('End conversation error:', error)
+        }
+    }
+
     const handleMessageChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>
     ) => {
@@ -90,7 +108,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
             <div className="flex gap-2">
                 <button
                     className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
-                    onClick={() => { }}
+                    onClick={handleSkip}
                 >
                     <span className="flex items-center gap-x-2">
                         <BsSkipEndFill /> Skip
@@ -109,7 +127,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
             </div>
 
             <div className="flex-1 flex items-end">
-                <textarea
+                <Textarea
                     ref={textareaRef}
                     className="flex-1 border rounded-l-md p-2 focus:outline-none resize-none overflow-y-auto"
                     placeholder="Type a message..."
