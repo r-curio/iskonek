@@ -1,11 +1,11 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { ArrowLeft } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ArrowLeft } from 'lucide-react';
 
 interface PasswordSettingsProps {
-  onCancel: () => void
+  onCancel: () => void;
 }
 
 export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
@@ -44,5 +44,5 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
         </Button>
       </div>
     </div>
-  )
+  );
 }
