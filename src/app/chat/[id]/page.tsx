@@ -6,6 +6,7 @@ import { useState } from 'react';
 interface Message {
     text: string;
     isUser: boolean;
+    timestamp: Date;
 }
 
 interface ChatPageProps {
@@ -14,12 +15,19 @@ interface ChatPageProps {
 
 const ChatPage = ({ recipientName }: ChatPageProps) => {
     const [messages, setMessages] = useState<Message[]>([
-        { text: 'Hello!', isUser: false },
-        { text: 'Hi there!', isUser: true },
+        { text: 'Hello!', isUser: false, timestamp: new Date() },
+        { text: 'Hi there!', isUser: true, timestamp: new Date() },
     ]);
 
     const handleSendMessage = (newMessage: string) => {
-        setMessages([...messages, { text: newMessage, isUser: true }]);
+        setMessages([
+            ...messages, 
+            { 
+                text: newMessage, 
+                isUser: true,
+                timestamp: new Date()
+            }
+        ]);
     };
 
     // const [isSearching, setIsSearching] = useState(false)
