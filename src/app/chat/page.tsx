@@ -2,11 +2,12 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button';
+import LoadingScreen from './loading';
 
 export default function Page() {
 
     const router = useRouter()
-    const [, setIsSearching] = useState(false)
+    const [isSearching, setIsSearching] = useState(false)
     const [matchInterval, setMatchInterval] = useState<NodeJS.Timeout | null>(null)
 
     const checkMatch = async () => {
@@ -66,14 +67,14 @@ export default function Page() {
         console.log('Cancelled search:', data)
     }
 
-
-
     return (
         <div>
             <h1>Chat Page</h1>
             <div>
                 <Button onClick={handleConnect}>Connect</Button>
                 <Button onClick={handleCancelSearch}>Cancel</Button>
+                {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch}/>
+            }
             </div>
         </div>
     );
