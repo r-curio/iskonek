@@ -1,9 +1,9 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+'use client'
+import { cn } from '@/lib/utils'
 
 interface MessageBubbleProps {
-    text: string;
-    isUser: boolean;
+    text: string
+    isUser: boolean
 }
 
 const MessageBubble: React.FC<MessageBubbleProps> = ({ text, isUser }) => {
@@ -14,7 +14,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ text, isUser }) => {
         )}>
             {text}
         </div>
-    );
-};
+    )
+}
 
-export default MessageBubble;
+export default MessageBubble
