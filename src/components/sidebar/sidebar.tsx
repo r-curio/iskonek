@@ -8,6 +8,7 @@ import { SectionDivider } from "../ui/section-divider";
 import { ContactsList } from "./contacts-list";
 import { useEffect, useState } from "react";
 import UserProfile from "./user-profile";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Contact {
   id: string;
@@ -59,7 +60,7 @@ export default function Sidebar() {
   );
 
   return (
-    <aside className="w-[280px] min-h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden shrink-0">
+    <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
       <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
         <Image
           src={Logo}
@@ -92,7 +93,7 @@ export default function Sidebar() {
         </Button>
       </nav>
 
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         <div className="px-4 py-2">
           <SectionDivider text="Direct Messages" />
           <div className="mt-2">
@@ -106,13 +107,13 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <ScrollArea className="flex-1">
           <ContactsList
             contacts={filteredContacts}
             onSelectContact={setSelectedContact}
             selectedContact={selectedContact}
           />
-        </div>
+        </ScrollArea>
       </div>
 
       <footer className="h-16 border-t bg-white">
