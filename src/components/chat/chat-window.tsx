@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import ChatHeader from './chat-header';
 import MessageBubble from './bubble';
 import ChatInput from './message-box';
@@ -20,7 +20,23 @@ interface ChatWindowProps {
     roomId: string 
 }
 
-interface Message {
+
+const ChatWindow: React.FC<ChatWindowProps> = ({
+    recipientName,
+    recipientProfilePic,
+    messages,
+    onSendMessage,
+}) => {
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
     id: string
     content: string
     sender_id: string
@@ -72,17 +88,22 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
 
     return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} />
+            <ChatHeader
+                recipientName={recipientName}
+                recipientProfilePic={recipientProfilePic}
+            />
             <ScrollArea className="flex-1 p-4">
-                {messages.map((message) => (
+                {messages.map((message, index) => (
                     <MessageBubble
-                        key={message.id}
-                        text={message.content}
-                        isUser={message.sender_id === userId}
+                        key={index}
+                        text={message.text}
+                        isUser={message.isUser}
+                        timestamp={message.timestamp}
                     />
                 ))}
+                <div ref={messagesEndRef} />
             </ScrollArea>
-            <ChatInput roomId={roomId} onMessageSent={addNewMessage} />
+            <ChatInput onSendMessage={onSendMessage} />
         </div>
     )
 }

@@ -58,7 +58,8 @@ export default function RegisterForm(): JSX.Element {
         <CardWrapper 
             label="Register"
             title="Create an account"
-            backButtonText="Already have an account? Login here."
+            footerText="Already have an account? "
+            backButtonText="Login here."
             backButtonPath="/auth/login"
         >
             <Form {...form}>
@@ -68,9 +69,9 @@ export default function RegisterForm(): JSX.Element {
                         name="email"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Email</FormLabel>
+                                <FormLabel>PUP WebMail</FormLabel>
                                 <FormControl>
-                                    <Input type="email" placeholder="email@example.com" {...field} />
+                                    <Input type="email" placeholder="johndoe@iskolarngbayan.pup.edu.ph" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
