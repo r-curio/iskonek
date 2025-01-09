@@ -1,5 +1,5 @@
-import React from 'react';
-import { cn } from '@/lib/utils';
+'use client'
+import { cn } from '@/lib/utils'
 
 interface MessageBubbleProps {
     text: string;
@@ -48,7 +48,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
                 </span>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default MessageBubble;
+export default MessageBubble

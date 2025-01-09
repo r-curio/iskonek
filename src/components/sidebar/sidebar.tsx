@@ -32,8 +32,8 @@ export default function Sidebar() {
     return (
         <div className="w-1/5 max-w-1/5 bg-[#FAF9F6] min-h-screen flex flex-col justify-between">
             <div>
-                <div className='flex items-center z-10 shadow-lg  bor max-h-16'>
-                    <Image src={Logo} alt='logo' width={100} height={100}/>
+                <div className='flex items-center z-10 shadow-lg max-h-16 gap-4 px-4 py-4'>
+                    <Image src={Logo} alt='logo' width={50} height={50}/>
                     <h1 className='text-3xl font-bold text-accent '>Isko<span className='text-[#C6980F]'>nek</span></h1>
                 </div>
                 <div className='pt-4 px-4 flex flex-col gap-4'>

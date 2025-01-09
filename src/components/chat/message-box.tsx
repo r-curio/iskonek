@@ -2,14 +2,27 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BsFillSendFill } from 'react-icons/bs';
 import { BsSkipEndFill } from 'react-icons/bs';
 import { BsFillLightbulbFill } from 'react-icons/bs';
+import { createClient } from '@/utils/supabase/client'
 
-interface ChatInputProps {
-    onSendMessage: (message: string) => void;
+interface Message {
+    id: string
+    content: string
+    created_at: string
+    sender_id: string
+    room_id: string
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
-    const [message, setMessage] = useState('');
+interface ChatInputProps {
+    roomId: string
+    onMessageSent: (message: Message) => void
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
+    const [message, setMessage] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [userId, setUserId] = useState<string | null>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    const supabase = createClient()
 
     const adjustHeight = () => {
         const textarea = textareaRef.current;
@@ -20,16 +33,50 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
         }
     };
 
-    const handleSendMessage = () => {
-        if (message.trim()) {
-            onSendMessage(message);
-            setMessage('');
-            // Reset height after sending
-            if (textareaRef.current) {
-                textareaRef.current.style.height = '40px';
-            }
+    useEffect(() => {
+        const getUser = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (user) setUserId(user.id)
         }
-    };
+        getUser()
+    }, [])
+
+    const handleSendMessage = async () => {
+        if (!message.trim() || isLoading || !userId) return
+        setIsLoading(true)
+
+        const optimisticMessage = {
+            id: Date.now().toString(),
+            content: message.trim(),
+            created_at: new Date().toISOString(),
+            sender_id: userId,
+            room_id: roomId
+        }
+
+        if (textareaRef.current) {
+            textareaRef.current.style.height = '40px';
+        }
+        
+        try {
+            onMessageSent(optimisticMessage)
+            setMessage('')
+            
+            const response = await fetch('/api/chat/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    content: message.trim(), 
+                    roomId 
+                })
+            })
+
+            if (!response.ok) throw new Error('Failed to send message')
+        } catch (error) {
+            console.error('Send message error:', error)
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     const handleMessageChange = (
         e: React.ChangeEvent<HTMLTextAreaElement>
@@ -86,7 +133,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSendMessage }) => {
                 </button>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ChatInput;
+export default ChatInput

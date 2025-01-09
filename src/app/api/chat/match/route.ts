@@ -46,7 +46,7 @@ export async function POST() {
         .single();
 
     if (existingQueue) {
-        // Find potential match
+        // Find a potential match
         const { data: matchQueue, error: matchQueueError } = await supabase
             .from('matching_queue')
             .select('user_id')
@@ -60,31 +60,16 @@ export async function POST() {
             return NextResponse.json({ status: 'waiting' });
         }
 
-        // Create chat room for both users
-        const { data: room, error: roomError } = await supabase
-            .from('chat_rooms')
-            .insert({
+        // Use the Postgres function to create the match
+        const { data: matchResult, error: matchError } = await supabase
+            .rpc('create_match', {
                 user1_id: user.id,
                 user2_id: matchQueue.user_id,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString(),
-                status: 'active'
-            })
-            .select()
-            .single();
+            });
 
-        if (roomError) {
-            return NextResponse.json({ error: 'Failed to create chat room' }, { status: 500 });
-        }
-
-        // Update both users' status to matched
-        const { error: updateError } = await supabase
-            .from('matching_queue')
-            .update({ status: 'matched' })
-            .in('user_id', [user.id, matchQueue.user_id]);
-
-        if (updateError) {
-            return NextResponse.json({ error: 'Failed to update match status' }, { status: 500 });
+        if (matchError) {
+            console.error('Match creation error:', matchError);
+            return NextResponse.json({ error: 'Failed to create match' }, { status: 500 });
         }
 
         // Get matched user's profile
@@ -94,22 +79,16 @@ export async function POST() {
             .eq('id', matchQueue.user_id)
             .single();
 
-        // Remove both users from queue
-        await supabase
-            .from('matching_queue')
-            .delete()
-            .in('user_id', [user.id, matchQueue.user_id]);
-
         return NextResponse.json({
             status: 'matched',
-            room_id: room.id,
+            room_id: matchResult[0].room_id,
             matchedUser: {
                 id: matchQueue.user_id,
                 username: profile?.username
             }
         });
     } else {
-        // Insert new user into queue
+        // Insert user into queue
         const { error: insertError } = await supabase
             .from('matching_queue')
             .insert([{ 
