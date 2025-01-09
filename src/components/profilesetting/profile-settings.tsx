@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { CgProfile } from 'react-icons/cg';
 import { FaUserGear } from "react-icons/fa6";
-import { BsGearFill } from 'react-icons/bs';
+import { CiLogout } from "react-icons/ci";
 
 interface ProfileSettingsProps {
   activeView: string;
@@ -36,7 +36,7 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
       </div>
       <div className="p-2">
         <Button variant="ghost" className="justify-start text-destructive">
-          <BsGearFill className="mr-2 h-4 w-4" />
+          <CiLogout className="mr-2 h-4 w-4" />
           Logout
         </Button>
       </div>
