@@ -113,7 +113,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 ))}
                 <div ref={messagesEndRef} />
             </ScrollArea>
-            <ChatInput roomId={roomId} onMessageSent={addNewMessage} />
+            <ChatInput roomId={roomId} onMessageSent={addNewMessage} recipientName={recipientName}/>
 
         </div>
     )

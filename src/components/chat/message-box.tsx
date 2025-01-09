@@ -4,6 +4,7 @@ import { BsSkipEndFill } from 'react-icons/bs';
 import { BsFillLightbulbFill } from 'react-icons/bs';
 import { createClient } from '@/utils/supabase/client'
 import { Textarea } from '../ui/textarea';
+import { ActionModal } from './actionModal';
 
 interface Message {
     id: string
@@ -16,10 +17,12 @@ interface Message {
 interface ChatInputProps {
     roomId: string
     onMessageSent: (message: Message) => void
+    recipientName?: string
 }
 
-const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
+const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent, recipientName }) => {
     const [message, setMessage] = useState('')
+    const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [userId, setUserId] = useState<string | null>(null)
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -108,7 +111,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
             <div className="flex gap-2">
                 <button
                     className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
-                    onClick={handleSkip}
+                    onClick={() => setIsConfirmEndOpen(true)}
                 >
                     <span className="flex items-center gap-x-2">
                         <BsSkipEndFill /> Skip
@@ -150,6 +153,12 @@ const ChatInput: React.FC<ChatInputProps> = ({ roomId, onMessageSent }) => {
                     <BsFillSendFill />
                 </button>
             </div>
+            <ActionModal
+                isOpen={isConfirmEndOpen}
+                onClose={() => setIsConfirmEndOpen(false)}
+                onEndChat={handleSkip}
+                username={recipientName || ''}
+            />
         </div>
     )
 }
