@@ -54,11 +54,11 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
               disabled={!isUsernameEditing}
             />
             {isUsernameEditing ? (
-              <Button onClick={() => setIsUsernameEditing(false)} className="bg-red-500 text-white hover:bg-red-600" variant="secondary">
+              <Button onClick={() => setIsUsernameEditing(false)} className="bg-[#693d52] text-white hover:bg-[#532e40]" variant="secondary">
                 Save
               </Button>
             ) : (
-              <Button onClick={() => setIsUsernameEditing(true)} className="hover:bg-[#682A43] hover:text-white" variant="secondary">
+              <Button onClick={() => setIsUsernameEditing(true)} className="hover:bg-[#919192] hover:text-white" variant="secondary">
                 Edit
               </Button>
             )}
@@ -130,11 +130,11 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
               />
             )}
             {isDepartmentEditing ? (
-              <Button onClick={() => setIsDepartmentEditing(false)} className="bg-red-500 text-white hover:bg-red-600" variant="secondary">
+              <Button onClick={() => setIsDepartmentEditing(false)} className="bg-[#693d52] text-white hover:bg-[#532e40]" variant="secondary">
                 Save
               </Button>
             ) : (
-              <Button onClick={() => setIsDepartmentEditing(true)} className="hover:bg-[#682A43] hover:text-white" variant="secondary">
+              <Button onClick={() => setIsDepartmentEditing(true)} className="hover:bg-[#919192] hover:text-white" variant="secondary">
                 Edit
               </Button>
             )}
@@ -145,7 +145,7 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
           <label className="text-sm font-medium">Password</label>
           <div className="flex items-center space-x-2">
             <Input className="flex-1" type="password" value="********" disabled />
-            <Button onClick={onPasswordEdit} className="hover:bg-[#682A43] hover:text-white" variant="secondary">
+            <Button onClick={onPasswordEdit} className="hover:bg-[#919192] hover:text-white" variant="secondary">
               Edit
             </Button>
           </div>
@@ -153,7 +153,7 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
       </div>
 
       <div className="flex justify-end pt-6">
-        <Button className="bg-[#682A43] text-white" variant="destructive">
+        <Button className="bg-[#682A43] text-white hover:bg-[#532e40]">
           Save Changes
         </Button>
       </div>
