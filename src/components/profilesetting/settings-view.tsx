@@ -6,6 +6,8 @@ import ProfileSettings from "@/components/profilesetting/profile-settings";
 import ProfileView from "@/components/profilesetting/profile-view";
 import PasswordSettings from "@/components/profilesetting/password-settings";
 import ManageAccount from "@/components/profilesetting/manage-account";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
 interface SettingsViewProps {
   open: boolean;
@@ -42,6 +44,9 @@ export default function SettingsView({ open, onOpenChange }: SettingsViewProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
+      <VisuallyHidden.Root>
+        <DialogTitle>Settings</DialogTitle>
+      </VisuallyHidden.Root>
       <DialogContent className="max-w-3xl p-0 gap-0 h-[550px]">
         <div className="flex h-full">
           <ProfileSettings activeView={activeView} onViewChange={handleViewChange} />
