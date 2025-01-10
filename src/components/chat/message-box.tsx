@@ -43,7 +43,7 @@ const useChatInput = (
       if (user) setUserId(user.id);
     };
     getUser();
-  }, []);
+  }, [supabase]);
 
   const sendMessage = async () => {
     if (!message.trim() || isLoading || !userId) return false;
