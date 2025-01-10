@@ -48,9 +48,9 @@ export async function signup(formData: FormData) {
         const email_domain = email.split('@')[1]
         
         // Check if email is a PUP Webmail Account
-        // if (email_domain !== 'iskolarngbayan.pup.edu.ph') {
-        //     return { error: 'Enter your PUP Webmail Account' }
-        // }
+        if (email_domain !== 'iskolarngbayan.pup.edu.ph') {
+            return { error: 'Enter your PUP Webmail Account' }
+        }
 
         if (password !== confirmPassword) {
             return { error: 'Passwords do not match' }
