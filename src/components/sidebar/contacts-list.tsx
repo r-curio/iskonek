@@ -11,6 +11,7 @@ interface User {
 
 interface ContactsListProps {
   contacts: User[]
+  
   onSelectContact: (contact: User) => void
 }
 

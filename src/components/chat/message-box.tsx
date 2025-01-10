@@ -43,7 +43,7 @@ const useChatInput = (
       if (user) setUserId(user.id);
     };
     getUser();
-  }, []);
+  }, [supabase]);
 
   const sendMessage = async () => {
     if (!message.trim() || isLoading || !userId) return false;
@@ -88,7 +88,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { message, setMessage, sendMessage, isLoading } = useChatInput(
+  const { message, setMessage, sendMessage, } = useChatInput(
     roomId,
     onMessageSent
   );

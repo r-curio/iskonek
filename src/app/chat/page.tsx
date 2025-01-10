@@ -2,9 +2,9 @@
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
-import LoadingScreen from "./loading";
 import { useMatchmaking } from "@/hooks/use-matchmaking";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import LoadingScreen from "./loading";
 
 export default function Page() {
   const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking();

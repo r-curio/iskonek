@@ -59,6 +59,10 @@ export default function Sidebar() {
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  useEffect(() => {
+    console.log(selectedContact);
+  }, [selectedContact]);
+
   return (
     <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
       <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
@@ -111,7 +115,6 @@ export default function Sidebar() {
           <ContactsList
             contacts={filteredContacts}
             onSelectContact={setSelectedContact}
-            selectedContact={selectedContact}
           />
         </ScrollArea>
       </div>

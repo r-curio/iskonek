@@ -1,10 +1,13 @@
 'use client'
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 
-export function useRoomDeletion(roomId: string) {
-    const router = useRouter()
+interface RoomDeletionProps {
+    roomId: string
+    setStatus: (status: string) => void
+}
+
+export function useRoomDeletion({ roomId, setStatus }: RoomDeletionProps) {
     const supabase = createClient()
 
     useEffect(() => {
@@ -15,12 +18,12 @@ export function useRoomDeletion(roomId: string) {
                 table: 'chat_rooms',
                 filter: `id=eq.${roomId}`
             }, () => {
-                router.push('/chat')
+                setStatus('ended') // Match this with the check in ChatWindow
             })
             .subscribe()
 
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [roomId, router, supabase])
+    }, [roomId, supabase, setStatus])
 }

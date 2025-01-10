@@ -4,9 +4,8 @@ import { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Loader2 } from 'lucide-react'
 
-export default function LoadingScreen({ handleCancelSearch} : { handleCancelSearch: () => void }) {
+export default function LoadingScreen({handleCancelSearch} : {handleCancelSearch: () => void}) {
   const [dots, setDots] = useState('.')
-
 
   useEffect(() => {
     const dotInterval = setInterval(() => {
