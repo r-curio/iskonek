@@ -36,10 +36,10 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
       </div>
 
       <div className="mt-8 flex justify-end gap-2">
-        <Button variant="outline" onClick={onCancel}>
+        <Button onClick={onCancel} className="hover:bg-[#919192] hover:text-white" variant="secondary">
           Cancel
         </Button>
-        <Button className="bg-[#682A43] text-white hover:bg-red-500" variant="default">
+        <Button className="bg-[#682A43] text-white hover:bg-[#532e40]" variant="default">
           Save
         </Button>
       </div>

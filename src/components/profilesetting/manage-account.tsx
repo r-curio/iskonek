@@ -21,7 +21,7 @@ export default function ManageAccount() {
       </div>
 
       <div className="mt-8 flex justify-end">
-        <Button className="bg-[#682A43] text-white hover:bg-red-500" variant="default">
+        <Button className="bg-[#693d52] text-white hover:bg-[#532e40]" variant="default">
           Delete Account
         </Button>
       </div>

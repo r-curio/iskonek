@@ -76,7 +76,7 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
       <div className="p-2">
         <Button 
           variant="ghost" 
-          className="justify-start text-destructive" 
+          className="justify-start w-full text-[#693d52] hover:bg-[#532e40] hover:text-white" 
           onClick={handleLogoutClick}
           disabled={isLoading}
         >
@@ -92,14 +92,14 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
             <p className="mb-4">Are you sure you want to logout?</p>
             <div className="flex justify-end space-x-2">
               <Button 
-                variant="secondary" 
+                className="hover:bg-[#919192] hover:text-white" variant="secondary"
                 onClick={handleCancelClick}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button 
-                variant="destructive" 
+                className="bg-[#693d52] text-white hover:bg-[#532e40]"
                 onClick={handleConfirmClick}
                 disabled={isLoading}
               >
@@ -112,3 +112,4 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
     </div>
   );
 }
+
