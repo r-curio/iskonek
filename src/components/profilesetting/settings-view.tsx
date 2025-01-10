@@ -42,10 +42,12 @@ export default function SettingsView({ open, onOpenChange }: SettingsViewProps) 
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl p-0 gap-0">
-        <div className="flex">
+      <DialogContent className="max-w-3xl p-0 gap-0 h-[550px]">
+        <div className="flex h-full">
           <ProfileSettings activeView={activeView} onViewChange={handleViewChange} />
-          {renderRightComponent()}
+          <div className="flex-1 overflow-y-auto">
+            {renderRightComponent()}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
