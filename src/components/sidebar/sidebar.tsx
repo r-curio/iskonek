@@ -2,18 +2,18 @@
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
-import { BsChatLeftFill, BsFillPeopleFill, BsSearch } from "react-icons/bs";
+import { BsChatLeftFill, BsPersonFillAdd , BsSearch, BsFillPeopleFill } from "react-icons/bs";
 import { CustomInput } from "./custom-input";
 import { SectionDivider } from "../ui/section-divider";
 import { ContactsList } from "./contacts-list";
+import { FriendRequestList } from "./friend-request-list";
 import { useEffect, useState } from "react";
 import UserProfile from "./user-profile";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Contact {
   id: string;
   name: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
 }
 
 interface User {
@@ -52,16 +52,26 @@ const currentUser: User = {
 };
 
 export default function Sidebar() {
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [, setSelectedContact] = useState<Contact | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
+  const [friendRequests, setFriendRequests] = useState<Contact[]>([]);
 
   const filteredContacts = contacts.filter((contact) =>
     contact.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   useEffect(() => {
-    console.log(selectedContact);
-  }, [selectedContact]);
+    
+    const fetchFriendRequests = async () => {
+      const response = await fetch("/api/friend/get-friend-requests");
+      const data = await response.json();
+      setFriendRequests(data.friendProfiles);
+    };
+
+    fetchFriendRequests();
+
+  }, []);
 
   return (
     <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
@@ -91,9 +101,19 @@ export default function Sidebar() {
         <Button
           variant="ghost"
           className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
+          onClick={() => setDisplayFriendRequests((prev) => !prev)}
         >
-          <BsFillPeopleFill className="text-lg" />
-          <span>Add Friends</span>
+          {displayFriendRequests ? (
+            <>
+              <BsFillPeopleFill className="text-2xl" />
+              <span>Contacts</span>
+            </>
+          ) : (
+            <>
+              <BsPersonFillAdd className="text-2xl" />
+              <span>Friend Requests</span>
+            </>
+          )}
         </Button>
       </nav>
 
@@ -111,12 +131,16 @@ export default function Sidebar() {
           </div>
         </div>
 
-        <ScrollArea className="flex-1">
-          <ContactsList
-            contacts={filteredContacts}
-            onSelectContact={setSelectedContact}
-          />
-        </ScrollArea>
+          {displayFriendRequests ? (
+            <FriendRequestList
+              requests={friendRequests}
+            />
+          ) : (
+            <ContactsList
+              contacts={filteredContacts}
+              onSelectContact={setSelectedContact}
+            />
+          )}
       </div>
 
       <footer className="h-16 border-t bg-white">
