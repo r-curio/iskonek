@@ -1,5 +1,5 @@
+// src/components/auth/forgot-password-form.tsx
 'use client'
-
 import CardWrapper from "./card-wrapper"
 import { Button } from "@/components/ui/button"
 import {
@@ -26,8 +26,8 @@ export function EmailVerificationForm(): JSX.Element {
         },
     })
 
-    async function onSubmit(values: { email: string }) {
-        const response = await forgotPassword(values) // Pass plain object
+    async function onSubmit(formData: FormData) {
+        const response = await forgotPassword(formData)
 
         if (response?.error) {
             toast({
@@ -43,46 +43,42 @@ export function EmailVerificationForm(): JSX.Element {
             description: "Password reset instructions sent to your email.",
             variant: "success",
         })
-
+        
         form.reset()
     }
 
     return (
-        <div className="flex items-center justify-center h-screen bg-gray-100">
-            <CardWrapper
-                label="Reset Password"
-                title="Reset your password"
-                footerText="Remember your password? "
-                backButtonText="Back to login"
-                backButtonPath="/auth/login"
-                className="w-full max-w-md p-6 bg-white rounded-lg shadow-md"
-            >
-                <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                        <FormField
-                            control={form.control}
-                            name="email"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel className="text-base font-medium">PUP WebMail</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="email"
-                                            placeholder="johndoe@iskolarngbayan.pup.edu.ph"
-                                            {...field}
-                                            className="h-11 text-sm"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-sm text-red-500" />
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit" className="w-full h-11">
-                            Send Reset Instructions
-                        </Button>
-                    </form>
-                </Form>
-            </CardWrapper>
-        </div>
+        <CardWrapper
+            label="Reset Password"
+            title="Reset your password"
+            footerText="Remember your password? "
+            backButtonText="Back to login"
+            backButtonPath="/auth/login"
+        >
+            <Form {...form}>
+                <form action={onSubmit} className="space-y-8">
+                    <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>PUP WebMail</FormLabel>
+                                <FormControl>
+                                    <Input 
+                                        type="email" 
+                                        placeholder="johndoe@iskolarngbayan.pup.edu.ph" 
+                                        {...field} 
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <Button type="submit" className="w-full">
+                        Send Reset Instructions
+                    </Button>
+                </form>
+            </Form>
+        </CardWrapper>
     )
 }
