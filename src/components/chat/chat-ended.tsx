@@ -17,7 +17,6 @@ export function ChatEndedOptions({
   onNewChat,
   partnerName
 }: ChatEndedOptionsProps) {
-
   
   return (
     <Card className="w-full max-w-md mx-auto bg-yellow-100 border-yellow-300">
