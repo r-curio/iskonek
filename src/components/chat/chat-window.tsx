@@ -9,7 +9,9 @@ import { useAppExit } from '@/hooks/use-app-exit';
 import { useRoomDeletion } from '@/hooks/use-room-delete'
 import { useMessageSubscription } from '@/hooks/use-messages';
 import { useMatchmaking } from '@/hooks/use-matchmaking';
+import { handleAddFriend } from '@/utils/actions';
 import { ChatEndedOptions } from './chat-ended';
+import { useToast } from '@/hooks/use-toast';
 import LoadingScreen from '@/app/chat/loading';
 
 interface message {
@@ -33,6 +35,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
     const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking()
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [status, setStatus] = useState('active')
+    const { toast } = useToast()
     const router = useRouter()
 
     useAppExit(roomId)
@@ -51,6 +54,23 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
         scrollToBottom()
     }, [messages])
 
+    const handleFriendRequest = async () => {
+        try {
+            await handleAddFriend({ recipientUsername: recipientName })
+            toast({
+                title: "Friend Request Sent!",
+                description: `Friend request sent to ${recipientName}`,
+                variant: "success",
+            })
+        } catch (error) {
+            toast({
+                title: "Error",
+                description: error.toString(),
+                variant: "destructive",
+            })
+        }
+    }
+
         return (
         <div className="flex flex-col h-screen w-full">
             <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} />
@@ -67,7 +87,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
                     <div className="flex justify-center mt-8">
                         <ChatEndedOptions
                             onGoHome={() => router.push('/chat')}
-                            onAddFriend={() => {}}
+                            onAddFriend={() => handleFriendRequest()}                            
                             onNewChat={handleConnect}
                             partnerName={recipientName}
                         />
