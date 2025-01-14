@@ -2,12 +2,12 @@
 import CardWrapper from "./card-wrapper"
 import { Button } from "@/components/ui/button"
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 
@@ -16,6 +16,7 @@ import { useForm } from 'react-hook-form'
 import { loginSchema } from "@/schema"
 import { useToast } from "@/hooks/use-toast"
 import { login } from "@/app/auth/login/actions"
+import Link from 'next/link'
 
 export default function LoginForm(): JSX.Element {
 
@@ -43,16 +44,16 @@ export default function LoginForm(): JSX.Element {
     }
 
     return (
-        <CardWrapper 
+        <CardWrapper
             label="Sign In"
             title="Sign in to an account"
             footerText="Don't have an account? "
-            backButtonText="Register here." 
+            backButtonText="Register here."
             backButtonPath="/auth/register"
         >
             <Form {...form}>
                 <form action={onSubmit} className="space-y-8">
-                    <FormField 
+                    <FormField
                         control={form.control}
                         name="email"
                         render={({ field }) => (
@@ -65,12 +66,19 @@ export default function LoginForm(): JSX.Element {
                             </FormItem>
                         )}
                     />
-                    <FormField 
+                    <FormField
                         control={form.control}
                         name="password"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Password</FormLabel>
+                                <Link
+                                    href="/auth/forgot-password"
+                                    style={{ marginLeft: '0.50rem', fontSize: '14px', color: '#682A43' }}
+                                    className="hover:underline"
+                                >
+                                    Forgot Password?
+                                </Link>
                                 <FormControl>
                                     <Input type="password" placeholder="******"{...field} />
                                 </FormControl>
