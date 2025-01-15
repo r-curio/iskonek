@@ -11,7 +11,7 @@ export async function handleAddFriend({ recipientUsername }: handleAddFriendProp
     }
 
     try {
-        const response = await fetch('/api/friend/add-friend', {
+        const response = await fetch('/api/friend', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
