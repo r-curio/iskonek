@@ -9,66 +9,43 @@ import { ContactsList } from "./contacts-list";
 import { FriendRequestList } from "./friend-request-list";
 import { useEffect, useState } from "react";
 import UserProfile from "./user-profile";
-
-interface Contact {
-  id: string;
-  name: string;
-  avatarUrl: string | null;
-}
-
 interface User {
   id: string;
-  name: string;
-  avatarUrl: string;
+  username: string;
+  avatarUrl: string | undefined;
 }
 
-const contacts: Contact[] = [
-  {
-    id: "2",
-    name: "Alice Smith",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "4",
-    name: "Carol Williams",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "5",
-    name: "David Brown",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-];
-
-const currentUser: User = {
-  id: "1",
-  name: "John Doe",
-  avatarUrl: "https://github.com/shadcn.png",
-};
 
 export default function Sidebar() {
-  const [, setSelectedContact] = useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<User[]>([]);
+  const [, setSelectedContact] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
-  const [friendRequests, setFriendRequests] = useState<Contact[]>([]);
+  const [friendRequests, setFriendRequests] = useState<User[]>([]);
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredContacts = contacts?.filter((contact) =>
+    contact.username.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   useEffect(() => {
     
     const fetchFriendRequests = async () => {
-      const response = await fetch("/api/friend/get-friend-requests");
+      console.log("fetching friend requests");
+      const response = await fetch("/api/friend?status=pending");
       const data = await response.json();
-      setFriendRequests(data.friendProfiles);
+      console.log(data);
+      setFriendRequests(data.friendRequests);
     };
 
+    const fetchContacts = async () => {
+      console.log("fetching contacts");
+      const response = await fetch("/api/friend?status=accepted");
+      const data = await response.json();
+      console.log(data);
+      setContacts(data.acceptedFriends);
+    }
+
+    fetchContacts();
     fetchFriendRequests();
 
   }, []);
@@ -133,7 +110,7 @@ export default function Sidebar() {
 
           {displayFriendRequests ? (
             <FriendRequestList
-              requests={friendRequests}
+              friendRequests={friendRequests}
             />
           ) : (
             <ContactsList
@@ -145,8 +122,8 @@ export default function Sidebar() {
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={currentUser.avatarUrl}
-          name={currentUser.name}
+          avatarUrl={""}
+          name={"John Doe"}
         />
       </footer>
     </aside>

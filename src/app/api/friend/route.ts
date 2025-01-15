@@ -20,6 +20,7 @@ export async function GET(request: Request) {
 
     if (status === 'accepted') {
         const acceptedFriends = await getAcceptedFriends(supabase, user.id);
+        console.log('Accepted friends:', acceptedFriends);
         return NextResponse.json({ acceptedFriends });
     }
 }
