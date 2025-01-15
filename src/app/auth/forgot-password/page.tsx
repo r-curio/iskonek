@@ -11,8 +11,6 @@ export default async function ForgotPasswordPage() {
     }
 
     return (
-        <div>
             <ForgotPasswordForm />
-        </div>
     )
 }
