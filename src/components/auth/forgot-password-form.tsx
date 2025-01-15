@@ -1,4 +1,3 @@
-// src/components/auth/forgot-password-form.tsx
 'use client'
 import CardWrapper from "./card-wrapper"
 import { Button } from "@/components/ui/button"
@@ -11,13 +10,16 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { forgotPasswordSchema } from "@/schema"
 import { useToast } from "@/hooks/use-toast"
 import { forgotPassword } from "@/app/auth/forgot-password/action"
+import { useRouter } from "next/navigation"
 
-export function EmailVerificationForm(): JSX.Element {
+export default function ForgotPasswordForm(): JSX.Element {
+    const router = useRouter()
     const { toast } = useToast()
     const form = useForm({
         resolver: zodResolver(forgotPasswordSchema),
@@ -40,16 +42,17 @@ export function EmailVerificationForm(): JSX.Element {
 
         toast({
             title: "Success",
-            description: "Password reset instructions sent to your email.",
-            variant: "success",
+            description: "Password reset instructions sent to your email",
         })
         
-        form.reset()
+        setTimeout(() => {
+            router.push('/auth/login')
+        }, 3000)
     }
 
     return (
         <CardWrapper
-            label="Reset Password"
+            label="Forgot Password"
             title="Reset your password"
             footerText="Remember your password? "
             backButtonText="Back to login"
@@ -64,18 +67,14 @@ export function EmailVerificationForm(): JSX.Element {
                             <FormItem>
                                 <FormLabel>PUP WebMail</FormLabel>
                                 <FormControl>
-                                    <Input 
-                                        type="email" 
-                                        placeholder="johndoe@iskolarngbayan.pup.edu.ph" 
-                                        {...field} 
-                                    />
+                                    <Input type="email" placeholder="johndoe@iskolarngbayan.pup.edu.ph" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
                     <Button type="submit" className="w-full">
-                        Send Reset Instructions
+                        Send Instructions
                     </Button>
                 </form>
             </Form>

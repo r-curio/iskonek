@@ -1,4 +1,4 @@
-import { EmailVerificationForm } from "@/components/auth/forgot-password-form"
+import ForgotPasswordForm from "@/components/auth/forgot-password-form"
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 
@@ -12,7 +12,7 @@ export default async function ForgotPasswordPage() {
 
     return (
         <div>
-            <EmailVerificationForm />
+            <ForgotPasswordForm />
         </div>
     )
 }
