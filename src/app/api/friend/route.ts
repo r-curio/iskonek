@@ -1,5 +1,29 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
+import { getFriendRequests, getAcceptedFriends } from "./helpers";
+
+export async function GET(request: Request) {
+
+    const { searchParams } = new URL(request.url);
+    const status = searchParams.get('status') || 'pending'; 
+    const supabase = await createClient();  
+    const { data: { user }, error: UserError } = await supabase.auth.getUser();
+
+    if (!user || UserError) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (status === 'pending') {
+        const friendRequests = await getFriendRequests(supabase, user.id, status);
+        return NextResponse.json({ friendRequests });
+    }
+
+    if (status === 'accepted') {
+        const acceptedFriends = await getAcceptedFriends(supabase, user.id);
+        console.log('Accepted friends:', acceptedFriends);
+        return NextResponse.json({ acceptedFriends });
+    }
+}
 
 export async function POST(request: Request) {
     const supabase = await createClient();
@@ -54,3 +78,33 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ status: 'success' });
 }
+
+export async function PUT(request: Request) {
+
+    const supabase = await createClient();
+    const { id } = await request.json();
+
+    console.log('Accepting friend request:', id);
+
+    const { data: { user }, error: UserError } = await supabase.auth.getUser();
+    if (!user || UserError) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const { error: friendRequestError } = await supabase
+        .from('friendships')
+        .update({ status: 'accepted' })
+        .eq('from_user_id', id)
+        .eq('to_user_id', user.id);
+
+    if (friendRequestError) {
+        console.error('Friend request error:', friendRequestError);
+        return NextResponse.json({ 
+            error: 'Failed to accept friend request',
+            details: friendRequestError.message 
+        }, { status: 500 });
+    }
+
+    return NextResponse.json({ status: 'success' });
+}
+
