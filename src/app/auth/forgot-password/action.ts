@@ -18,13 +18,7 @@ export async function forgotPassword(formData: FormData) {
 
     const { email } = result.data;
 
-    // check if the user is using the PUP Webmail Account
-    const email_domain = email.split('@')[1];
-    if (email_domain !== 'iskolarngbayan.pup.edu.ph') {
-        return { error: 'Enter your PUP Webmail Account' }
-    }
 
-    try {
         const { error } = await supabase.auth.resetPasswordForEmail(email, {
             redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/login`,
         });
@@ -35,7 +29,4 @@ export async function forgotPassword(formData: FormData) {
 
         revalidatePath('/', 'layout')
         return { success: true }
-    } catch (error) {
-        return { error: 'An error occurred while resetting password' }
-    }
 }
