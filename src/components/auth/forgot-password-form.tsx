@@ -46,7 +46,7 @@ export default function ForgotPasswordForm(): JSX.Element {
         })
         
         setTimeout(() => {
-            router.push('/auth/login')
+            router.push('/auth/reset-password')
         }, 3000)
     }
 

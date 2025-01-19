@@ -10,7 +10,6 @@ export async function forgotPassword(formData: FormData) {
         email: formData.get('email') as string,
     }
 
-    // Validate request body against schema
     const result = forgotPasswordSchema.safeParse(data);
     if (!result.success) {
         return { error: result.error.errors[0].message }
@@ -18,15 +17,14 @@ export async function forgotPassword(formData: FormData) {
 
     const { email } = result.data;
 
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/reset-password`,
+    });
 
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/login`,
-        });
+    if (error) {
+        return { error: error.message }
+    }
 
-        if (error) {
-            return { error: error.message }
-        }
-
-        revalidatePath('/', 'layout')
-        return { success: true }
+    revalidatePath('/', 'layout')
+    return { success: true }
 }
