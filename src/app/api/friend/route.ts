@@ -2,6 +2,8 @@ import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 import { getFriendRequests, getAcceptedFriends } from "./helpers";
 
+
+// GET list of friend requests or accepted friends
 export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url);
@@ -25,6 +27,7 @@ export async function GET(request: Request) {
     }
 }
 
+// POST send friend request
 export async function POST(request: Request) {
     const supabase = await createClient();
     const username = request.headers.get('username');
@@ -38,7 +41,7 @@ export async function POST(request: Request) {
     const { data: recipientData, error: recipientError } = await supabase
         .from('profiles')
         .select('id')
-        .eq('username', username)
+        .eq('username', username || '') 
         .single();
 
     if (recipientError || !recipientData) {
@@ -79,6 +82,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: 'success' });
 }
 
+// UPDATE accept friend request
 export async function PUT(request: Request) {
 
     const supabase = await createClient();
@@ -91,6 +95,7 @@ export async function PUT(request: Request) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // if friend request exist and status is pending, update status to accepted
     const { error: friendRequestError } = await supabase
         .from('friendships')
         .update({ status: 'accepted' })
@@ -102,6 +107,25 @@ export async function PUT(request: Request) {
         return NextResponse.json({ 
             error: 'Failed to accept friend request',
             details: friendRequestError.message 
+        }, { status: 500 });
+    }
+
+    // Create a new chat room
+    const { error: newRoomError } = await supabase
+        .from('chat_rooms')
+        .insert({
+            user1_id: user.id,
+            user2_id: id,
+            status: 'active',
+            created_at: new Date().toISOString(),
+            type: 'friend',
+        });
+
+    if (newRoomError) {
+        console.error('New room error:', newRoomError);
+        return NextResponse.json({ 
+            error: 'Failed to create chat room',
+            details: newRoomError.message 
         }, { status: 500 });
     }
 
