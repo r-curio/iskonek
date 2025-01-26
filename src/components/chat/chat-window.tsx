@@ -60,12 +60,11 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
             toast({
                 title: "Friend Request Sent!",
                 description: `Friend request sent to ${recipientName}`,
-                variant: "success",
             })
         } catch (error) {
             toast({
                 title: "Error",
-                description: error.toString(),
+                description: error instanceof Error ? error.message : 'An unknown error occurred',
                 variant: "destructive",
             })
         }
