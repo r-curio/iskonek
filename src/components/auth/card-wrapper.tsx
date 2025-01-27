@@ -25,7 +25,7 @@ export default function CardWrapper(props: CardWrapperProps): JSX.Element {
     return (
         <Card className="lg:w-1/3 md:w-1/2 w-full">
             <CardHeader className="text-center">
-                <Image src={Logo} alt='logo' width={150} height={150} className="mx-auto border-black border-2"/>
+                <Image src={Logo} alt='logo' width={70} height={70} className="mx-auto"/>
                 <CardTitle className="text-2xl font-bold text-accent">Welcome to Iskonek!</CardTitle>
                 <CardDescription className="text-lg text-accent/90">{props.title}</CardDescription>
             </CardHeader>

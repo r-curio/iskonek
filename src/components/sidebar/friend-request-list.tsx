@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Check, X } from 'lucide-react'
 import { useState } from 'react'
 import { useToast } from '@/hooks/use-toast'
@@ -53,7 +52,7 @@ export function FriendRequestList({ friendRequests }: FriendRequestListProps) {
     }
 
     return (
-        <ScrollArea className="flex-1 p-4">
+        <>
         {requests.length === 0 ? (
             <p className="text-center text-muted-foreground p-4">No pending friend requests</p>
             ) : (
@@ -87,7 +86,7 @@ export function FriendRequestList({ friendRequests }: FriendRequestListProps) {
                 </div>
             ))
             )}
-        </ScrollArea>
+        </>
     )
 }
 

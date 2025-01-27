@@ -24,7 +24,7 @@ export async function handleAddFriend({ recipientUsername }: handleAddFriendProp
             throw new Error(data.error)
         }
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error instanceof Error ? error.message : String(error))
         return { success: false, error }
     }
 

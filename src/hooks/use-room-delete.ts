@@ -5,12 +5,16 @@ import { createClient } from '@/utils/supabase/client'
 interface RoomDeletionProps {
     roomId: string
     setStatus: (status: string) => void
+    isRandom?: boolean
 }
 
-export function useRoomDeletion({ roomId, setStatus }: RoomDeletionProps) {
+export function useRoomDeletion({ roomId, setStatus, isRandom }: RoomDeletionProps) {
     const supabase = createClient()
 
     useEffect(() => {
+
+        if (!isRandom) return
+
         const channel = supabase.channel('room_deletion')
             .on('postgres_changes', {
                 event: 'DELETE',
@@ -25,5 +29,5 @@ export function useRoomDeletion({ roomId, setStatus }: RoomDeletionProps) {
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [roomId, supabase, setStatus])
+    }, [roomId, supabase, setStatus, isRandom])
 }

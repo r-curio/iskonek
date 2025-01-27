@@ -2,12 +2,15 @@
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BsChatLeftFill, BsPersonFillAdd , BsSearch, BsFillPeopleFill } from "react-icons/bs";
 import { CustomInput } from "./custom-input";
 import { SectionDivider } from "../ui/section-divider";
 import { ContactsList } from "./contacts-list";
 import { FriendRequestList } from "./friend-request-list";
+import { ScrollArea } from "../ui/scroll-area";
 import { useEffect, useState } from "react";
+import { useFriendUpdates } from "@/hooks/use-FriendUpdates";
 import UserProfile from "./user-profile";
 interface User {
   id: string;
@@ -27,27 +30,23 @@ export default function Sidebar() {
     contact.username.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
+  useFriendUpdates(setFriendRequests, setContacts);
+
   useEffect(() => {
-    
-    const fetchFriendRequests = async () => {
-      console.log("fetching friend requests");
-      const response = await fetch("/api/friend?status=pending");
-      const data = await response.json();
-      console.log(data);
-      setFriendRequests(data.friendRequests);
+    const fetchInitialData = async () => {
+      const [requestsResponse, contactsResponse] = await Promise.all([
+        fetch("/api/friend?status=pending"),
+        fetch("/api/friend?status=accepted")
+      ]);
+
+      const requestsData = await requestsResponse.json();
+      const contactsData = await contactsResponse.json();
+
+      setFriendRequests(requestsData.friendRequests || []);
+      setContacts(contactsData.acceptedFriends || []);
     };
 
-    const fetchContacts = async () => {
-      console.log("fetching contacts");
-      const response = await fetch("/api/friend?status=accepted");
-      const data = await response.json();
-      console.log(data);
-      setContacts(data.acceptedFriends);
-    }
-
-    fetchContacts();
-    fetchFriendRequests();
-
+    fetchInitialData();
   }, []);
 
   return (
@@ -87,8 +86,20 @@ export default function Sidebar() {
             </>
           ) : (
             <>
-              <BsPersonFillAdd className="text-2xl" />
-              <span>Friend Requests</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex gap-3">
+                  <BsPersonFillAdd className="text-2xl" />
+                  <span>Friend Requests</span>
+                </div>
+                {friendRequests.length > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className=""
+                  >
+                    {friendRequests.length}
+                  </Badge>
+                )}
+              </div>
             </>
           )}
         </Button>
@@ -107,17 +118,18 @@ export default function Sidebar() {
             />
           </div>
         </div>
-
-          {displayFriendRequests ? (
-            <FriendRequestList
-              friendRequests={friendRequests}
-            />
-          ) : (
-            <ContactsList
-              contacts={filteredContacts}
-              onSelectContact={setSelectedContact}
-            />
-          )}
+          <ScrollArea>
+            {displayFriendRequests ? (
+              <FriendRequestList
+                friendRequests={friendRequests}
+              />
+            ) : (
+              <ContactsList
+                contacts={filteredContacts}
+                onSelectContact={setSelectedContact}
+              />
+            )}
+          </ScrollArea>
       </div>
 
       <footer className="h-16 border-t bg-white">
