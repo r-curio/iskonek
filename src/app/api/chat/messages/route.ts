@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 
 export async function POST(request: Request) {
     const supabase = await createClient()
+    console.log('POST /api/chat/messages')
     
     try {
         const { content, roomId } = await request.json()

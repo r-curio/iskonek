@@ -24,6 +24,7 @@ interface ChatInputProps {
   roomId: string;
   onMessageSent: (message: Message) => void;
   recipientName?: string;
+  isRandom?: boolean;
 }
 
 const useChatInput = (
@@ -84,6 +85,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   roomId,
   onMessageSent,
   recipientName,
+  isRandom,
 }) => {
   const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -128,7 +130,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="flex items-end p-4 border-t min-h-[5rem] gap-2">
       <div className="flex gap-2">
-        <Button
+        {isRandom && (
+          <Button
           className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
           onClick={() => setIsConfirmEndOpen(true)}
         >
@@ -136,6 +139,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <BsSkipEndFill /> Skip
           </span>
         </Button>
+        )}
+        
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>

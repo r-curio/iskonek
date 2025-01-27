@@ -2,13 +2,18 @@ import ChatWindow from '@/components/chat/chat-window';
 import { createClient } from '@/utils/supabase/server';
 interface PageProps {
     params: { id?: string };
-    searchParams: { username?: string };
+    searchParams: { 
+        username?: string;
+        isRandom?: string;
+    };
 }
 
 export default async function ChatPage({ params, searchParams }: PageProps) {
     const supabase = await createClient();
     const { id } = params;
     const username = searchParams ? searchParams.username : null;
+    const isRandom = searchParams ? searchParams.isRandom : null;
+    
 
     // Validate `id` and `username`
     if (!id) {
@@ -43,6 +48,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
                 recipientProfilePic=""
                 messages={messages || []}
                 roomId={id}
+                isRandom={isRandom === 'true'}
             />
         );
     } catch (err) {

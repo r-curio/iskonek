@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingScreen from "./loading";
 
 export default function Page() {
-  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking();
+  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(true);
 
   return (
     <ScrollArea className="h-screen w-full">
