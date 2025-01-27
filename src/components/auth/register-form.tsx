@@ -9,6 +9,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { 
+    Select, 
+    SelectTrigger, 
+    SelectValue, 
+    SelectContent, 
+    SelectItem 
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -19,7 +26,6 @@ import { signup } from "@/app/auth/register/actions"
 import { useRouter } from "next/navigation"
 
 export default function RegisterForm(): JSX.Element {
-    
     const router = useRouter()
     const { toast } = useToast()
     const form = useForm({
@@ -27,6 +33,7 @@ export default function RegisterForm(): JSX.Element {
         defaultValues: {
             email: "",
             username: "",
+            department: "",
             password: "",
             confirmPassword: "",
         },
@@ -92,6 +99,29 @@ export default function RegisterForm(): JSX.Element {
                     />
                     <FormField
                         control={form.control}
+                        name="department"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Department</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a department" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="cs">Computer Science</SelectItem>
+                                        <SelectItem value="it">Information Technology</SelectItem>
+                                        <SelectItem value="is">Information Systems</SelectItem>
+                                        {/* Add more departments as needed */}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name="password"
                         render={({ field }) => (
                             <FormItem>
@@ -116,7 +146,7 @@ export default function RegisterForm(): JSX.Element {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full bg-accent">
                         Register
                     </Button>
                 </form>
@@ -124,3 +154,4 @@ export default function RegisterForm(): JSX.Element {
         </CardWrapper>
     )
 }
+

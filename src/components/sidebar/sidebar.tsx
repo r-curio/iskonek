@@ -2,75 +2,51 @@
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { BsChatLeftFill, BsPersonFillAdd , BsSearch, BsFillPeopleFill } from "react-icons/bs";
 import { CustomInput } from "./custom-input";
 import { SectionDivider } from "../ui/section-divider";
 import { ContactsList } from "./contacts-list";
 import { FriendRequestList } from "./friend-request-list";
+import { ScrollArea } from "../ui/scroll-area";
 import { useEffect, useState } from "react";
+import { useFriendUpdates } from "@/hooks/use-FriendUpdates";
 import UserProfile from "./user-profile";
-
-interface Contact {
-  id: string;
-  name: string;
-  avatarUrl: string | null;
-}
-
 interface User {
   id: string;
-  name: string;
-  avatarUrl: string;
+  username: string;
+  avatarUrl: string | undefined;
 }
 
-const contacts: Contact[] = [
-  {
-    id: "2",
-    name: "Alice Smith",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "3",
-    name: "Bob Johnson",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "4",
-    name: "Carol Williams",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-  {
-    id: "5",
-    name: "David Brown",
-    avatarUrl: "/placeholder.svg?height=32&width=32",
-  },
-];
-
-const currentUser: User = {
-  id: "1",
-  name: "John Doe",
-  avatarUrl: "https://github.com/shadcn.png",
-};
 
 export default function Sidebar() {
-  const [, setSelectedContact] = useState<Contact | null>(null);
+  const [contacts, setContacts] = useState<User[]>([]);
+  const [, setSelectedContact] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
-  const [friendRequests, setFriendRequests] = useState<Contact[]>([]);
+  const [friendRequests, setFriendRequests] = useState<User[]>([]);
 
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredContacts = contacts?.filter((contact) =>
+    contact.username.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  useFriendUpdates(setFriendRequests, setContacts);
 
   useEffect(() => {
-    
-    const fetchFriendRequests = async () => {
-      const response = await fetch("/api/friend/get-friend-requests");
-      const data = await response.json();
-      setFriendRequests(data.friendProfiles);
+    const fetchInitialData = async () => {
+      const [requestsResponse, contactsResponse] = await Promise.all([
+        fetch("/api/friend?status=pending"),
+        fetch("/api/friend?status=accepted")
+      ]);
+
+      const requestsData = await requestsResponse.json();
+      const contactsData = await contactsResponse.json();
+
+      setFriendRequests(requestsData.friendRequests || []);
+      setContacts(contactsData.acceptedFriends || []);
     };
 
-    fetchFriendRequests();
-
+    fetchInitialData();
   }, []);
 
   return (
@@ -110,8 +86,20 @@ export default function Sidebar() {
             </>
           ) : (
             <>
-              <BsPersonFillAdd className="text-2xl" />
-              <span>Friend Requests</span>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex gap-3">
+                  <BsPersonFillAdd className="text-2xl" />
+                  <span>Friend Requests</span>
+                </div>
+                {friendRequests.length > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className=""
+                  >
+                    {friendRequests.length}
+                  </Badge>
+                )}
+              </div>
             </>
           )}
         </Button>
@@ -130,23 +118,24 @@ export default function Sidebar() {
             />
           </div>
         </div>
-
-          {displayFriendRequests ? (
-            <FriendRequestList
-              requests={friendRequests}
-            />
-          ) : (
-            <ContactsList
-              contacts={filteredContacts}
-              onSelectContact={setSelectedContact}
-            />
-          )}
+          <ScrollArea>
+            {displayFriendRequests ? (
+              <FriendRequestList
+                friendRequests={friendRequests}
+              />
+            ) : (
+              <ContactsList
+                contacts={filteredContacts}
+                onSelectContact={setSelectedContact}
+              />
+            )}
+          </ScrollArea>
       </div>
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={currentUser.avatarUrl}
-          name={currentUser.name}
+          avatarUrl={""}
+          name={"John Doe"}
         />
       </footer>
     </aside>

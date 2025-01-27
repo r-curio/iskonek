@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 
 interface MatchState {
@@ -8,12 +8,12 @@ interface MatchState {
     handleCancelSearch: () => Promise<void>
 }
 
-export function useMatchmaking(): MatchState {
+export function useMatchmaking(isRandom: boolean): MatchState {
     const router = useRouter()
     const [isSearching, setIsSearching] = useState(false)
     const [matchInterval, setMatchInterval] = useState<NodeJS.Timeout | null>(null)
 
-    const checkMatch = async () => {
+    const checkMatch = useCallback(async () => {
         try {
             const response = await fetch('/api/chat/match', {
                 method: 'POST',
@@ -28,7 +28,7 @@ export function useMatchmaking(): MatchState {
                     clearInterval(matchInterval)
                     setMatchInterval(null)
                 }
-                router.push(`/chat/${data.room_id}?username=${data.matchedUser.username}`)
+                router.push(`/chat/${data.room_id}?username=${data.matchedUser.username}&isRandom=true`)
                 return true
             }
     
@@ -37,9 +37,9 @@ export function useMatchmaking(): MatchState {
             console.error('Match check error:', error)
             return false
         }
-    }
-    
-    const handleConnect = async () => {
+    }, [matchInterval, router])
+
+    const handleConnect = useCallback(async () => {
         setIsSearching(true)
         const interval = setInterval(async () => {
             const matched = await checkMatch()
@@ -49,13 +49,15 @@ export function useMatchmaking(): MatchState {
             }
         }, 3000)
         setMatchInterval(interval)
-    }
+    }, [checkMatch])
 
-    const handleCancelSearch = async () => {
+    const handleCancelSearch = useCallback(async () => {
         setIsSearching(false)
-        if (matchInterval) clearInterval(matchInterval)
+        if (matchInterval) {
+            clearInterval(matchInterval)
+            setMatchInterval(null)
+        }
         
-        // Remove user from queue
         try {
             const response = await fetch('/api/chat/cancel-match', {
                 method: 'POST',
@@ -65,14 +67,23 @@ export function useMatchmaking(): MatchState {
         } catch (error) {
             console.error('Error cancelling search:', error)
         }
-    }
+    }, [matchInterval])
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (matchInterval) clearInterval(matchInterval)
+            if (matchInterval) {
+                clearInterval(matchInterval)
+            }
         }
     }, [matchInterval])
+
+    if (!isRandom) {
+        return {
+            isSearching: false,
+            handleConnect: async () => {},
+            handleCancelSearch: async () => {}
+        }
+    }
 
     return {
         isSearching,
