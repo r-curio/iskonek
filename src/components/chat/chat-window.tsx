@@ -27,19 +27,20 @@ interface ChatWindowProps {
     recipientProfilePic?: string
     messages: message[]
     roomId: string 
+    isRandom: boolean
 }
 
 
-export default function ChatWindow({ recipientName, recipientProfilePic, messages: initialMessages, roomId }: ChatWindowProps) {
+export default function ChatWindow({ recipientName, recipientProfilePic, messages: initialMessages, roomId, isRandom }: ChatWindowProps) {
     const { messages, userId, addNewMessage, setMessages } = useMessageSubscription(roomId)
-    const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking()
+    const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [status, setStatus] = useState('active')
     const { toast } = useToast()
     const router = useRouter()
 
-    useAppExit(roomId)
-    useRoomDeletion({ roomId, setStatus })
+    useAppExit(roomId, isRandom)
+    useRoomDeletion({ roomId, setStatus, isRandom })
 
     // Initialize messages with initialMessages
     useEffect(() => {
@@ -99,6 +100,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
                     roomId={roomId} 
                     onMessageSent={addNewMessage} 
                     recipientName={recipientName}
+                    isRandom={isRandom}
                 />
             )}
             {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}

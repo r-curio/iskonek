@@ -15,6 +15,7 @@ export async function POST() {
         .select('*')
         .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
         .eq('status', 'active')
+        .eq('type', 'random')
         .single();
 
     if (existingRoom) {
