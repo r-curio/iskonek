@@ -1,7 +1,6 @@
 import React from 'react'
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface User {
   id: string
@@ -16,7 +15,7 @@ interface ContactsListProps {
 
 export function ContactsList({ contacts, onSelectContact }: ContactsListProps) {
   return (
-    <ScrollArea className="flex-1 p-4">
+    <>
       <nav>
         {contacts.length === 0 ? (
           <p className="text-center text-muted-foreground p-4">
@@ -41,6 +40,6 @@ export function ContactsList({ contacts, onSelectContact }: ContactsListProps) {
           ))
         )}
       </nav>
-    </ScrollArea>
+    </>
   )
 }
