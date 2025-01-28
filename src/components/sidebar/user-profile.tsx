@@ -16,10 +16,6 @@ export default function UserProfile({ avatarUrl, name }: UserProfileProps) {
     setIsSettingsOpen(true);
   };
 
-  const handleSettingsClose = () => {
-    setIsSettingsOpen(false);
-  };
-
   return (
     <div className="p-4 flex items-center space-x-4">
       <Avatar>
