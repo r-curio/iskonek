@@ -23,7 +23,7 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
   const [bgColor, setBgColor] = useState("#693d52"); 
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
-
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleMainDivClick = () => {
     setIsColorPickerOpen(true)
@@ -32,6 +32,63 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
   const handleColorChange = (color: string) => {
     setBgColor(color)
   }
+
+
+
+  const handleUsernameEdit = async () => {
+    if (!username.trim()) return;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'username': username
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update username');
+      }
+
+      const data = await response.json();
+      console.log('Username update response:', data);
+      setIsUsernameEditing(false);
+    } catch (error) {
+      console.error('Error updating username:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleDepartmentEdit = async () => {
+    if (!collegeDepartment.trim()) return;
+    setIsLoading(true);
+  
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'department': collegeDepartment
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update department');
+      }
+  
+      const data = await response.json();
+      console.log('Department update response:', data);
+      setIsDepartmentEditing(false);
+    } catch (error) {
+      console.error('Error updating department:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
 
 
   return (
@@ -52,8 +109,8 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
           </PopoverContent>
         </Popover>
         <div className="relative">
-          <div className="absolute -top-14 left-4 border-2 border-accent rounded-full bg-white">
-            <Avatar onClick={onAvatarClick} className="cursor-pointer w-14 h-14">
+          <div className="absolute -top-16 left-4 border-2 border-white rounded-full bg-white">
+            <Avatar onClick={onAvatarClick} className="cursor-pointer w-16 h-16 border-[#FAF9F6]">
               <AvatarImage src={avatarUrl} alt={name} />
               <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -73,11 +130,20 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
               disabled={!isUsernameEditing}
             />
             {isUsernameEditing ? (
-              <Button onClick={() => setIsUsernameEditing(false)} className="bg-[#693d52] text-white hover:bg-[#532e40]" variant="secondary">
-                Save
+              <Button 
+                onClick={handleUsernameEdit} 
+                disabled={isLoading}
+                className="bg-[#693d52] text-white hover:bg-[#532e40]" 
+                variant="secondary"
+              >
+                {isLoading ? 'Saving...' : 'Save'}
               </Button>
             ) : (
-              <Button onClick={() => setIsUsernameEditing(true)} className="hover:bg-[#919192] hover:text-white" variant="secondary">
+              <Button 
+                onClick={() => setIsUsernameEditing(true)} 
+                className="hover:bg-[#919192] hover:text-white" 
+                variant="secondary"
+              >
                 Edit
               </Button>
             )}
