@@ -10,11 +10,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 interface ProfileViewProps {
   onPasswordEdit: () => void;
   onAvatarClick: () => void;
+  name: string;
+  department: string;
 }
 
-export default function ProfileView({ onPasswordEdit, onAvatarClick }: ProfileViewProps) {
-  const [username, setUsername] = useState("iskofzz");
-  const [department, setDepartment] = useState("");
+export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department }: ProfileViewProps) {
+  const [username, setUsername] = useState(name);
+  const [collegeDepartment, setCollegeDepartment] = useState(department);
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
   const [bgColor, setBgColor] = useState("#f3f4f6") // Default background color
@@ -95,16 +97,16 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick }: ProfileVi
                   <SelectValue placeholder="Select Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="College of Accountancy and Finance (CAF)">
+                  <SelectItem value="CAF">
                   College of Accountancy and Finance (CAF)
                   </SelectItem>
-                  <SelectItem value="College of Architecture, Design and the Built Environment (CADBE)">
+                  <SelectItem value="CADBE">
                     College of Architecture, Design and the Built Environment (CADBE)
                   </SelectItem>
-                  <SelectItem value="College of Arts and Letters (CAL)">
+                  <SelectItem value="CAL">
                     College of Arts and Letters (CAL)
                   </SelectItem>
-                  <SelectItem value="College of Business Administration (CBA)">
+                  <SelectItem value="CBA">
                     College of Business Administration (CBA)
                   </SelectItem>
                   <SelectItem value="College of Communication (COC)">

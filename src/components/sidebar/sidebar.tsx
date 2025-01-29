@@ -213,6 +213,7 @@ export default function Sidebar({ user }: { user: Profile }) {
         <UserProfile
           avatarUrl={user.avatar}
           name={user.username}
+          department={user.department}
         />
       </footer>
     </aside>

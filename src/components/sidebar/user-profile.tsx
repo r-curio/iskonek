@@ -8,6 +8,7 @@ import AvatarSelectView from "@/components/profilesetting/avatar-select-view" //
 interface UserProfileProps {
   avatarUrl: string
   name: string
+  department: string
 }
 
 export default function UserProfile({ avatarUrl, name }: UserProfileProps) {
@@ -37,7 +38,7 @@ export default function UserProfile({ avatarUrl, name }: UserProfileProps) {
         <span className="sr-only">Settings</span>
       </Button>
 
-      <SettingsView open={isSettingsOpen} onOpenChange={setIsSettingsOpen} onAvatarClick={handleAvatarClick} />
+      <SettingsView open={isSettingsOpen} onOpenChange={setIsSettingsOpen} onAvatarClick={handleAvatarClick} username={name} department={department}/>
       <AvatarSelectView open={isAvatarSelectOpen} onOpenChange={setIsAvatarSelectOpen} />
     </div>
   )

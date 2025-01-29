@@ -13,9 +13,11 @@ interface SettingsViewProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onAvatarClick: () => void
+  username: string
+  department: string
 }
 
-export default function SettingsView({ open, onOpenChange, onAvatarClick }: SettingsViewProps) {
+export default function SettingsView({ open, onOpenChange, onAvatarClick, username, department }: SettingsViewProps) {
   const [activeView, setActiveView] = useState("profile")
   const [isPasswordView, setIsPasswordView] = useState(false)
 
@@ -46,7 +48,7 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick }: Sett
         return isPasswordView ? (
           <PasswordSettings onCancel={handlePasswordCancel} />
         ) : (
-          <ProfileView onPasswordEdit={handlePasswordEdit} onAvatarClick={onAvatarClick} />
+          <ProfileView onPasswordEdit={handlePasswordEdit} onAvatarClick={onAvatarClick} name={username} department={department}/>
         )
       case "manage-account":
         return <ManageAccount />
