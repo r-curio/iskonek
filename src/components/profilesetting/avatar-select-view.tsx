@@ -23,14 +23,29 @@ export default function AvatarSelectView({ open, onOpenChange }: AvatarSelectVie
     console.log('Selected avatar:', avatarName)
   }
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedAvatarName) {
       onOpenChange(false)
-      
     }
 
-    
+    // Send the selected avatar to the server
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'avatar': selectedAvatarName || ''
+        }
+      })
+      const data = await response.json()
+      console.log('Avatar update response:', data)
+    } catch (error) {
+      console.error('Error updating avatar:', error)
+    }
+
   }
+
+
 
   useEffect(() => {
     if (!open) {
