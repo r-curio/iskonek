@@ -9,6 +9,7 @@ interface User {
   username: string
   avatarUrl: string | undefined
   isRandom?: boolean
+  department?: string
 }
 
 interface ContactsListProps {

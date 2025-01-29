@@ -23,7 +23,9 @@ interface RandomChat {
 interface User {
   id: string;
   username: string;
-  avatarUrl: string | undefined;
+  avatarUrl: string; // Consistent naming
+  isRandom?: boolean;
+  department?: string;
 }
 
 
