@@ -11,7 +11,7 @@ interface UserProfileProps {
   department: string
 }
 
-export default function UserProfile({ avatarUrl, name }: UserProfileProps) {
+export default function UserProfile({ avatarUrl, name, department}: UserProfileProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isAvatarSelectOpen, setIsAvatarSelectOpen] = useState(false)
 
@@ -38,8 +38,18 @@ export default function UserProfile({ avatarUrl, name }: UserProfileProps) {
         <span className="sr-only">Settings</span>
       </Button>
 
-      <SettingsView open={isSettingsOpen} onOpenChange={setIsSettingsOpen} onAvatarClick={handleAvatarClick} username={name} department={department}/>
-      <AvatarSelectView open={isAvatarSelectOpen} onOpenChange={setIsAvatarSelectOpen} />
+      <SettingsView 
+        open={isSettingsOpen} 
+        onOpenChange={setIsSettingsOpen} 
+        onAvatarClick={handleAvatarClick} 
+        username={name} 
+        department={department}
+        avatarUrl={avatarUrl}  
+      />
+      <AvatarSelectView 
+        open={isAvatarSelectOpen} 
+        onOpenChange={setIsAvatarSelectOpen} 
+      />
     </div>
   )
 }

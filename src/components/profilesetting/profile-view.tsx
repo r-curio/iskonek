@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { HexColorPicker } from "react-colorful"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface ProfileViewProps {
@@ -12,14 +13,15 @@ interface ProfileViewProps {
   onAvatarClick: () => void;
   name: string;
   department: string;
+  avatarUrl?: string;
 }
 
-export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department }: ProfileViewProps) {
+export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department, avatarUrl }: ProfileViewProps) {
   const [username, setUsername] = useState(name);
   const [collegeDepartment, setCollegeDepartment] = useState(department);
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
-  const [bgColor, setBgColor] = useState("#f3f4f6") // Default background color
+  const [bgColor, setBgColor] = useState("#693d52"); 
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
 
 
@@ -50,14 +52,11 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
           </PopoverContent>
         </Popover>
         <div className="relative">
-          <div className="absolute -top-16 left-4">
-            <div
-              className="h-20 w-20 rounded-full bg-muted border-4 border-background cursor-pointer hover:opacity-80 transition-opacity"
-              onClick={onAvatarClick}
-              role="button"
-              tabIndex={0}
-              aria-label="Change profile picture"
-            />
+          <div className="absolute -top-14 left-4 border-2 border-accent rounded-full bg-white">
+            <Avatar onClick={onAvatarClick} className="cursor-pointer w-14 h-14">
+              <AvatarImage src={avatarUrl} alt={name} />
+              <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </div>
@@ -90,15 +89,15 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
           <div className="flex items-center space-x-2">
             {isDepartmentEditing ? (
               <Select
-                value={department}
-                onValueChange={setDepartment}
+                value={collegeDepartment}
+                onValueChange={setCollegeDepartment}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Department" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="CAF">
-                  College of Accountancy and Finance (CAF)
+                    College of Accountancy and Finance (CAF)
                   </SelectItem>
                   <SelectItem value="CADBE">
                     College of Architecture, Design and the Built Environment (CADBE)
@@ -109,34 +108,34 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
                   <SelectItem value="CBA">
                     College of Business Administration (CBA)
                   </SelectItem>
-                  <SelectItem value="College of Communication (COC)">
+                  <SelectItem value="COC">
                     College of Communication (COC)
                   </SelectItem>
-                  <SelectItem value="College of Computer and Information Sciences (CCIS)">
+                  <SelectItem value="CCIS">
                     College of Computer and Information Sciences (CCIS)
                   </SelectItem>
-                  <SelectItem value="College of Education (COED)">
+                  <SelectItem value="COED">
                     College of Education (COED)
                   </SelectItem>
-                  <SelectItem value="College of Engeneering (COE)">
+                  <SelectItem value="COE">
                     College of Engineering (COE)
                   </SelectItem>
-                  <SelectItem value="College of Human Kinetics (CHK)">
+                  <SelectItem value="CHK">
                     College of Human Kinetics (CHK)
                   </SelectItem>
-                  <SelectItem value="College of Law (CL)">
+                  <SelectItem value="CL">
                     College of Law (CL)
                   </SelectItem>
-                  <SelectItem value="College of Political Science and Public Administration (CPSPA)">
+                  <SelectItem value="CPSPA">
                     College of Political Science and Public Administration (CPSPA)
                   </SelectItem>
-                  <SelectItem value="College of Social Sciences and Development (CSSD)">
+                  <SelectItem value="CSSD">
                     College of Social Sciences and Development (CSSD)
                   </SelectItem>
-                  <SelectItem value="College of Science (CS)">
+                  <SelectItem value="CS">
                     College of Science (CS)
                   </SelectItem>
-                  <SelectItem value="College of Tourism, Hospitality, and Transportation Management (CTHTM)">
+                  <SelectItem value="CTHTM">
                     College of Tourism, Hospitality, and Transportation Management (CTHTM)
                   </SelectItem>
                 </SelectContent>
@@ -145,7 +144,7 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
               <Input
                 className="flex-1"
                 placeholder="Select Department"
-                value={department}
+                value={collegeDepartment}
                 disabled
               />
             )}
