@@ -13,9 +13,12 @@ interface SettingsViewProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   onAvatarClick: () => void
+  username: string
+  department: string
+  avatarUrl?: string
 }
 
-export default function SettingsView({ open, onOpenChange, onAvatarClick }: SettingsViewProps) {
+export default function SettingsView({ open, onOpenChange, onAvatarClick, username, department, avatarUrl }: SettingsViewProps) {
   const [activeView, setActiveView] = useState("profile")
   const [isPasswordView, setIsPasswordView] = useState(false)
 
@@ -46,7 +49,13 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick }: Sett
         return isPasswordView ? (
           <PasswordSettings onCancel={handlePasswordCancel} />
         ) : (
-          <ProfileView onPasswordEdit={handlePasswordEdit} onAvatarClick={onAvatarClick} />
+          <ProfileView 
+            onPasswordEdit={handlePasswordEdit} 
+            onAvatarClick={onAvatarClick} 
+            name={username} 
+            department={department}
+            avatarUrl={avatarUrl}
+        />
         )
       case "manage-account":
         return <ManageAccount />
@@ -62,7 +71,7 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick }: Sett
       </VisuallyHidden.Root>
       <DialogContent className="max-w-3xl p-0 gap-0 h-[550px]">
         <div className="flex h-full">
-          <ProfileSettings activeView={activeView} onViewChange={handleViewChange} />
+          <ProfileSettings activeView={activeView} onViewChange={handleViewChange}/>
           <div className="flex-1 overflow-y-auto">{renderRightComponent()}</div>
         </div>
       </DialogContent>

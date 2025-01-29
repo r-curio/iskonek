@@ -1,4 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { createAvatar } from '@dicebear/core';
+import { funEmoji } from '@dicebear/collection';
 
 export async function getFriendRequests(supabase: SupabaseClient, userId: string, status: string = 'pending') {
     const { data: friendRequests, error: friendRequestsError } = await supabase
@@ -15,11 +17,19 @@ export async function getFriendRequests(supabase: SupabaseClient, userId: string
 
     const { data: friendProfiles, error: friendProfilesError } = await supabase
         .from('profiles')
-        .select('id, username')
+        .select('id, username, avatar, department')
         .in('id', friendRequestUserIds);
 
     if (friendProfilesError) {
         throw new Error('Failed to fetch friend profiles');
+    }
+
+    for (const profile of friendProfiles) {
+        const avatar = createAvatar(funEmoji, {
+            seed: profile.avatar || profile.username || 'Adrian',
+        });
+
+        profile.avatarUrl = avatar.toDataUri();
     }
 
     return friendProfiles;
@@ -45,12 +55,20 @@ export async function getAcceptedFriends(supabase: SupabaseClient, userId: strin
     // Get friend profiles
     const { data: friendProfiles, error: friendProfilesError } = await supabase
         .from('profiles')
-        .select('id,username')
+        .select('id, username, avatar, department')
         .in('id', friendIds);
 
     if (friendProfilesError) {
         throw new Error('Failed to fetch friend profiles');
     }
+
+    for (const profile of friendProfiles) {
+        const avatar = createAvatar(funEmoji, {
+            seed: profile.avatar || profile.username || 'Adrian',
+        });
+
+        profile.avatarUrl = avatar.toDataUri();
+    }   
 
     return friendProfiles;
 }
