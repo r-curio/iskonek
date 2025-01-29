@@ -4,39 +4,57 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { HexColorPicker } from "react-colorful"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface ProfileViewProps {
   onPasswordEdit: () => void;
+  onAvatarClick: () => void;
 }
 
-export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
+export default function ProfileView({ onPasswordEdit, onAvatarClick }: ProfileViewProps) {
   const [username, setUsername] = useState("iskofzz");
   const [department, setDepartment] = useState("");
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
+  const [bgColor, setBgColor] = useState("#f3f4f6") // Default background color
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
+
 
   const handleMainDivClick = () => {
-    console.log("Main div clicked");
-  };
+    setIsColorPickerOpen(true)
+  }
 
-  const handleProfilePicClick = () => {
-    console.log("Profile picture clicked");
-  };
+  const handleColorChange = (color: string) => {
+    setBgColor(color)
+  }
+
 
   return (
     <div className="flex-1 p-6 space-y-6">
       <div className="space-y-4">
-        <div
-          className="w-full h-32 bg-muted rounded-lg cursor-pointer"
-          role="button"
-          tabIndex={0}
-          onClick={handleMainDivClick}
-        />
+      <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
+          <PopoverTrigger asChild>
+            <div
+              className="w-full h-32 rounded-lg cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={handleMainDivClick}
+              style={{ backgroundColor: bgColor }}
+            />
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <HexColorPicker color={bgColor} onChange={handleColorChange} />
+          </PopoverContent>
+        </Popover>
         <div className="relative">
           <div className="absolute -top-16 left-4">
             <div
-              className="h-20 w-20 rounded-full bg-muted border-4 border-background cursor-pointer"
-              onClick={handleProfilePicClick}
+              className="h-20 w-20 rounded-full bg-muted border-4 border-background cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={onAvatarClick}
+              role="button"
+              tabIndex={0}
+              aria-label="Change profile picture"
             />
           </div>
         </div>
