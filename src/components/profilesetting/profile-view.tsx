@@ -33,8 +33,6 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
     setBgColor(color)
   }
 
-
-
   const handleUsernameEdit = async () => {
     if (!username.trim()) return;
     setIsLoading(true);
@@ -89,28 +87,27 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
     }
   }
 
-
-
   return (
-    <div className="flex-1 p-6 space-y-6">
-      <div className="space-y-4">
-      <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
+    <div className="flex-1 p-8 flex flex-col h-full">
+      {/* Top section with banner and avatar */}
+      <div className="space-y-4 mb-8">
+        <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
           <PopoverTrigger asChild>
             <div
-              className="w-full h-32 rounded-lg cursor-pointer"
+              className="w-full h-28 rounded-xl cursor-pointer transition-all duration-300 hover:opacity-90 shadow-sm"
               role="button"
               tabIndex={0}
               onClick={handleMainDivClick}
               style={{ backgroundColor: bgColor }}
             />
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
+          <PopoverContent className="w-auto p-3 rounded-lg">
             <HexColorPicker color={bgColor} onChange={handleColorChange} />
           </PopoverContent>
         </Popover>
         <div className="relative">
-          <div className="absolute -top-16 left-4 border-2 border-white rounded-full bg-white">
-            <Avatar onClick={onAvatarClick} className="cursor-pointer w-16 h-16 border-[#FAF9F6]">
+          <div className="absolute -top-20 left-6 border-4 border-white rounded-full bg-white shadow-md transition-transform hover:scale-105">
+            <Avatar onClick={onAvatarClick} className="cursor-pointer w-24 h-24">
               <AvatarImage src={avatarUrl} alt={name} />
               <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
@@ -118,12 +115,14 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Username</label>
-          <div className="flex items-center space-x-2">
+      {/* Middle section with form fields */}
+      <div className="flex-1 space-y-8">
+        {/* Username section */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Username</label>
+          <div className="flex items-center space-x-3">
             <Input
-              className="flex-1"
+              className="flex-1 h-11 rounded-lg border-gray-200 focus:border-[#693d52] focus:ring-[#693d52]"
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -150,9 +149,10 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Department</label>
-          <div className="flex items-center space-x-2">
+        {/* Department section */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-gray-700">Department</label>
+          <div className="flex items-center space-x-3">
             {isDepartmentEditing ? (
               <Select
                 value={collegeDepartment}
@@ -225,20 +225,18 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
             )}
           </div>
         </div>
-
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Password</label>
-          <div className="flex items-center space-x-2">
-            <Input className="flex-1" type="password" value="********" disabled />
-            <Button onClick={onPasswordEdit} className="hover:bg-[#919192] hover:text-white" variant="secondary">
-              Edit
-            </Button>
-          </div>
-        </div>
       </div>
 
-      <div className="flex justify-end pt-6">
-        <Button className="bg-[#682A43] text-white hover:bg-[#532e40]">
+      {/* Bottom section with buttons - fixed at bottom */}
+      <div className="pt-6 mt-auto border-t flex justify-end space-x-3">
+        <Button 
+          onClick={onPasswordEdit}
+          className="h-11 px-6 hover:bg-[#919192] hover:text-white transition-colors" 
+          variant="secondary"
+        >
+          Change Password
+        </Button>
+        <Button className="h-11 px-8 bg-[#682A43] text-white hover:bg-[#532e40] transition-colors">
           Save Changes
         </Button>
       </div>
