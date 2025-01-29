@@ -55,7 +55,7 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
   };
 
   return (
-    <div className="w-48 border-r h-full bg-background flex flex-col justify-between">
+    <div className="w-48 border-r h-full bg-[#FAF9F6] flex flex-col justify-between">
       <div className="flex flex-col space-y-1 p-2">
         <h2 className="text-lg font-semibold px-4 py-2">Settings</h2>
         <Button

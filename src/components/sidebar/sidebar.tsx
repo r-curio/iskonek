@@ -11,24 +11,42 @@ import { FriendRequestList } from "./friend-request-list";
 import { ScrollArea } from "../ui/scroll-area";
 import { useEffect, useState } from "react";
 import { useFriendUpdates } from "@/hooks/use-FriendUpdates";
+import { useSearchParams } from 'next/navigation'
 import UserProfile from "./user-profile";
+import { createClient } from '@/utils/supabase/client'
+import { usePathname, useRouter } from 'next/navigation'
+
+interface RandomChat {
+  roomId: string
+  username: string
+}
 interface User {
   id: string;
   username: string;
-  avatarUrl: string | undefined;
+  avatarUrl: string; // Consistent naming
+  isRandom?: boolean;
+  department?: string;
+}
+
+interface Profile {
+  id: string;
+  username?: string;
+  avatar: string;
+  department?: string;
 }
 
 
-export default function Sidebar() {
+export default function Sidebar({ user }: { user: Profile }) {
   const [contacts, setContacts] = useState<User[]>([]);
-  const [, setSelectedContact] = useState<User | null>(null);
+  const [selectedContactId, setSelectedContactId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("");
   const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState<User[]>([]);
-
-  const filteredContacts = contacts?.filter((contact) =>
-    contact.username.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const searchParams = useSearchParams()
+  const [activeRandomChats, setActiveRandomChats] = useState<RandomChat[]>([])
+  const supabase = createClient()
+  const pathname = usePathname()
+  const router = useRouter()  
 
   useFriendUpdates(setFriendRequests, setContacts);
 
@@ -49,6 +67,63 @@ export default function Sidebar() {
     fetchInitialData();
   }, []);
 
+  // Add random chat when URL changes
+  useEffect(() => {
+    const roomId = pathname.split('/chat/')[1]
+    const isRandom = searchParams.get('isRandom') === 'true'
+    const username = searchParams.get('username')
+
+    if (pathname.startsWith('/chat') && isRandom && roomId && username) {
+      setActiveRandomChats(prev => [
+        ...prev.filter(chat => chat.roomId !== roomId),
+        { roomId, username }
+      ])
+      setSelectedContactId(roomId)
+    }
+
+    if (pathname === '/chat') {
+      setSelectedContactId(null)
+    }
+  }, [pathname, searchParams])
+
+
+  // Listen for room deletions
+  useEffect(() => {
+    const channel = supabase.channel('sidebar-room-deletion')
+      .on('postgres_changes', {
+        event: 'DELETE',
+        schema: 'public',
+        table: 'chat_rooms',
+      }, (payload) => {
+        setActiveRandomChats(prev => 
+          prev.filter(chat => chat.roomId !== payload.old.id)
+        )
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [supabase])
+
+  // Merge contacts with active random chats
+  const combinedContacts = [
+    ...activeRandomChats.map(chat => ({
+      id: chat.roomId,
+      username: chat.username,
+      avatarUrl: undefined,
+      isRandom: true
+    })),
+    ...contacts.filter(contact => 
+      !activeRandomChats.some(chat => chat.roomId === contact.id)
+    )
+  ]
+
+  // Update filteredContacts to use combinedContacts
+  const filteredContacts = combinedContacts.filter((contact) =>
+    contact.username.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
   return (
     <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
       <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
@@ -67,10 +142,11 @@ export default function Sidebar() {
       </header>
 
       <nav className="p-4 flex flex-col gap-2">
-        <Button
-          variant="ghost"
-          className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
-        >
+          <Button
+            variant="ghost"
+            className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
+            onClick={() => router.push('/chat')}
+          >
           <BsChatLeftFill className="text-lg" />
           <span>New Chat</span>
         </Button>
@@ -118,7 +194,7 @@ export default function Sidebar() {
             />
           </div>
         </div>
-          <ScrollArea>
+          <ScrollArea className="px-4">
             {displayFriendRequests ? (
               <FriendRequestList
                 friendRequests={friendRequests}
@@ -126,7 +202,8 @@ export default function Sidebar() {
             ) : (
               <ContactsList
                 contacts={filteredContacts}
-                onSelectContact={setSelectedContact}
+                onSelectContact={(contact) => setSelectedContactId(contact.id)}
+                selectedContactId={selectedContactId}
               />
             )}
           </ScrollArea>
@@ -134,8 +211,9 @@ export default function Sidebar() {
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={""}
-          name={"John Doe"}
+          avatarUrl={user.avatar}
+          name={user.username}
+          department={user.department}
         />
       </footer>
     </aside>

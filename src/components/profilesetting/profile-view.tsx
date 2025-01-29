@@ -4,40 +4,116 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { HexColorPicker } from "react-colorful"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface ProfileViewProps {
   onPasswordEdit: () => void;
+  onAvatarClick: () => void;
+  name: string;
+  department: string;
+  avatarUrl?: string;
 }
 
-export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
-  const [username, setUsername] = useState("iskofzz");
-  const [department, setDepartment] = useState("");
+export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department, avatarUrl }: ProfileViewProps) {
+  const [username, setUsername] = useState(name);
+  const [collegeDepartment, setCollegeDepartment] = useState(department);
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
+  const [bgColor, setBgColor] = useState("#693d52"); 
+  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleMainDivClick = () => {
-    console.log("Main div clicked");
-  };
+    setIsColorPickerOpen(true)
+  }
 
-  const handleProfilePicClick = () => {
-    console.log("Profile picture clicked");
-  };
+  const handleColorChange = (color: string) => {
+    setBgColor(color)
+  }
+
+
+
+  const handleUsernameEdit = async () => {
+    if (!username.trim()) return;
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'username': username
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update username');
+      }
+
+      const data = await response.json();
+      console.log('Username update response:', data);
+      setIsUsernameEditing(false);
+    } catch (error) {
+      console.error('Error updating username:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleDepartmentEdit = async () => {
+    if (!collegeDepartment.trim()) return;
+    setIsLoading(true);
+  
+    try {
+      const response = await fetch('/api/profiles', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'department': collegeDepartment
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update department');
+      }
+  
+      const data = await response.json();
+      console.log('Department update response:', data);
+      setIsDepartmentEditing(false);
+    } catch (error) {
+      console.error('Error updating department:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+
 
   return (
     <div className="flex-1 p-6 space-y-6">
       <div className="space-y-4">
-        <div
-          className="w-full h-32 bg-muted rounded-lg cursor-pointer"
-          role="button"
-          tabIndex={0}
-          onClick={handleMainDivClick}
-        />
-        <div className="relative">
-          <div className="absolute -top-16 left-4">
+      <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
+          <PopoverTrigger asChild>
             <div
-              className="h-20 w-20 rounded-full bg-muted border-4 border-background cursor-pointer"
-              onClick={handleProfilePicClick}
+              className="w-full h-32 rounded-lg cursor-pointer"
+              role="button"
+              tabIndex={0}
+              onClick={handleMainDivClick}
+              style={{ backgroundColor: bgColor }}
             />
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <HexColorPicker color={bgColor} onChange={handleColorChange} />
+          </PopoverContent>
+        </Popover>
+        <div className="relative">
+          <div className="absolute -top-16 left-4 border-2 border-white rounded-full bg-white">
+            <Avatar onClick={onAvatarClick} className="cursor-pointer w-16 h-16 border-[#FAF9F6]">
+              <AvatarImage src={avatarUrl} alt={name} />
+              <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </div>
@@ -54,11 +130,20 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
               disabled={!isUsernameEditing}
             />
             {isUsernameEditing ? (
-              <Button onClick={() => setIsUsernameEditing(false)} className="bg-[#693d52] text-white hover:bg-[#532e40]" variant="secondary">
-                Save
+              <Button 
+                onClick={handleUsernameEdit} 
+                disabled={isLoading}
+                className="bg-[#693d52] text-white hover:bg-[#532e40]" 
+                variant="secondary"
+              >
+                {isLoading ? 'Saving...' : 'Save'}
               </Button>
             ) : (
-              <Button onClick={() => setIsUsernameEditing(true)} className="hover:bg-[#919192] hover:text-white" variant="secondary">
+              <Button 
+                onClick={() => setIsUsernameEditing(true)} 
+                className="hover:bg-[#919192] hover:text-white" 
+                variant="secondary"
+              >
                 Edit
               </Button>
             )}
@@ -70,53 +155,53 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
           <div className="flex items-center space-x-2">
             {isDepartmentEditing ? (
               <Select
-                value={department}
-                onValueChange={setDepartment}
+                value={collegeDepartment}
+                onValueChange={setCollegeDepartment}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select Department" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="College of Accountancy and Finance (CAF)">
-                  College of Accountancy and Finance (CAF)
+                  <SelectItem value="CAF">
+                    College of Accountancy and Finance (CAF)
                   </SelectItem>
-                  <SelectItem value="College of Architecture, Design and the Built Environment (CADBE)">
+                  <SelectItem value="CADBE">
                     College of Architecture, Design and the Built Environment (CADBE)
                   </SelectItem>
-                  <SelectItem value="College of Arts and Letters (CAL)">
+                  <SelectItem value="CAL">
                     College of Arts and Letters (CAL)
                   </SelectItem>
-                  <SelectItem value="College of Business Administration (CBA)">
+                  <SelectItem value="CBA">
                     College of Business Administration (CBA)
                   </SelectItem>
-                  <SelectItem value="College of Communication (COC)">
+                  <SelectItem value="COC">
                     College of Communication (COC)
                   </SelectItem>
-                  <SelectItem value="College of Computer and Information Sciences (CCIS)">
+                  <SelectItem value="CCIS">
                     College of Computer and Information Sciences (CCIS)
                   </SelectItem>
-                  <SelectItem value="College of Education (COED)">
+                  <SelectItem value="COED">
                     College of Education (COED)
                   </SelectItem>
-                  <SelectItem value="College of Engeneering (COE)">
+                  <SelectItem value="COE">
                     College of Engineering (COE)
                   </SelectItem>
-                  <SelectItem value="College of Human Kinetics (CHK)">
+                  <SelectItem value="CHK">
                     College of Human Kinetics (CHK)
                   </SelectItem>
-                  <SelectItem value="College of Law (CL)">
+                  <SelectItem value="CL">
                     College of Law (CL)
                   </SelectItem>
-                  <SelectItem value="College of Political Science and Public Administration (CPSPA)">
+                  <SelectItem value="CPSPA">
                     College of Political Science and Public Administration (CPSPA)
                   </SelectItem>
-                  <SelectItem value="College of Social Sciences and Development (CSSD)">
+                  <SelectItem value="CSSD">
                     College of Social Sciences and Development (CSSD)
                   </SelectItem>
-                  <SelectItem value="College of Science (CS)">
+                  <SelectItem value="CS">
                     College of Science (CS)
                   </SelectItem>
-                  <SelectItem value="College of Tourism, Hospitality, and Transportation Management (CTHTM)">
+                  <SelectItem value="CTHTM">
                     College of Tourism, Hospitality, and Transportation Management (CTHTM)
                   </SelectItem>
                 </SelectContent>
@@ -125,7 +210,7 @@ export default function ProfileView({ onPasswordEdit }: ProfileViewProps) {
               <Input
                 className="flex-1"
                 placeholder="Select Department"
-                value={department}
+                value={collegeDepartment}
                 disabled
               />
             )}

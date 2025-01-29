@@ -68,7 +68,17 @@ const useChatInput = (
         body: JSON.stringify({ content: message.trim(), roomId }),
       });
 
-      if (!response.ok) throw new Error("Failed to send message");
+      if (!response.ok) {
+        const error = await response.json();
+        if (error.categories) {
+          toast({
+            title: "Message Not Sent",
+            description: "Your message may contain inappropriate content",
+            variant: "destructive"
+          });
+        }
+        return false;
+      }
       return true;
     } catch (error) {
       console.error("Send message error:", error);

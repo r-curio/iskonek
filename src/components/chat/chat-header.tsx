@@ -5,6 +5,7 @@ import { Timer } from "./timer";
 interface ChatHeaderProps {
   recipientName: string | undefined;
   recipientProfilePic?: string;
+  recipientDepartment?: string;
   initialTime?: number;
 }
 
@@ -12,6 +13,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   recipientName,
   recipientProfilePic,
   initialTime,
+  recipientDepartment,
 }) => {
   const shouldShowTimer = initialTime !== undefined && initialTime > 0;
 
@@ -27,7 +29,12 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
             </AvatarFallback>
           )}
         </Avatar>
-        <h2 className="text-lg font-semibold">{recipientName}</h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-lg font-semibold">{recipientName}</h2>
+          {recipientDepartment && (
+            <span className="text-md text-gray-500">{recipientDepartment}</span>
+          )}
+        </div>
       </div>
       {shouldShowTimer && (
         <div className="w-48">
