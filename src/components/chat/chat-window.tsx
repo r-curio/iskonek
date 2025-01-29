@@ -25,13 +25,14 @@ interface message {
 interface ChatWindowProps {
     recipientName: string | undefined
     recipientProfilePic?: string
+    recipientDepartment?: string
     messages: message[]
     roomId: string 
     isRandom: boolean
 }
 
 
-export default function ChatWindow({ recipientName, recipientProfilePic, messages: initialMessages, roomId, isRandom }: ChatWindowProps) {
+export default function ChatWindow({ recipientName, recipientProfilePic, recipientDepartment, messages: initialMessages, roomId, isRandom }: ChatWindowProps) {
     const { messages, userId, addNewMessage, setMessages } = useMessageSubscription(roomId)
     const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom)
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -73,7 +74,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, message
 
         return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} />
+            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic}  recipientDepartment={recipientDepartment}/>
             <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
