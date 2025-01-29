@@ -28,8 +28,15 @@ interface User {
   department?: string;
 }
 
+interface Profile {
+  id: string;
+  username?: string;
+  avatar: string;
+  department?: string;
+}
 
-export default function Sidebar() {
+
+export default function Sidebar({ user }: { user: Profile }) {
   const [contacts, setContacts] = useState<User[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState("");
@@ -204,8 +211,8 @@ export default function Sidebar() {
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={""}
-          name={"John Doe"}
+          avatarUrl={user.avatar}
+          name={user.username}
         />
       </footer>
     </aside>
