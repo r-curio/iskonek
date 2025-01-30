@@ -12,14 +12,15 @@ interface ProfileViewProps {
   name: string;
   department: string;
   avatarUrl?: string;
+  color?: string;
 }
 
-export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department, avatarUrl }: ProfileViewProps) {
+export default function ProfileView({ onPasswordEdit, onAvatarClick, name, department, avatarUrl, color }: ProfileViewProps) {
   const [username, setUsername] = useState(name);
   const [collegeDepartment, setCollegeDepartment] = useState(department);
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
-  const [bgColor, setBgColor] = useState("#693d52"); 
+  const [bgColor, setBgColor] = useState(color); 
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 

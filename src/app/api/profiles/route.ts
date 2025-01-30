@@ -58,6 +58,7 @@ export async function PUT(request: Request) {
         if (body.username) updateData.username = body.username;
         if (body.department) updateData.department = body.department;
         if (body.avatar) updateData.avatar = body.avatar;
+        if (body.bgColor) updateData.bgColor = body.bgColor;
         
         if (Object.keys(updateData).length > 0) {
             const { error } = await supabase
