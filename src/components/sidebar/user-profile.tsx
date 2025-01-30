@@ -24,9 +24,14 @@ export default function UserProfile({ avatarUrl, name, department}: UserProfileP
     setIsAvatarSelectOpen(true)
   }
 
+  const handleAvatarSelectClose = () => {
+    setIsAvatarSelectOpen(false);
+    setIsSettingsOpen(true);
+  };
+
   return (
     <div className="p-4 flex items-center space-x-4">
-      <Avatar onClick={handleAvatarClick} className="cursor-pointer">
+      <Avatar onClick={handleSettingsOpen} className="cursor-pointer">
         <AvatarImage src={avatarUrl} alt={name} />
         <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
       </Avatar>
@@ -48,7 +53,8 @@ export default function UserProfile({ avatarUrl, name, department}: UserProfileP
       />
       <AvatarSelectView 
         open={isAvatarSelectOpen} 
-        onOpenChange={setIsAvatarSelectOpen} 
+        onOpenChange={setIsAvatarSelectOpen}
+        onClose={handleAvatarSelectClose} 
       />
     </div>
   )

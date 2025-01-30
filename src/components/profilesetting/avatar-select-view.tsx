@@ -12,10 +12,10 @@ import { Check } from "lucide-react"
 interface AvatarSelectViewProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-
+  onClose?: () => void;
 }
 
-export default function AvatarSelectView({ open, onOpenChange }: AvatarSelectViewProps) {
+export default function AvatarSelectView({ open, onOpenChange, onClose }: AvatarSelectViewProps) {
   const [selectedAvatarName, setSelectedAvatarName] = useState<string | null>(null)
 
   const handleAvatarSelect = (avatarName: string) => {
@@ -45,7 +45,10 @@ export default function AvatarSelectView({ open, onOpenChange }: AvatarSelectVie
 
   }
 
-
+  const handleClose = () => {
+    onOpenChange(false);
+    onClose?.();  // Call onClose if provided
+  };
 
   useEffect(() => {
     if (!open) {
@@ -54,7 +57,7 @@ export default function AvatarSelectView({ open, onOpenChange }: AvatarSelectVie
   }, [open])
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[500px] bg-white rounded-xl">
         <DialogTitle className="text-2xl font-bold text-center text-gray-800 mb-4">
           Choose Your Avatar
@@ -92,7 +95,7 @@ export default function AvatarSelectView({ open, onOpenChange }: AvatarSelectVie
         <DialogFooter className="sm:justify-center mt-6">
           <Button
             variant="secondary"
-            onClick={() => onOpenChange(false)}
+            onClick={handleClose}
             className="mr-2"
           >
             Cancel

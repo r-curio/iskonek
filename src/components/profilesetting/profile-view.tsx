@@ -4,9 +4,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { HexColorPicker } from "react-colorful"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 interface ProfileViewProps {
   onPasswordEdit: () => void;
@@ -22,18 +20,13 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
   const [isUsernameEditing, setIsUsernameEditing] = useState(false);
   const [isDepartmentEditing, setIsDepartmentEditing] = useState(false);
   const [bgColor, setBgColor] = useState("#693d52"); 
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const handleMainDivClick = () => {
-    setIsColorPickerOpen(true);
-  }
-
-  const handleColorChange = (color: string) => {
-    setBgColor(color);
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setBgColor(e.target.value);
     setHasChanges(true);
-  }
+  };
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -58,6 +51,7 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
         body: JSON.stringify({
           username,
           department: collegeDepartment,
+          bgColor,
         })
       });
 
@@ -81,22 +75,24 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
     <div className="flex-1 p-8 flex flex-col h-full">
       {/* Top section with banner and avatar */}
       <div className="space-y-4 mb-8">
-        <Popover open={isColorPickerOpen} onOpenChange={setIsColorPickerOpen}>
-          <PopoverTrigger asChild>
-            <div
-              className="w-full h-28 rounded-xl cursor-pointer transition-all duration-300 hover:opacity-90 shadow-sm"
-              role="button"
-              tabIndex={0}
-              onClick={handleMainDivClick}
-              style={{ backgroundColor: bgColor }}
-            />
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-3 rounded-lg">
-            <HexColorPicker color={bgColor} onChange={handleColorChange} />
-          </PopoverContent>
-        </Popover>
         <div className="relative">
-          <div className="absolute -top-20 left-6 border-4 border-white rounded-full bg-white shadow-md transition-transform hover:scale-105">
+          <div 
+            className="w-full h-28 rounded-xl shadow-sm"
+            style={{ backgroundColor: bgColor }}
+          />
+          <div className="absolute right-4 top-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm">
+            <label htmlFor="colorPicker" className="text-sm font-medium text-gray-700">
+              Banner Color:
+            </label>
+            <input
+              id="colorPicker"
+              type="color"
+              value={bgColor}
+              onChange={handleColorChange}
+              className="w-8 h-8 p-0 border-0 rounded cursor-pointer"
+            />
+          </div>
+          <div className="absolute -bottom-12 left-6 border-4 border-white rounded-full bg-white shadow-md transition-transform hover:scale-105">
             <Avatar onClick={onAvatarClick} className="cursor-pointer w-24 h-24">
               <AvatarImage src={avatarUrl} alt={name} />
               <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
@@ -106,7 +102,7 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
       </div>
 
       {/* Middle section with form fields */}
-      <div className="flex-1 space-y-8">
+      <div className="flex-1 space-y-8 mt-8">
         {/* Username section */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700">Username</label>
