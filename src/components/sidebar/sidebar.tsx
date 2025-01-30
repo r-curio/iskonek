@@ -15,6 +15,8 @@ import { useSearchParams } from 'next/navigation'
 import UserProfile from "./user-profile";
 import { createClient } from '@/utils/supabase/client'
 import { usePathname, useRouter } from 'next/navigation'
+import { createAvatar } from '@dicebear/core';
+import { funEmoji } from '@dicebear/collection';
 
 interface RandomChat {
   roomId: string
@@ -30,7 +32,7 @@ interface User {
 
 interface Profile {
   id: string;
-  username?: string;
+  username: string;
   avatar: string;
   department?: string;
 }
@@ -42,8 +44,9 @@ export default function Sidebar({ user }: { user: Profile }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState<User[]>([]);
-  const searchParams = useSearchParams()
   const [activeRandomChats, setActiveRandomChats] = useState<RandomChat[]>([])
+  const [userProfile, setUserProfile] = useState(user);
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const pathname = usePathname()
   const router = useRouter()  
@@ -86,7 +89,6 @@ export default function Sidebar({ user }: { user: Profile }) {
     }
   }, [pathname, searchParams])
 
-
   // Listen for room deletions
   useEffect(() => {
     const channel = supabase.channel('sidebar-room-deletion')
@@ -105,6 +107,36 @@ export default function Sidebar({ user }: { user: Profile }) {
       supabase.removeChannel(channel)
     }
   }, [supabase])
+
+
+  //Listen for profile updates
+  useEffect(() => {
+    const channel = supabase.channel('sidebar-profile')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles',
+        filter: `id=eq.${user.id}`
+      }, async (payload) => {
+        // Create new avatar
+        const avatar = createAvatar(funEmoji, {
+          seed: payload.new.avatar || payload.new.username || 'Adrian',
+        });
+        
+        // Update local profile state
+        setUserProfile(prev => ({
+          ...prev,
+          username: payload.new.username,
+          department: payload.new.department,
+          avatar: avatar.toDataUri(),
+        }));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, user.id]);
 
   // Merge contacts with active random chats
   const combinedContacts = [
@@ -211,9 +243,9 @@ export default function Sidebar({ user }: { user: Profile }) {
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={user.avatar}
-          name={user.username}
-          department={user.department}
+          avatarUrl={userProfile.avatar}
+          name={userProfile.username ?? 'Anonymous'}
+          department={userProfile.department ?? 'No Department'}
         />
       </footer>
     </aside>
