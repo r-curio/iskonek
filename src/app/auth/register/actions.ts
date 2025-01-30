@@ -4,70 +4,72 @@ import { registerSchema } from "@/schema"
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/utils/supabase/server'
 
-export async function signup(formData: FormData) {
+type SignupResponse = {
+  data?: unknown;
+  error?: string;
+}
+
+export async function signup(formData: FormData): Promise<SignupResponse> {
+    const supabase = await createClient()
+
     try {
-        const supabase = await createClient()
-    
         const data = {
             email: formData.get('email') as string,
             password: formData.get('password') as string,
             username: formData.get('username') as string,
+            department: formData.get('department') as string,
             confirmPassword: formData.get('confirmPassword') as string,
         }
 
-        // Validate request body against schema
+        console.log('Signup data:', data)
+
+        // Validate request body
         const result = registerSchema.safeParse(data)
         if (!result.success) {
             return { error: result.error.errors[0].message }
         }
 
-        const { email, username, password, confirmPassword } = result.data
+        const { email, username, password, confirmPassword, department } = result.data
 
-        // check if the email already exists in profiles table
-        const { data: existingUserByEmail } = await supabase
-            .from('profiles')
-            .select('id')
-            .eq('email', email)
-            .single()
-
-        if (existingUserByEmail) {
-            return { error: 'Email already taken' }
+        // Validate email domain
+        if (!email.endsWith('@iskolarngbayan.pup.edu.ph')) {
+            return { error: 'Please use your PUP Webmail Account' }
         }
 
-        // Check if username is unique
-        const { data: existingUserByUsername } = await supabase
+        // Start transaction
+        const { data: existingUser, error: checkError } = await supabase
             .from('profiles')
             .select('id')
-            .eq('username', username)
+            .or(`email.eq.${email},username.eq.${username}`)
             .single()
 
-        if (existingUserByUsername) {
-            return { error: 'Username already taken' }
+        if (checkError && checkError.code !== 'PGRST116') {
+            return { error: 'Error checking existing user' }
         }
 
-        const email_domain = email.split('@')[1]
-        
-        // Check if email is a PUP Webmail Account
-        if (email_domain !== 'iskolarngbayan.pup.edu.ph') {
-            return { error: 'Enter your PUP Webmail Account' }
+        if (existingUser) {
+            return { error: 'Email or username already taken' }
         }
 
         if (password !== confirmPassword) {
             return { error: 'Passwords do not match' }
         }
 
-        // Register user
-        const { error: signUpError, data: authData } = await supabase.auth.signUp({
+        // Create auth user
+        const { data: authData, error: signUpError } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 data: {
-                    username
+                    username,
+                    department,
+                    avatar: 'Adrian' // Initial avatar seed
                 }
             }
         })
-    
+
         if (signUpError) {
+            console.log('Signup error:', signUpError)
             return { error: signUpError.message }
         }
 
@@ -76,10 +78,12 @@ export async function signup(formData: FormData) {
         }
 
         revalidatePath('/', 'layout')
-        
         return { data: authData }
-        
+
     } catch (error) {
-        return { error }
+        console.error('Registration error:', error)
+        return { 
+            error: error instanceof Error ? error.message : 'An unexpected error occurred' 
+        }
     }
 }
