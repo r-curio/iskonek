@@ -1,61 +1,80 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 
+type ProfileUpdateData = {
+    username?: string;
+    department?: string;
+    currentPassword?: string;
+    newPassword?: string;
+};
+
 export async function PUT(request: Request) {
     const supabase = await createClient();
     
-    // Check which field is being updated
-    const avatar = request.headers.get('avatar');
-    const username = request.headers.get('username');
-    const department = request.headers.get('department');
-    const password = request.headers.get('password');
-
     const { data: { user }, error: UserError } = await supabase.auth.getUser();
     if (!user || UserError) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     try {
-        // Handle different update types
-        if (avatar) {
-            const { error } = await supabase
-                .from('profiles')
-                .update({ avatar })
-                .eq('id', user.id);
-            if (error) throw error;
-            return NextResponse.json({ success: true, type: 'avatar' });
-        }
+        const body = await request.json();
+        const updateType = request.headers.get('update-type');
 
-        if (username) {
-            const { error } = await supabase
-                .from('profiles')
-                .update({ username })
-                .eq('id', user.id);
-            if (error) throw error;
-            return NextResponse.json({ success: true, type: 'username' });
-        }
+        // Handle password update
+        if (updateType === 'password') {
 
-        if (department) {
-            const { error } = await supabase
-                .from('profiles')
-                .update({ department })
-                .eq('id', user.id);
-            if (error) throw error;
-            return NextResponse.json({ success: true, type: 'department' });
-        }
+            const { currentPassword, newPassword } = body;
+            
+            if (!currentPassword || !newPassword) {
+                return NextResponse.json({ error: 'Missing password fields' }, { status: 400 });
+            }
 
-        if (password) {
-            const { error } = await supabase.auth.updateUser({
-                password: password
+            // Verify current password
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email: user.email!,
+                password: currentPassword,
             });
+
+            if (signInError) {
+                return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
+            }
+
+            // Update password
+            const { error: passwordError } = await supabase.auth.updateUser({
+                password: newPassword
+            });
+
+            if (passwordError) {
+                return NextResponse.json({ error: passwordError.message }, { status: 400 });
+            }
+
+            return NextResponse.json({ success: true, updated: ['password'] });
+        }
+
+        // Handle profile updates
+        const updateData: Record<string, ProfileUpdateData[keyof ProfileUpdateData]> = {};
+        if (body.username) updateData.username = body.username;
+        if (body.department) updateData.department = body.department;
+        
+        if (Object.keys(updateData).length > 0) {
+            const { error } = await supabase
+                .from('profiles')
+                .update(updateData)
+                .eq('id', user.id);
+                
             if (error) throw error;
-            return NextResponse.json({ success: true, type: 'password' });
+            return NextResponse.json({ 
+                success: true, 
+                updated: Object.keys(updateData)
+            });
         }
 
         return NextResponse.json({ error: 'No valid update field provided' }, { status: 400 });
 
     } catch (error) {
         console.error('Update error:', error);
-        return NextResponse.json({ error: 'Error updating profile' }, { status: 500 });
+        return NextResponse.json({ 
+            error: error instanceof Error ? error.message : 'Error updating profile' 
+        }, { status: 500 });
     }
 }
