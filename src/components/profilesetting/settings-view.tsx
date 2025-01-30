@@ -16,9 +16,10 @@ interface SettingsViewProps {
   username: string
   department: string
   avatarUrl?: string
+  bgColor?: string
 }
 
-export default function SettingsView({ open, onOpenChange, onAvatarClick, username, department, avatarUrl }: SettingsViewProps) {
+export default function SettingsView({ open, onOpenChange, onAvatarClick, username, department, avatarUrl, bgColor }: SettingsViewProps) {
   const [activeView, setActiveView] = useState("profile")
   const [isPasswordView, setIsPasswordView] = useState(false)
 
@@ -55,6 +56,7 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick, userna
             name={username} 
             department={department}
             avatarUrl={avatarUrl}
+            color={bgColor}
         />
         )
       case "manage-account":

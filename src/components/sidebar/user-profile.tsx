@@ -9,9 +9,10 @@ interface UserProfileProps {
   avatarUrl: string
   name: string
   department: string
+  bgColor: string
 }
 
-export default function UserProfile({ avatarUrl, name, department}: UserProfileProps) {
+export default function UserProfile({ avatarUrl, name, department, bgColor}: UserProfileProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isAvatarSelectOpen, setIsAvatarSelectOpen] = useState(false)
 
@@ -49,7 +50,8 @@ export default function UserProfile({ avatarUrl, name, department}: UserProfileP
         onAvatarClick={handleAvatarClick} 
         username={name} 
         department={department}
-        avatarUrl={avatarUrl}  
+        avatarUrl={avatarUrl}
+        bgColor={bgColor}  
       />
       <AvatarSelectView 
         open={isAvatarSelectOpen} 

@@ -35,6 +35,7 @@ interface Profile {
   username: string;
   avatar: string;
   department?: string;
+  bgColor?: string;
 }
 
 
@@ -129,6 +130,7 @@ export default function Sidebar({ user }: { user: Profile }) {
           username: payload.new.username,
           department: payload.new.department,
           avatar: avatar.toDataUri(),
+          bgColor: payload.new.bgColor
         }));
       })
       .subscribe();
@@ -176,7 +178,7 @@ export default function Sidebar({ user }: { user: Profile }) {
       <nav className="p-4 flex flex-col gap-2">
           <Button
             variant="ghost"
-            className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
+            className={`flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start ${pathname === '/chat' ? 'bg-[#682A43] text-white' : ''}`}
             onClick={() => router.push('/chat')}
           >
           <BsChatLeftFill className="text-lg" />
@@ -248,6 +250,7 @@ export default function Sidebar({ user }: { user: Profile }) {
           avatarUrl={userProfile.avatar}
           name={userProfile.username ?? 'Anonymous'}
           department={userProfile.department ?? 'No Department'}
+          bgColor={userProfile.bgColor ?? '#F9FAFB'}
         />
       </footer>
     </aside>
