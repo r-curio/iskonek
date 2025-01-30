@@ -6,7 +6,9 @@ type ProfileUpdateData = {
     department?: string;
     currentPassword?: string;
     newPassword?: string;
+    avatar?: string;
 };
+
 
 export async function PUT(request: Request) {
     const supabase = await createClient();
@@ -55,6 +57,7 @@ export async function PUT(request: Request) {
         const updateData: Record<string, ProfileUpdateData[keyof ProfileUpdateData]> = {};
         if (body.username) updateData.username = body.username;
         if (body.department) updateData.department = body.department;
+        if (body.avatar) updateData.avatar = body.avatar;
         
         if (Object.keys(updateData).length > 0) {
             const { error } = await supabase

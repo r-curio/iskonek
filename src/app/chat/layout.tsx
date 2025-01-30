@@ -3,7 +3,14 @@ import { createClient } from '@/utils/supabase/server';
 import { createAvatar } from '@dicebear/core';
 import { funEmoji } from '@dicebear/collection';
 
-export default async function Layout({ children }: { children: React.ReactNode }): JSX.Element {
+interface Profile {
+    id: string;
+    username: string;
+    avatar: string;
+    department: string;
+}
+
+export default async function Layout({ children }: { children: React.ReactNode }): Promise<JSX.Element> {
 
     const supabase = await createClient();
     const { data: { user }, error: UserError } = await supabase.auth.getUser();
@@ -11,12 +18,13 @@ export default async function Layout({ children }: { children: React.ReactNode }
         return <div>Unauthorized</div>;
     }
 
+
     // Fetch user profile of the logged-in user
     const { data: profiles, error: ProfileError } = await supabase
         .from('profiles')
         .select('id, username, avatar, department')
         .eq('id', user.id)
-        .single();
+        .single<Profile>();
 
     if (ProfileError) {
         return <div>Error fetching profiles</div>;
@@ -31,8 +39,6 @@ export default async function Layout({ children }: { children: React.ReactNode }
     });
 
     profiles.avatar = avatar.toDataUri();
-
-    console.log('Profiles:', profiles);
 
     return (
         

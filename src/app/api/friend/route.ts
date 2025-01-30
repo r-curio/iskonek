@@ -22,7 +22,6 @@ export async function GET(request: Request) {
 
     if (status === 'accepted') {
         const acceptedFriends = await getAcceptedFriends(supabase, user.id);
-        console.log('Accepted friends:', acceptedFriends);
         return NextResponse.json({ acceptedFriends });
     }
 }
@@ -130,5 +129,38 @@ export async function PUT(request: Request) {
     }
 
     return NextResponse.json({ status: 'success' });
+}
+
+// DELETE decline friend request
+export async function DELETE(request: Request) {
+    
+    const supabase = await createClient();
+    const { id } = await request.json();
+
+    console.log('Declining friend request:', id);
+
+    const { data: { user }, error: UserError } = await supabase.auth.getUser();
+    if (!user || UserError) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // if friend request exist and status is pending, delete the request
+    const { error: friendRequestError } = await supabase
+        .from('friendships')
+        .delete()
+        .eq('from_user_id', id)
+        .eq('to_user_id', user.id)
+        .eq('status', 'pending');
+
+    if (friendRequestError) {
+        console.error('Friend request error:', friendRequestError);
+        return NextResponse.json({ 
+            error: 'Failed to decline friend request',
+            details: friendRequestError.message 
+        }, { status: 500 });
+    }
+
+    return NextResponse.json({ status: 'success' });
+    
 }
 

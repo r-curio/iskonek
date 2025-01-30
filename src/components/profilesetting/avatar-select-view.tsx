@@ -33,9 +33,11 @@ export default function AvatarSelectView({ open, onOpenChange, onClose }: Avatar
       const response = await fetch('/api/profiles', {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'avatar': selectedAvatarName || ''
-        }
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          avatar: selectedAvatarName
+        })
       })
       const data = await response.json()
       console.log('Avatar update response:', data)

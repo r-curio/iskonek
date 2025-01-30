@@ -48,7 +48,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
             <ChatWindow
                 recipientName={username}
                 recipientProfilePic={profile}
-                recipientDepartment={user.department}
+                recipientDepartment={user.department ?? undefined}
                 messages={messages || []}
                 roomId={id}
                 isRandom={isRandom === 'true'}
