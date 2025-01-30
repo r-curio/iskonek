@@ -12,43 +12,41 @@ interface User {
 }
 
 interface FriendRequestListProps {
-  friendRequests: User[]
+    friendRequests: User[];
+    onFriendRequestHandled?: (id: string) => void;
 }
 
-export function FriendRequestList({ friendRequests }: FriendRequestListProps) {
+export function FriendRequestList({ friendRequests, onFriendRequestHandled }: FriendRequestListProps) {
     const [requests, setRequests] = useState<User[]>(friendRequests || [])
     const { toast } = useToast()
 
     const handleAccept = async (id: string) => {
-        setRequests(requests.filter(request => request.id !== id))
-        // Here you would typically make an API call to accept the friend request
-       const response = await fetch('/api/friend', {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id }),
+        setRequests(prev => prev.filter(request => request.id !== id)); // Local update
+        onFriendRequestHandled?.(id); // Notify Sidebar
+        
+        const response = await fetch('/api/friend', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id }),
         });
-        if (response.ok) {
-            console.log(`Accepted friend request from user ${id}`)
-            toast({
-                title: "Friend Request Accepted!",
-                description: `Friend request from accepted`,
-            })
-        } else {
-            console.error(`Failed to accept friend request from user ${id}`)
-            toast({
-                title: "Failed to accept friend request",
-                description: `Failed to accept friend request`,
-                variant: "destructive",
-            })
-      }
-    }
     
-      const handleDecline = (id: string) => {
+        if (response.ok) {
+            toast({ title: "Friend Request Accepted!", description: "Friend request accepted" });
+        } else {
+            toast({ title: "Failed to accept friend request", description: "Try again", variant: "destructive" });
+        }
+    };
+    
+    const handleDecline = (id: string) => {
         setRequests(requests.filter(request => request.id !== id))
-        // Here you would typically make an API call to remove the friend request
-        console.log(`Declined friend request from user ${id}`)
+        
+        fetch('/api/friend', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id }),
+        })
+
+        
     }
 
     return (

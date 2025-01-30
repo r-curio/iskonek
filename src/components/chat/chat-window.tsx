@@ -12,7 +12,7 @@ import { useMatchmaking } from '@/hooks/use-matchmaking';
 import { handleAddFriend } from '@/utils/actions';
 import { ChatEndedOptions } from './chat-ended';
 import { useToast } from '@/hooks/use-toast';
-import LoadingScreen from '@/app/chat/loading';
+import LoadingScreen from '@/app/chat/searching';
 
 interface message {
     id: string

@@ -228,9 +228,11 @@ export default function Sidebar({ user }: { user: Profile }) {
         </div>
           <ScrollArea className="px-4">
             {displayFriendRequests ? (
-              <FriendRequestList
-                friendRequests={friendRequests}
+              <FriendRequestList 
+                friendRequests={friendRequests} 
+                onFriendRequestHandled={(id) => setFriendRequests(prev => prev.filter(req => req.id !== id))} 
               />
+            
             ) : (
               <ContactsList
                 contacts={filteredContacts}
