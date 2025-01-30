@@ -15,6 +15,8 @@ import { useSearchParams } from 'next/navigation'
 import UserProfile from "./user-profile";
 import { createClient } from '@/utils/supabase/client'
 import { usePathname, useRouter } from 'next/navigation'
+import { createAvatar } from '@dicebear/core';
+import { funEmoji } from '@dicebear/collection';
 
 interface RandomChat {
   roomId: string
@@ -30,9 +32,10 @@ interface User {
 
 interface Profile {
   id: string;
-  username?: string;
+  username: string;
   avatar: string;
   department?: string;
+  bgColor?: string;
 }
 
 
@@ -42,8 +45,9 @@ export default function Sidebar({ user }: { user: Profile }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [displayFriendRequests, setDisplayFriendRequests] = useState(false);
   const [friendRequests, setFriendRequests] = useState<User[]>([]);
-  const searchParams = useSearchParams()
   const [activeRandomChats, setActiveRandomChats] = useState<RandomChat[]>([])
+  const [userProfile, setUserProfile] = useState(user);
+  const searchParams = useSearchParams()
   const supabase = createClient()
   const pathname = usePathname()
   const router = useRouter()  
@@ -86,7 +90,6 @@ export default function Sidebar({ user }: { user: Profile }) {
     }
   }, [pathname, searchParams])
 
-
   // Listen for room deletions
   useEffect(() => {
     const channel = supabase.channel('sidebar-room-deletion')
@@ -105,6 +108,37 @@ export default function Sidebar({ user }: { user: Profile }) {
       supabase.removeChannel(channel)
     }
   }, [supabase])
+
+
+  //Listen for profile updates
+  useEffect(() => {
+    const channel = supabase.channel('sidebar-profile')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles',
+        filter: `id=eq.${user.id}`
+      }, async (payload) => {
+        // Create new avatar
+        const avatar = createAvatar(funEmoji, {
+          seed: payload.new.avatar || payload.new.username || 'Adrian',
+        });
+        
+        // Update local profile state
+        setUserProfile(prev => ({
+          ...prev,
+          username: payload.new.username,
+          department: payload.new.department,
+          avatar: avatar.toDataUri(),
+          bgColor: payload.new.bgColor
+        }));
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, user.id]);
 
   // Merge contacts with active random chats
   const combinedContacts = [
@@ -144,7 +178,7 @@ export default function Sidebar({ user }: { user: Profile }) {
       <nav className="p-4 flex flex-col gap-2">
           <Button
             variant="ghost"
-            className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
+            className={`flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start ${pathname === '/chat' ? 'bg-[#682A43] text-white' : ''}`}
             onClick={() => router.push('/chat')}
           >
           <BsChatLeftFill className="text-lg" />
@@ -196,9 +230,11 @@ export default function Sidebar({ user }: { user: Profile }) {
         </div>
           <ScrollArea className="px-4">
             {displayFriendRequests ? (
-              <FriendRequestList
-                friendRequests={friendRequests}
+              <FriendRequestList 
+                friendRequests={friendRequests} 
+                onFriendRequestHandled={(id) => setFriendRequests(prev => prev.filter(req => req.id !== id))} 
               />
+            
             ) : (
               <ContactsList
                 contacts={filteredContacts}
@@ -211,9 +247,10 @@ export default function Sidebar({ user }: { user: Profile }) {
 
       <footer className="h-16 border-t bg-white">
         <UserProfile
-          avatarUrl={user.avatar}
-          name={user.username}
-          department={user.department}
+          avatarUrl={userProfile.avatar}
+          name={userProfile.username ?? 'Anonymous'}
+          department={userProfile.department ?? 'No Department'}
+          bgColor={userProfile.bgColor ?? '#F9FAFB'}
         />
       </footer>
     </aside>

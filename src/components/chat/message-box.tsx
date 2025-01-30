@@ -11,6 +11,7 @@ import { ActionModal } from "./actionModal";
 import { ConvoStarters } from "../convostarters/convostarters";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -34,6 +35,7 @@ const useChatInput = (
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const { toast } = useToast();
   const supabase = createClient();
 
   useEffect(() => {
