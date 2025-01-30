@@ -16,9 +16,8 @@ export default function LandingPage() {
           backgroundSize: "auto",
         }}
       >
-        {/* Hero Section with Background Pattern */}
+        {/* Section with Background Pattern */}
         <section className="relative bg-[#e0e0e0] min-h-[70vh] w-full bg-repeat bg-auto">
-          {/* Background Pattern */}
           <div className="absolute inset-0 w-full h-full opacity-75 pointer-events-none z-[1]">
             <Image
               src={bgPattern.src}
@@ -30,7 +29,6 @@ export default function LandingPage() {
             />
           </div>
 
-          {/* Hero Content */}
           <div className="relative container mx-auto px-4 pt-20 pb-12 text-center z-[2]">
             <div className="mb-4">
               <Image src={Logo.src} alt="Iskonek Logo" width={64} height={64} className="mx-auto" priority />
@@ -59,7 +57,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Features Section - White Background */}
+        {/* Features Section */}
         <section className="container mx-auto px-4 py-16 bg-white">
           <h2 className="text-3xl font-bold text-[#702632] text-center mb-12">Why Choose Iskonek?</h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
