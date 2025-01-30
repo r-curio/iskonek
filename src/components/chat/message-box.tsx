@@ -11,6 +11,7 @@ import { ActionModal } from "./actionModal";
 import { ConvoStarters } from "../convostarters/convostarters";
 import { Button } from "../ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;
@@ -24,6 +25,7 @@ interface ChatInputProps {
   roomId: string;
   onMessageSent: (message: Message) => void;
   recipientName?: string;
+  isRandom?: boolean;
 }
 
 const useChatInput = (
@@ -33,6 +35,7 @@ const useChatInput = (
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const { toast } = useToast();
   const supabase = createClient();
 
   useEffect(() => {
@@ -67,7 +70,17 @@ const useChatInput = (
         body: JSON.stringify({ content: message.trim(), roomId }),
       });
 
-      if (!response.ok) throw new Error("Failed to send message");
+      if (!response.ok) {
+        const error = await response.json();
+        if (error.categories) {
+          toast({
+            title: "Message Not Sent",
+            description: "Your message may contain inappropriate content",
+            variant: "destructive"
+          });
+        }
+        return false;
+      }
       return true;
     } catch (error) {
       console.error("Send message error:", error);
@@ -84,6 +97,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   roomId,
   onMessageSent,
   recipientName,
+  isRandom,
 }) => {
   const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -128,7 +142,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   return (
     <div className="flex items-end p-4 border-t min-h-[5rem] gap-2">
       <div className="flex gap-2">
-        <Button
+        {isRandom && (
+          <Button
           className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
           onClick={() => setIsConfirmEndOpen(true)}
         >
@@ -136,6 +151,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
             <BsSkipEndFill /> Skip
           </span>
         </Button>
+        )}
+        
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>

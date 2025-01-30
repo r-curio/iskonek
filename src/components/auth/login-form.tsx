@@ -86,7 +86,7 @@ export default function LoginForm(): JSX.Element {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full">Sign In</Button>
+                    <Button type="submit" className="w-full bg-accent">Sign In</Button>
                 </form>
             </Form>
         </CardWrapper>

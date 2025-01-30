@@ -55,55 +55,87 @@ export default function ProfileSettings({ activeView, onViewChange }: ProfileSet
   };
 
   return (
-    <div className="w-48 border-r h-full bg-background flex flex-col justify-between">
-      <div className="flex flex-col space-y-1 p-2">
-        <h2 className="text-lg font-semibold px-4 py-2">Settings</h2>
-        <Button
-          className={`justify-start ${activeView === 'profile' ? 'bg-[#682A43] text-white' : 'bg-transparent text-black hover:bg-[#682A43] hover:text-white'}`}
-          onClick={() => handleViewChange('profile')}
-        >
-          <CgProfile className={`mr-2 h-4 w-4 ${activeView === 'profile' ? 'text-white' : 'text-black'}`} />
-          Profile
-        </Button>
-        <Button
-          className={`justify-start ${activeView === 'manage-account' ? 'bg-[#682A43] text-white' : 'bg-transparent text-black hover:bg-[#682A43] hover:text-white'}`}
-          onClick={() => handleViewChange('manage-account')}
-        >
-          <FaUserGear className={`mr-2 h-4 w-4 ${activeView === 'manage-account' ? 'text-white' : 'text-black'}`} />
-          Manage Account
-        </Button>
+    <div className="w-64 border-r border-gray-100 h-full bg-[#FAF9F6] flex flex-col">
+      <div className="p-4">
+        <h2 className="text-xl font-semibold px-4 py-4 text-gray-800">Settings</h2>
       </div>
-      <div className="p-2">
+      
+      {/* Fixed height container for navigation buttons */}
+      <div className="flex-1 px-4 pb-4">
+        <div className="space-y-2">
+          <Button
+            className={`w-full justify-start h-12 rounded-lg transition-all duration-200 ${
+              activeView === 'profile' 
+                ? 'bg-[#682A43] text-white shadow-md' 
+                : 'bg-transparent text-gray-700 hover:bg-[#682A43] hover:text-white'
+            }`}
+            onClick={() => handleViewChange('profile')}
+          >
+            <CgProfile className="mr-3 h-5 w-5" />
+            Profile
+          </Button>
+          <Button
+            className={`w-full justify-start h-12 rounded-lg transition-all duration-200 ${
+              activeView === 'manage-account' 
+                ? 'bg-[#682A43] text-white shadow-md' 
+                : 'bg-transparent text-gray-700 hover:bg-[#682A43] hover:text-white'
+            }`}
+            onClick={() => handleViewChange('manage-account')}
+          >
+            <FaUserGear className="mr-3 h-5 w-5" />
+            Manage Account
+          </Button>
+        </div>
+      </div>
+
+      {/* Fixed bottom section */}
+      <div className="p-4 border-t border-gray-100 mt-auto">
         <Button 
           variant="ghost" 
-          className="justify-start w-full text-[#693d52] hover:bg-[#532e40] hover:text-white" 
+          className="w-full justify-start h-12 text-[#693d52] hover:bg-[#532e40] hover:text-white transition-colors rounded-lg" 
           onClick={handleLogoutClick}
           disabled={isLoading}
         >
-          <CiLogout className="mr-2 h-4 w-4" />
+          <CiLogout className="mr-3 h-5 w-5" />
           {isLoading ? 'Logging out...' : 'Logout'}
         </Button>
       </div>
 
       {isLogoutModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-lg z-50">
-            <h2 className="text-lg font-semibold mb-4">Confirm Logout?</h2>
-            <p className="mb-4">Are you sure you want to logout?</p>
-            <div className="flex justify-end space-x-2">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 animate-in fade-in-0 duration-200">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full mx-4 p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-full bg-red-50">
+                <CiLogout className="h-6 w-6 text-red-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">Sign Out</h2>
+                <p className="text-sm text-gray-500 mt-1">Are you sure you want to sign out of your account?</p>
+              </div>
+            </div>
+            
+            <div className="flex items-center justify-end gap-3">
               <Button 
-                className="hover:bg-[#919192] hover:text-white" variant="secondary"
+                className="min-w-[100px] bg-gray-100 hover:bg-gray-200 text-gray-700" 
+                variant="secondary"
                 onClick={handleCancelClick}
                 disabled={isLoading}
               >
                 Cancel
               </Button>
               <Button 
-                className="bg-[#693d52] text-white hover:bg-[#532e40]"
+                className="min-w-[100px] bg-[#693d52] hover:bg-[#532e40]"
                 onClick={handleConfirmClick}
                 disabled={isLoading}
               >
-                {isLoading ? 'Logging out...' : 'Confirm'}
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white animate-spin rounded-full"/>
+                    <span>Signing out...</span>
+                  </div>
+                ) : (
+                  'Sign out'
+                )}
               </Button>
             </div>
           </div>

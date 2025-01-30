@@ -32,6 +32,7 @@ export async function POST(request: Request) {
             .from('chat_rooms')
             .delete()
             .eq('id', roomId)
+            .eq('type', 'random')
 
         if (deleteRoomError) {
             return NextResponse.json(

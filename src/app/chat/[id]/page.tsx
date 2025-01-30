@@ -1,52 +1,61 @@
 import ChatWindow from '@/components/chat/chat-window';
 import { createClient } from '@/utils/supabase/server';
+import { createAvatar } from '@dicebear/core';
+import { funEmoji } from '@dicebear/collection';
+
+export const dynamic = 'force-dynamic'; // Ensure dynamic rendering
+
 interface PageProps {
     params: { id?: string };
-    searchParams: { username?: string };
+    searchParams: { 
+        username?: string;
+        isRandom?: string;
+    };
 }
 
 export default async function ChatPage({ params, searchParams }: PageProps) {
     const supabase = await createClient();
     const { id } = params;
-    const username = searchParams ? searchParams.username : null;
+    const { username, isRandom } = searchParams;
 
-    // Validate `id` and `username`
-    if (!id) {
-        console.error('Chat room ID is missing');
-        return <div>Invalid chat room ID</div>;
-    }
-
-    if (!username) {
-        console.error('Recipient username is missing');
-        return <div>Invalid recipient username</div>;
-    }
+    if (!id) return <div>Invalid chat room ID</div>;
+    if (!username) return <div>Invalid recipient username</div>;
 
     try {
-        // Fetch messages for the chat room
         const { data: messages, error } = await supabase
             .from('messages')
             .select('*')
             .eq('room_id', id)
             .order('created_at', { ascending: true });
-        
-        console.log('Messages:', messages);
 
-        if (error) {
-            console.error('Error fetching messages:', error);
-            return <div>Error loading messages</div>;
-        }
+        if (error) throw error;
 
-        // Render the chat window with fetched messages
+        const { data: user, error: userError } = await supabase
+            .from('profiles')
+            .select('avatar, department')
+            .ilike('username', username) // Case-insensitive search
+            .single();
+
+        if (userError) throw userError;
+
+        const avatar = createAvatar(funEmoji, {
+            seed: user.avatar || username || 'Adrian', // Fallback seed
+        });
+
+        const profile = avatar.toDataUri();
+
         return (
             <ChatWindow
                 recipientName={username}
-                recipientProfilePic=""
+                recipientProfilePic={profile}
+                recipientDepartment={user.department ?? undefined}
                 messages={messages || []}
                 roomId={id}
+                isRandom={isRandom === 'true'}
             />
         );
     } catch (err) {
-        console.error('Unexpected error:', err);
-        return <div>An unexpected error occurred</div>;
+        console.error('Error:', err);
+        return <div>An error occurred. Please try again.</div>;
     }
 }

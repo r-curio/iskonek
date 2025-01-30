@@ -1,13 +1,14 @@
-"use client";
+'use client'
+
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
 import { useMatchmaking } from "@/hooks/use-matchmaking";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import LoadingScreen from "./loading";
+import LoadingScreen from "./searching";
 
 export default function Page() {
-  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking();
+  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(true);
 
   return (
     <ScrollArea className="h-screen w-full">
