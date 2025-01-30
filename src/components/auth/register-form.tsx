@@ -39,7 +39,13 @@ export default function RegisterForm(): JSX.Element {
         },
     })
 
-    async function onSubmit(formData: FormData) {        
+    async function onSubmit(values: Record<string, string>) {
+        // Create FormData from the form values
+        const formData = new FormData()
+        Object.entries(values).forEach(([key, value]) => {
+            formData.append(key, value as string)
+        })
+                
         const response = await signup(formData)
 
         if (response?.error) {
@@ -70,7 +76,7 @@ export default function RegisterForm(): JSX.Element {
             backButtonPath="/auth/login"
         >
             <Form {...form}>
-                <form action={onSubmit} className="space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
                         name="email"
@@ -103,17 +109,27 @@ export default function RegisterForm(): JSX.Element {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Department</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <Select onValueChange={field.onChange} value={field.value}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a department" />
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        <SelectItem value="cs">Computer Science</SelectItem>
-                                        <SelectItem value="it">Information Technology</SelectItem>
-                                        <SelectItem value="is">Information Systems</SelectItem>
-                                        {/* Add more departments as needed */}
+                                        <SelectItem value="CAF">College of Accountancy and Finance (CAF)</SelectItem>
+                                        <SelectItem value="CADBE">College of Architecture, Design and the Built Environment (CADBE)</SelectItem>
+                                        <SelectItem value="CAL">College of Arts and Letters (CAL)</SelectItem>
+                                        <SelectItem value="CBA">College of Business Administration (CBA)</SelectItem>
+                                        <SelectItem value="COC">College of Communication (COC)</SelectItem>
+                                        <SelectItem value="CCIS">College of Computer and Information Sciences (CCIS)</SelectItem>
+                                        <SelectItem value="COED">College of Education (COED)</SelectItem>
+                                        <SelectItem value="COE">College of Engineering (COE)</SelectItem>
+                                        <SelectItem value="CHK">College of Human Kinetics (CHK)</SelectItem>
+                                        <SelectItem value="CL">College of Law (CL)</SelectItem>
+                                        <SelectItem value="CPSPA">College of Political Science and Public Administration (CPSPA)</SelectItem>
+                                        <SelectItem value="CSSD">College of Social Sciences and Development (CSSD)</SelectItem>
+                                        <SelectItem value="CS">College of Science (CS)</SelectItem>
+                                        <SelectItem value="CTHTM">College of Tourism, Hospitality, and Transportation Management (CTHTM)</SelectItem>
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -154,4 +170,3 @@ export default function RegisterForm(): JSX.Element {
         </CardWrapper>
     )
 }
-
