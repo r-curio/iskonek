@@ -60,7 +60,7 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick, userna
       case "manage-account":
         return <ManageAccount />
       default:
-        return <ProfileView onPasswordEdit={handlePasswordEdit} onAvatarClick={onAvatarClick} />
+        return <ProfileView onPasswordEdit={handlePasswordEdit} onAvatarClick={onAvatarClick} name={username} department={department} avatarUrl={avatarUrl} />
     }
   }
 
@@ -69,10 +69,10 @@ export default function SettingsView({ open, onOpenChange, onAvatarClick, userna
       <VisuallyHidden.Root>
         <DialogTitle>Settings</DialogTitle>
       </VisuallyHidden.Root>
-      <DialogContent className="max-w-3xl p-0 gap-0 h-[550px]">
-        <div className="flex h-full">
+      <DialogContent className="max-w-3xl p-0 gap-0 h-[550px] rounded-lg overflow-hidden border-none">
+        <div className="flex h-full bg-white">
           <ProfileSettings activeView={activeView} onViewChange={handleViewChange}/>
-          <div className="flex-1 overflow-y-auto">{renderRightComponent()}</div>
+          <div className="flex-1 overflow-y-auto transition-all duration-300">{renderRightComponent()}</div>
         </div>
       </DialogContent>
     </Dialog>
