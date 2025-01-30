@@ -22,7 +22,7 @@ export default async function Layout({ children }: { children: React.ReactNode }
     // Fetch user profile of the logged-in user
     const { data: profiles, error: ProfileError } = await supabase
         .from('profiles')
-        .select('id, username, avatar, department')
+        .select('id, username, avatar, department, bgColor')
         .eq('id', user.id)
         .single<Profile>();
 
