@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -25,7 +26,7 @@ export default function Home() {
 
           <div className="relative container mx-auto px-4 py-20 text-center z-10">
             <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
-              <Image src={Logo.src} alt="Iskonek Logo" width={96} height={96} className="mx-auto" priority />
+              <Image src={Logo.src} alt="Iskonek Logo" width={96} height={96} className="mx-auto pointer-events-none" priority />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-[#702632] mb-6">
               Connect Anonymously
@@ -37,16 +38,23 @@ export default function Home() {
               and support each other.
             </p>
             <div className="flex gap-6 justify-center">
-              <Button size="lg" className="bg-[#702632] hover:bg-[#5c1f28] text-white px-12 py-6 text-lg">
-                Log In
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg"
-              >
-                Sign Up
-              </Button>
+              <Link href="/auth/login" className="transform transition-all duration-300 hover:scale-105">
+                <Button 
+                  size="lg" 
+                  className="bg-[#702632] hover:bg-[#5c1f28] text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out relative after:absolute after:inset-0 after:z-[-1] after:bg-[#702632] after:opacity-30 after:blur-lg after:transition-all after:duration-300 hover:after:opacity-60"
+                >
+                  Log In
+                </Button>
+              </Link>
+              <Link href="/auth/register" className="transform transition-all duration-300 hover:scale-105">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-0.5"
+                >
+                  Sign Up
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
@@ -54,7 +62,10 @@ export default function Home() {
         {/* Features Section */}
         <section className="py-24 bg-white">
           <div className="container mx-auto px-4">
-            <h2 className="text-4xl font-bold text-[#702632] text-center mb-16">Why Choose Iskonek?</h2>
+            <h2 className="text-4xl font-bold text-[#702632] text-center mb-16 relative">
+              Why Choose Iskonek?
+              <span className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-[#702632]/30 rounded-full"></span>
+            </h2>
             <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
               <Card className="p-8 bg-gray-50 border-none hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-white">
                 <Shield className="w-16 h-16 text-[#702632] mb-6 mx-auto" />

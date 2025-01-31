@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useToast } from '@/hooks/use-toast';
 
 interface ProfileViewProps {
   onPasswordEdit: () => void;
@@ -23,6 +24,7 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
   const [bgColor, setBgColor] = useState(color); 
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
+  const { toast } = useToast();
 
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBgColor(e.target.value);
@@ -56,17 +58,33 @@ export default function ProfileView({ onPasswordEdit, onAvatarClick, name, depar
         })
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to update profile');
+        toast({
+          title: "Error updating profile",
+          description: data.error || "Something went wrong",
+          variant: "destructive",
+        });
+        return;
       }
 
-      const data = await response.json();
-      console.log('Profile update response:', data);
+      toast({
+        title: "Profile updated",
+        description: "Your changes have been saved successfully",
+      });
+
       setHasChanges(false);
       setIsUsernameEditing(false);
       setIsDepartmentEditing(false);
+
     } catch (error) {
       console.error('Error updating profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
