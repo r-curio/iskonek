@@ -35,7 +35,7 @@ interface ChatWindowProps {
 
 export default function ChatWindow({ recipientName, recipientProfilePic, recipientDepartment, messages: initialMessages, roomId, isRandom, isBlitz }: ChatWindowProps) {
     const { messages, userId, addNewMessage, setMessages } = useMessageSubscription(roomId)
-    const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom)
+    const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom, isBlitz)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [status, setStatus] = useState('active')
     const [isTimerActive, setIsTimerActive] = useState(true)
