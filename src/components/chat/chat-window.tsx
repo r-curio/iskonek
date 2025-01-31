@@ -27,12 +27,13 @@ interface ChatWindowProps {
     recipientProfilePic?: string
     recipientDepartment?: string
     messages: message[]
-    roomId: string 
+    roomId: string
     isRandom: boolean
+    isBlitz?: boolean
 }
 
 
-export default function ChatWindow({ recipientName, recipientProfilePic, recipientDepartment, messages: initialMessages, roomId, isRandom }: ChatWindowProps) {
+export default function ChatWindow({ recipientName, recipientProfilePic, recipientDepartment, messages: initialMessages, roomId, isRandom, isBlitz }: ChatWindowProps) {
     const { messages, userId, addNewMessage, setMessages } = useMessageSubscription(roomId)
     const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom)
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -72,9 +73,23 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
         }
     }
 
-        return (
+    const handleTimerEnd = async () => {
+        try {
+            const response = await fetch("/api/chat/end_convo", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ roomId }),
+            });
+            if (!response.ok) throw new Error("Failed to end conversation");
+            setStatus('ended');
+        } catch (error) {
+            console.error("End conversation error:", error);
+        }
+    };
+
+    return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic}  recipientDepartment={recipientDepartment}/>
+            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} recipientDepartment={recipientDepartment} initialTime={isBlitz ? 300 : undefined} onTimerEnd={isBlitz ? handleTimerEnd : undefined} />
             <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
@@ -88,7 +103,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
                     <div className="flex justify-center mt-8">
                         <ChatEndedOptions
                             onGoHome={() => router.push('/chat')}
-                            onAddFriend={() => handleFriendRequest()}                            
+                            onAddFriend={() => handleFriendRequest()}
                             onNewChat={handleConnect}
                             partnerName={recipientName}
                         />
@@ -97,9 +112,9 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
                 <div ref={messagesEndRef} />
             </ScrollArea>
             {status !== 'ended' && (
-                <ChatInput 
-                    roomId={roomId} 
-                    onMessageSent={addNewMessage} 
+                <ChatInput
+                    roomId={roomId}
+                    onMessageSent={addNewMessage}
                     recipientName={recipientName}
                     isRandom={isRandom}
                 />
