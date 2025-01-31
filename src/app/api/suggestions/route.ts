@@ -21,7 +21,7 @@ export async function POST(request: Request) {
 
     const { data, error } = await supabase
         .from('convo_starter_suggestions')
-        .insert([{ category, content }]);
+        .insert([{ category, content, user_id: user.id }]);
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
