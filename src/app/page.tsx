@@ -1,13 +1,20 @@
+
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Shield, Users, MessageSquare } from "lucide-react"
+import { createClient } from "@/utils/supabase/server"
 import bgPattern from "@/images/bg.svg"
 import Logo from "@/images/logo.svg"
 
-export default function Home() {
+export default async function Home() {
+
+  const supabase = await createClient()
+
+  const { data: { user } } = await supabase.auth.getUser();
+
   return (
     <ScrollArea className="h-screen w-full">
       <main className="w-full">
@@ -43,18 +50,21 @@ export default function Home() {
                   size="lg" 
                   className="bg-[#702632] hover:bg-[#5c1f28] text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out relative after:absolute after:inset-0 after:z-[-1] after:bg-[#702632] after:opacity-30 after:blur-lg after:transition-all after:duration-300 hover:after:opacity-60"
                 >
-                  Log In
+                  { user ? 'Start Chatting' : 'Log In' }
                 </Button>
               </Link>
-              <Link href="/auth/register" className="transform transition-all duration-300 hover:scale-105">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-0.5"
-                >
-                  Sign Up
-                </Button>
-              </Link>
+                { user ? null : (
+                    <Link href="/auth/register" className="transform transition-all duration-300 hover:scale-105">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-0.5"
+                      >
+                        Sign Up
+                      </Button>
+                    </Link>
+                  )
+                }
             </div>
           </div>
         </section>
