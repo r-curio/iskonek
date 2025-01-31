@@ -87,7 +87,7 @@ export function ContactsList({ contacts, onSelectContact, selectedContactId }: C
         description: "You have successfully unfriended this user",
       });
       
-    } catch (error: unknown) {
+    } catch (error) {
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to unfriend. Please try again.",
