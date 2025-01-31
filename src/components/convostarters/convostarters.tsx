@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Lightbulb, ChevronLeft, ChevronRight } from "lucide-react";
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const QUESTION_SETS = [
   {
@@ -114,15 +115,17 @@ export function ConvoStarters({
             </Button>
           </div>
         </DialogHeader>
-        <div className="flex flex-col gap-3 py-0">
-          {currentQuestions.questions.map((question, index) => (
-            <QuestionButton
-              key={index}
-              question={question}
-              onClick={() => onSelect(question)}
-            />
-          ))}
-        </div>
+        <ScrollArea className="max-h-[310 px] h-[310px]">
+          <div className="flex flex-col gap-3 py-3 ">
+            {currentQuestions.questions.map((question, index) => (
+              <QuestionButton
+                key={index}
+                question={question}
+                onClick={() => onSelect(question)}
+              />
+            ))}
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
