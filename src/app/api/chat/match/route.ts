@@ -1,8 +1,9 @@
 import { createClient } from '@/utils/supabase/server';
 import { NextResponse } from 'next/server';
 
-export async function POST() {
+export async function POST(request: Request) {
     const supabase = await createClient();
+    const { isBlitz } = await request.json() || {};
 
     try {
         const { data: { user }, error: UserError } = await supabase.auth.getUser();
@@ -10,13 +11,16 @@ export async function POST() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
+        // Use isBlitz to decide chat type
+        const chatType = isBlitz ? 'blitz' : 'random';
+
         // Check if user is already matched in a chat room
         const { data: existingRoom, error: roomError } = await supabase
             .from('chat_rooms')
             .select('*')
             .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
             .eq('status', 'active')
-            .eq('type', 'random')
+            .eq('type', chatType)
             .single();
 
         if (roomError && roomError.code !== 'PGRST116') { // Not found error code
@@ -80,7 +84,7 @@ export async function POST() {
 
             // Use the Postgres function to create the match
             const { data: matchResult, error: matchError } = await supabase
-                .rpc('create_match', {
+                .rpc(isBlitz ? 'create_blitz_match' : 'create_match', {
                     user1_id: user.id,
                     user2_id: matchQueue.user_id,
                 });
