@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
 import Logo from "@/images/logo.svg";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -161,18 +162,18 @@ export default function Sidebar({ user }: { user: Profile }) {
   return (
     <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
       <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
-        <Image
-          src={Logo}
-          alt="logo"
-          width={40}
-          height={40}
-          className="object-contain"
-          draggable="false"
-          onContextMenu={(e) => e.preventDefault()}
-        />
-        <h1 className="text-2xl font-bold text-accent">
-          Isko<span className="text-[#C6980F]">nek</span>
-        </h1>
+        <Link href="/" className="flex items-center gap-3">
+          <Image
+            src={Logo}
+            alt="logo"
+            width={40}
+            height={40}
+            className="object-contain pointer-events-none"
+          />
+          <h1 className="text-2xl font-bold text-accent">
+            Isko<span className="text-[#C6980F]">nek</span>
+          </h1>
+        </Link>
       </header>
 
       <nav className="p-4 flex flex-col gap-2">
