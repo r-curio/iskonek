@@ -17,14 +17,15 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Iskonek",
-  description: "Iskonek is an anonymous chat app for connecting with friends and strangers specifically for PUP students.",
+  description:
+    "Iskonek is an anonymous chat app for connecting with friends and strangers specifically for PUP students.",
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
-      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
-    ]
-  }
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +35,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
         <ToastProvider>
           {children}
           <Toaster />

@@ -15,7 +15,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   recipientProfilePic,
   initialTime,
   recipientDepartment,
-  onTimerEnd
+  onTimerEnd,
 }) => {
   const shouldShowTimer = initialTime !== undefined && initialTime > 0;
 
@@ -40,7 +40,7 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
       {shouldShowTimer && (
         <div className="w-48">
-          <Timer initialTime={initialTime} onTimeUp={onTimerEnd}/>
+          <Timer initialTime={initialTime} onTimeUp={onTimerEnd} />
         </div>
       )}
     </div>

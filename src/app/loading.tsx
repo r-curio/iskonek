@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react";
 
 export default function Loading() {
   return (
@@ -9,6 +9,5 @@ export default function Loading() {
         <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
       </div>
     </div>
-  )
+  );
 }
-

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
@@ -8,8 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingScreen from "./searching";
 
 export default function Page() {
-  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(true);
-  const { isSearching: isBlitzSearching, handleConnect: handleBlitzConnect, handleCancelSearch: handleBlitzCancel } = useMatchmaking(false, true);
+  const { isSearching, handleConnect, handleCancelSearch } =
+    useMatchmaking(true);
+  const {
+    isSearching: isBlitzSearching,
+    handleConnect: handleBlitzConnect,
+    handleCancelSearch: handleBlitzCancel,
+  } = useMatchmaking(false, true);
 
   return (
     <ScrollArea className="h-screen w-full">
@@ -57,8 +62,12 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}
-        {isBlitzSearching && <LoadingScreen handleCancelSearch={handleBlitzCancel} />}
+        {isSearching && (
+          <LoadingScreen handleCancelSearch={handleCancelSearch} />
+        )}
+        {isBlitzSearching && (
+          <LoadingScreen handleCancelSearch={handleBlitzCancel} />
+        )}
       </div>
     </ScrollArea>
   );

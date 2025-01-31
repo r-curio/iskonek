@@ -76,7 +76,7 @@ const useChatInput = (
           toast({
             title: "Message Not Sent",
             description: "Your message may contain inappropriate content",
-            variant: "destructive"
+            variant: "destructive",
           });
         }
         return false;
@@ -102,7 +102,7 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const [isConfirmEndOpen, setIsConfirmEndOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { message, setMessage, sendMessage, } = useChatInput(
+  const { message, setMessage, sendMessage } = useChatInput(
     roomId,
     onMessageSent
   );
@@ -144,15 +144,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
       <div className="flex gap-2">
         {isRandom && (
           <Button
-          className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
-          onClick={() => setIsConfirmEndOpen(true)}
-        >
-          <span className="flex items-center gap-x-2">
-            <BsSkipEndFill /> Skip
-          </span>
-        </Button>
+            className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
+            onClick={() => setIsConfirmEndOpen(true)}
+          >
+            <span className="flex items-center gap-x-2">
+              <BsSkipEndFill /> Skip
+            </span>
+          </Button>
         )}
-        
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
