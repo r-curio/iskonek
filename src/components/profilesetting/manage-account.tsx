@@ -5,9 +5,42 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { AlertTriangle } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
 
 export default function ManageAccount() {
+  const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [isConfirmed, setIsConfirmed] = useState(false)
+  const { toast } = useToast()
+
+  const handleDeleteAccount = async () => {
+    try {
+      const response = await fetch('/api/account', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password, confirmPassword })
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error)
+      }
+
+      toast({
+        title: 'Account Deleted',
+        description: 'Your account has been deleted successfully.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Failed to delete account',
+        description: error instanceof Error ? error.message : 'Please try again.',
+        variant: 'destructive'
+      })
+      console.error('Failed to delete account:', error)
+    }
+  }
 
   return (
     <div className="flex-1 p-8">
@@ -33,6 +66,7 @@ export default function ManageAccount() {
             <Input 
               type="password" 
               className="h-11 border-gray-200 focus:border-red-300 focus:ring-red-200"
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
             />
           </div>
@@ -42,6 +76,7 @@ export default function ManageAccount() {
             <Input 
               type="password" 
               className="h-11 border-gray-200 focus:border-red-300 focus:ring-red-200"
+              onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter your password"
             />
           </div>
@@ -66,6 +101,7 @@ export default function ManageAccount() {
         <Button 
           disabled={!isConfirmed}
           className="bg-red-600 text-white hover:bg-red-700 h-11 px-8 transition-colors"
+          onClick={handleDeleteAccount}
         >
           Delete Account
         </Button>
