@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 interface PasswordSettingsProps {
   onCancel: () => void;
 }
 
 export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -56,7 +58,13 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
         throw new Error(data.error || 'Failed to update password');
       }
 
-      // Success
+      toast({
+        title: "Password Updated",
+        description: "Your password has been changed successfully.",
+        className: "bg-green-600 text-white", 
+      });
+
+      // Close the dialog
       onCancel();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
