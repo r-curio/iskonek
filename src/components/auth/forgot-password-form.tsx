@@ -69,7 +69,7 @@ export default function ForgotPasswordForm(): JSX.Element {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full bg-accent">
                         Send Instructions
                     </Button>
                 </form>

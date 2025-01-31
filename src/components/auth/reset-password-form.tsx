@@ -97,7 +97,7 @@ export default function ResetPasswordForm(): JSX.Element {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full bg-accent">
                         Change Password
                     </Button>
                 </form>
