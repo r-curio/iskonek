@@ -45,7 +45,22 @@ export function useFriendUpdates(
           setContacts(data.acceptedFriends)
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'friendships'
+        },
+        async () => {
+          // Refresh contacts list after unfriend
+          const response = await fetch("/api/friend?status=accepted")
+          const data = await response.json()
+          setContacts(data.acceptedFriends)
+        }
+      )
       .subscribe()
+
 
     return () => {
       supabase.removeChannel(friendRequestsChannel)

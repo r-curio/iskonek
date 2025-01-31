@@ -131,36 +131,75 @@ export async function PUT(request: Request) {
     return NextResponse.json({ status: 'success' });
 }
 
-// DELETE decline friend request
+// DELETE decline friend request or unfriend
 export async function DELETE(request: Request) {
     
     const supabase = await createClient();
+    const type = request.headers.get('type');
     const { id } = await request.json();
-
-    console.log('Declining friend request:', id);
 
     const { data: { user }, error: UserError } = await supabase.auth.getUser();
     if (!user || UserError) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // if friend request exist and status is pending, delete the request
-    const { error: friendRequestError } = await supabase
-        .from('friendships')
-        .delete()
-        .eq('from_user_id', id)
-        .eq('to_user_id', user.id)
-        .eq('status', 'pending');
+    console.log('type:', type, 'id:', id);
 
-    if (friendRequestError) {
-        console.error('Friend request error:', friendRequestError);
-        return NextResponse.json({ 
-            error: 'Failed to decline friend request',
-            details: friendRequestError.message 
-        }, { status: 500 });
+    if (type === 'decline') {
+        // if friend request exist and status is pending, delete the request
+        const { error: friendRequestError } = await supabase
+            .from('friendships')
+            .delete()
+            .eq('from_user_id', id)
+            .eq('to_user_id', user.id)
+            .eq('status', 'pending');
+
+        if (friendRequestError) {
+            console.error('Friend request error:', friendRequestError);
+            return NextResponse.json({ 
+                error: 'Failed to decline friend request',
+                details: friendRequestError.message 
+            }, { status: 500 });
+        }
+
+        return NextResponse.json({ status: 'success' });
     }
 
-    return NextResponse.json({ status: 'success' });
+    if (type === 'unfriend') {
+        // if friendship exist and status is accepted, delete the friendship
+        const { error: unfriendError } = await supabase
+            .from('friendships')
+            .delete()
+            .or(`and(from_user_id.eq.${user.id},to_user_id.eq.${id}),and(from_user_id.eq.${id},to_user_id.eq.${user.id})`)
+            .eq('status', 'accepted');
+
+        if (unfriendError) {
+            console.error('Unfriend error:', unfriendError);
+            return NextResponse.json({ 
+                error: 'Failed to unfriend',
+                details: unfriendError.message 
+            }, { status: 500 });
+        }
+
+        // Delete chat room
+        const { error: deleteRoomError } = await supabase
+            .from('chat_rooms')
+            .delete()
+            .or(`and(user1_id.eq.${user.id},user2_id.eq.${id}),and(user1_id.eq.${id},user2_id.eq.${user.id})`)
+            .eq('type', 'friend');
+
+        if (deleteRoomError) {
+            console.error('Delete room error:', deleteRoomError);
+            return NextResponse.json({ 
+                error: 'Failed to delete chat room',
+                details: deleteRoomError.message 
+            }, { status: 500 });
+        }
+
+        // redirect to /chat
+
+        return NextResponse.json({ status: 'success' });
+    }
     
 }
 
