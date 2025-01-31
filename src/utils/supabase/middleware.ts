@@ -38,7 +38,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   // If user is authenticated and accessing root, redirect to /chat
-  if (user && request.nextUrl.pathname === '/') {
+  if (user && request.nextUrl.pathname === '/auth') {
     const url = request.nextUrl.clone()
     url.pathname = '/chat'
     return NextResponse.redirect(url)
@@ -47,11 +47,12 @@ export async function updateSession(request: NextRequest) {
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/auth')
+    !request.nextUrl.pathname.startsWith('/auth') &&
+    request.nextUrl.pathname !== '/'
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()
-    url.pathname = 'auth/login'
+    url.pathname = '/'
     return NextResponse.redirect(url)
   }
 

@@ -42,11 +42,12 @@ export function FriendRequestList({ friendRequests, onFriendRequestHandled }: Fr
         
         fetch('/api/friend', {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'type': 'decline'
+              },
             body: JSON.stringify({ id }),
         })
-
-        
     }
 
     return (
