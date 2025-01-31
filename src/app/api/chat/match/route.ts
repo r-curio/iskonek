@@ -66,7 +66,7 @@ export async function POST() {
                 .select('user_id')
                 .neq('user_id', user.id)
                 .eq('status', 'waiting')
-                .eq('chat_mode', 'random')
+                .eq('chat_mode', 'normal')
                 .order('joined_at', { ascending: true })
                 .limit(1)
                 .single();
