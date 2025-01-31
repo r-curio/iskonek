@@ -60,7 +60,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
                 roomId={id}
                 isRandom={isRandom === 'true'}
                 isBlitz={isBlitz === 'true'}
-                createdAt={created_at?.created_at}
+                createdAt={created_at?.created_at ?? undefined}
             />
         );
     } catch (err) {

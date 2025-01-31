@@ -36,8 +36,9 @@ interface ChatWindowProps {
 
 export default function ChatWindow({ recipientName, recipientProfilePic, recipientDepartment, messages: initialMessages, roomId, isRandom, isBlitz, createdAt }: ChatWindowProps) {
     const calculateRemainingTime = () => {
+        if (!createdAt) return 0;
         const createdTime = new Date(createdAt).getTime();
-        const endTime = createdTime + 60 *.1;
+        const endTime = createdTime + 60 * 5;
         const remainingTime = endTime - createdTime;
         return remainingTime;
       };
