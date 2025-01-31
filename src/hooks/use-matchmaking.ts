@@ -8,15 +8,25 @@ interface MatchState {
     handleCancelSearch: () => Promise<void>
 }
 
-export function useMatchmaking(isRandom: boolean): MatchState {
+export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
     const router = useRouter()
     const [isSearching, setIsSearching] = useState(false)
     const [matchInterval, setMatchInterval] = useState<NodeJS.Timeout | null>(null)
+
+    if (!isRandom && !isBlitz) {
+        return {
+            isSearching: false,
+            handleConnect: async () => {},
+            handleCancelSearch: async () => {}
+        }
+    }
 
     const checkMatch = useCallback(async () => {
         try {
             const response = await fetch('/api/chat/match', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isBlitz }),
             })
     
             const data = await response.json()
@@ -37,7 +47,7 @@ export function useMatchmaking(isRandom: boolean): MatchState {
             console.error('Match check error:', error)
             return false
         }
-    }, [matchInterval, router])
+    }, [matchInterval, router, isBlitz])
 
     const handleConnect = useCallback(async () => {
         setIsSearching(true)
@@ -76,14 +86,6 @@ export function useMatchmaking(isRandom: boolean): MatchState {
             }
         }
     }, [matchInterval])
-
-    if (!isRandom) {
-        return {
-            isSearching: false,
-            handleConnect: async () => {},
-            handleCancelSearch: async () => {}
-        }
-    }
 
     return {
         isSearching,
