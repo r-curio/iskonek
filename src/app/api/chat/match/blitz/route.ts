@@ -60,19 +60,41 @@ export async function POST() {
         }
 
         if (existingQueue) {
-            // Find a potential match
-            const { data: matchQueue, error: matchQueueError } = await supabase
+            //get a list of all friends
+            const { data: friends, error: friendsError } = await supabase
+                .from('friendships')
+                .select('from_user_id,to_user_id')
+                .eq('status', 'accepted')
+                .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`);
+
+            if (friendsError) {
+            throw new Error('Failed to fetch friends');
+            }
+
+            // Extract friend IDs
+            const friendIds = friends.map(friend => 
+                friend.from_user_id === user.id ? friend.to_user_id : friend.from_user_id
+            );
+
+            // Build base query
+            let matchQuery = supabase
                 .from('matching_queue')
                 .select('user_id')
                 .neq('user_id', user.id)
                 .eq('status', 'waiting')
                 .eq('chat_mode', 'blitz')
                 .order('joined_at', { ascending: true })
-                .limit(1)
-                .single();
+                .limit(1);
 
-            if (matchQueueError && matchQueueError.code !== 'PGRST116') {
-                throw matchQueueError;
+            // Add friend exclusion only if there are friends to exclude
+            if (friendIds.length > 0) {
+                matchQuery = matchQuery.not('user_id', 'in', friendIds);
+}
+                // Execute query
+                const { data: matchQueue, error: matchQueueError } = await matchQuery.maybeSingle();
+
+            if (matchQueueError) {
+                throw new Error('Failed to find match');
             }
 
             if (!matchQueue) {

@@ -13,7 +13,7 @@ export async function getFriendRequests(supabase: SupabaseClient, userId: string
         throw new Error('Failed to fetch friend requests');
     }
 
-    const friendRequestUserIds = friendRequests.map((request: string) => request.from_user_id);
+    const friendRequestUserIds = friendRequests.map((request: { from_user_id: string }) => request.from_user_id);
 
     const { data: friendProfiles, error: friendProfilesError } = await supabase
         .from('profiles')
