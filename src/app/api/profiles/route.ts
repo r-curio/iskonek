@@ -61,11 +61,13 @@ export async function PUT(request: Request) {
         if (body.bgColor) updateData.bgColor = body.bgColor;
         
         // get the current username of the user
-        const { data: { username } } = await supabase
+        const { data } = await supabase
             .from('profiles')
             .select('username')
             .eq('id', user.id)
             .single();
+
+        const username = data?.username;
 
         // Check if the user edit their username
         if (body.username && body.username !== username) {
