@@ -59,6 +59,17 @@ export async function PUT(request: Request) {
         if (body.department) updateData.department = body.department;
         if (body.avatar) updateData.avatar = body.avatar;
         if (body.bgColor) updateData.bgColor = body.bgColor;
+
+        // Check if username is unique
+        const { data: existingUserByUsername } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('username', body.username)
+            .single()
+
+        if (existingUserByUsername) {
+            return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+        }
         
         if (Object.keys(updateData).length > 0) {
             const { error } = await supabase
