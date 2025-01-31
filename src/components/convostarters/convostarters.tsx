@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Lightbulb, ChevronLeft, ChevronRight } from "lucide-react";
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ConvoStartersSuggestionForm } from "./convoSuggestionsForm";
 
 const QUESTION_SETS = [
   {
@@ -68,12 +69,15 @@ const QuestionButton = ({
   </div>
 );
 
+
+
 export function ConvoStarters({
   onSelect,
   onOpenChange,
   open,
 }: ConvoStartersProps) {
   const [currentSet, setCurrentSet] = useState(0);
+  const [showSuggestionForm, setShowSuggestionForm] = useState(false);
 
   const navigate = (direction: "next" | "prev") => {
     setCurrentSet((prev) => {
@@ -88,43 +92,63 @@ export function ConvoStarters({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] backdrop-blur-sm bg-white/95">
+      <DialogContent className="max-w-md max-h-[450px] min-h-[450px] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] backdrop-blur-sm bg-white/95">
         <DialogHeader>
           <DialogTitle className="text-center text-xl text-[#682A43]/60">
-            ConvoStarters
+            {showSuggestionForm ? "Submit a Suggestion" : "ConvoStarters"}
           </DialogTitle>
-          <div className="flex items-center justify-between mt-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("prev")}
-              className="h-8 w-8 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-gray-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-full"
-            >
-              <ChevronLeft className="h-4 w-4 transition-transform duration-200 ease-in-out group-hover:scale-110" />
-            </Button>
-            <p className="text-sm text-black font-bold">
-              {currentQuestions.title}
-            </p>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("next")}
-              className="h-8 w-8 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-gray-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-full"
-            >
-              <ChevronRight className="h-4 w-4 transition-transform duration-200 ease-in-out group-hover:scale-110" />
-            </Button>
-          </div>
+          {!showSuggestionForm && (
+            <div className="flex items-center justify-between mt-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("prev")}
+                className="h-8 w-8 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-gray-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-full"
+              >
+                <ChevronLeft className="h-4 w-4 transition-transform duration-200 ease-in-out group-hover:scale-110" />
+              </Button>
+              <p className="text-sm text-black font-bold">
+                {currentQuestions.title}
+              </p>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("next")}
+                className="h-8 w-8 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-gray-100 active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-300 rounded-full"
+              >
+                <ChevronRight className="h-4 w-4 transition-transform duration-200 ease-in-out group-hover:scale-110" />
+              </Button>
+            </div>
+          )}
         </DialogHeader>
-        <ScrollArea className="max-h-[310 px] h-[310px]">
-          <div className="flex flex-col gap-3 py-3 ">
-            {currentQuestions.questions.map((question, index) => (
-              <QuestionButton
-                key={index}
-                question={question}
-                onClick={() => onSelect(question)}
-              />
-            ))}
-          </div>
+        <ScrollArea className="max-h-[310px] h-[310px]">
+          {showSuggestionForm ? (
+            <ConvoStartersSuggestionForm onBack={() => setShowSuggestionForm(false)} />
+          ) : (
+            <>
+              <div className="flex flex-col gap-3 py-3">
+                {currentQuestions.questions.map((question, index) => (
+                  <QuestionButton
+                    key={index}
+                    question={question}
+                    onClick={() => {
+                      onSelect(question);
+                      onOpenChange(false);
+                    }}
+                  />
+                ))}
+              </div>
+              <div className="text-center text-sm text-[#682A43]/80 mt-4">
+                Got a suggestion in mind? Send it to us{" "}
+                <u 
+                  className="cursor-pointer hover:text-[#682A43]"
+                  onClick={() => setShowSuggestionForm(true)}
+                >
+                  here
+                </u>.
+              </div>
+            </>
+          )}
         </ScrollArea>
       </DialogContent>
     </Dialog>
