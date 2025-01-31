@@ -13,18 +13,15 @@ export async function POST(request: Request) {
 
     const { category, suggestion } = body;
 
+    const content = suggestion
+
     if (!category || !suggestion) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
     const { data, error } = await supabase
         .from('convo_starter_suggestions')
-        .insert([
-            { 
-                user_id: user.id,
-                category: category,
-                content: suggestion
-            }]);
+        .insert([{ category, content }]);
 
     if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
