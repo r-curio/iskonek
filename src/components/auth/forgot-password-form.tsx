@@ -65,7 +65,7 @@ export default function ForgotPasswordForm(): JSX.Element {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="johndoe@iskolarngbayan.pup.edu.ph"
+                    placeholder="juandelacruz@iskolarngbayan.pup.edu.ph"
                     {...field}
                   />
                 </FormControl>

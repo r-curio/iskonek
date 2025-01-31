@@ -86,7 +86,7 @@ export default function RegisterForm(): JSX.Element {
                 <FormControl>
                   <Input
                     type="email"
-                    placeholder="johndoe@iskolarngbayan.pup.edu.ph"
+                    placeholder="juandelacruz@iskolarngbayan.pup.edu.ph"
                     {...field}
                   />
                 </FormControl>
@@ -101,7 +101,7 @@ export default function RegisterForm(): JSX.Element {
               <FormItem>
                 <FormLabel>Username</FormLabel>
                 <FormControl>
-                  <Input placeholder="johndoe" {...field} />
+                  <Input placeholder="juandelacruz" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
