@@ -8,15 +8,47 @@ interface MatchState {
     handleCancelSearch: () => Promise<void>
 }
 
-export function useMatchmaking(isRandom: boolean): MatchState {
+export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
     const router = useRouter()
     const [isSearching, setIsSearching] = useState(false)
     const [matchInterval, setMatchInterval] = useState<NodeJS.Timeout | null>(null)
 
+    if (!isRandom && !isBlitz) {
+        return {
+            isSearching: false,
+            handleConnect: async () => {},
+            handleCancelSearch: async () => {}
+        }
+    }
+
     const checkMatch = useCallback(async () => {
         try {
+
+            if (isBlitz) {
+                const response = await fetch('/api/chat/match/blitz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+        
+                const data = await response.json()
+                console.log('Match check response:', data)
+        
+                if (data.status === 'matched' && data.matchedUser) {
+                    setIsSearching(false)
+                    if (matchInterval) {
+                        clearInterval(matchInterval)
+                        setMatchInterval(null)
+                    }
+                    router.push(`/chat/${data.room_id}?username=${data.matchedUser.username}&isRandom=true&isBlitz=true`)
+                    return true
+                }
+        
+                return false
+            }
+
             const response = await fetch('/api/chat/match', {
                 method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
             })
     
             const data = await response.json()
@@ -37,7 +69,7 @@ export function useMatchmaking(isRandom: boolean): MatchState {
             console.error('Match check error:', error)
             return false
         }
-    }, [matchInterval, router])
+    }, [matchInterval, router, isBlitz])
 
     const handleConnect = useCallback(async () => {
         setIsSearching(true)
@@ -76,14 +108,6 @@ export function useMatchmaking(isRandom: boolean): MatchState {
             }
         }
     }, [matchInterval])
-
-    if (!isRandom) {
-        return {
-            isSearching: false,
-            handleConnect: async () => {},
-            handleCancelSearch: async () => {}
-        }
-    }
 
     return {
         isSearching,

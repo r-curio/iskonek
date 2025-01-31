@@ -10,13 +10,14 @@ interface PageProps {
     searchParams: { 
         username?: string;
         isRandom?: string;
+        isBlitz?: string;
     };
 }
 
 export default async function ChatPage({ params, searchParams }: PageProps) {
     const supabase = await createClient();
     const { id } = params;
-    const { username, isRandom } = searchParams;
+    const { username, isRandom, isBlitz } = searchParams;
 
     if (!id) return <div>Invalid chat room ID</div>;
     if (!username) return <div>Invalid recipient username</div>;
@@ -44,6 +45,12 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
 
         const profile = avatar.toDataUri();
 
+        const { data: created_at } = await supabase
+            .from('chat_rooms')
+            .select('created_at')
+            .eq('id', id)
+            .single();
+
         return (
             <ChatWindow
                 recipientName={username}
@@ -52,6 +59,8 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
                 messages={messages || []}
                 roomId={id}
                 isRandom={isRandom === 'true'}
+                isBlitz={isBlitz === 'true'}
+                createdAt={created_at?.created_at}
             />
         );
     } catch (err) {
