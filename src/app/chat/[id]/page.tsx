@@ -45,6 +45,12 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
 
         const profile = avatar.toDataUri();
 
+        const { data: created_at } = await supabase
+            .from('chat_rooms')
+            .select('created_at')
+            .eq('id', id)
+            .single();
+
         return (
             <ChatWindow
                 recipientName={username}
@@ -54,6 +60,7 @@ export default async function ChatPage({ params, searchParams }: PageProps) {
                 roomId={id}
                 isRandom={isRandom === 'true'}
                 isBlitz={isBlitz === 'true'}
+                createdAt={created_at?.created_at}
             />
         );
     } catch (err) {
