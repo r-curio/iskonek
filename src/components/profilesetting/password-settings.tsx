@@ -58,10 +58,10 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
         throw new Error(data.error || 'Failed to update password');
       }
 
-      // Show success toast
       toast({
         title: "Password Updated",
         description: "Your password has been changed successfully.",
+        className: "bg-green-600 text-white", 
       });
 
       // Close the dialog
