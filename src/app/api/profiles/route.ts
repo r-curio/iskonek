@@ -59,17 +59,37 @@ export async function PUT(request: Request) {
         if (body.department) updateData.department = body.department;
         if (body.avatar) updateData.avatar = body.avatar;
         if (body.bgColor) updateData.bgColor = body.bgColor;
-
-        // Check if username is unique
-        const { data: existingUserByUsername } = await supabase
+        
+        // get the current username of the user
+        const { data } = await supabase
             .from('profiles')
-            .select('id')
-            .eq('username', body.username)
-            .single()
+            .select('username')
+            .eq('id', user.id)
+            .single();
 
-        if (existingUserByUsername) {
-            return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+        const username = data?.username;
+
+        // Check if the user edit their username
+        if (body.username && body.username !== username) {
+
+            // check if the user is more than 3 characters
+            if (body.username.length < 3) {
+                return NextResponse.json({ error: 'Username must be at least 3 characters' }, { status: 400 });
+            }
+
+            // Check if username is unique
+            const { data: existingUserByUsername } = await supabase
+                .from('profiles')
+                .select('id')
+                .eq('username', body.username)
+                .single()
+
+            if (existingUserByUsername) {
+                return NextResponse.json({ error: 'Username already taken' }, { status: 400 });
+            }
         }
+
+
         
         if (Object.keys(updateData).length > 0) {
             const { error } = await supabase
