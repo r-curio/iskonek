@@ -19,7 +19,7 @@ export async function POST() {
       .select("*")
       .or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`)
       .eq("status", "active")
-      .eq("type", "random")
+      .eq("type", "blitz")
       .single();
 
     if (roomError && roomError.code !== "PGRST116") {
@@ -90,7 +90,7 @@ export async function POST() {
         .select("user_id")
         .neq("user_id", user.id)
         .eq("status", "waiting")
-        .eq("chat_mode", "normal")
+        .eq("chat_mode", "blitz")
         .order("joined_at", { ascending: true })
         .limit(1);
 
@@ -112,7 +112,7 @@ export async function POST() {
 
       // Use the Postgres function to create the match
       const { data: matchResult, error: matchError } = await supabase.rpc(
-        "create_match",
+        "create_blitz_match",
         {
           user1_id: user.id,
           user2_id: matchQueue.user_id,
@@ -154,6 +154,7 @@ export async function POST() {
           {
             user_id: user.id,
             status: "waiting",
+            chat_mode: "blitz",
             joined_at: new Date().toISOString(),
           },
         ]);

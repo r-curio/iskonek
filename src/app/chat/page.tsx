@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import Image from "next/image";
 import Logo from "@/images/logo.svg";
@@ -8,7 +8,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingScreen from "./searching";
 
 export default function Page() {
-  const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(true);
+  const { isSearching, handleConnect, handleCancelSearch } =
+    useMatchmaking(true);
+  const {
+    isSearching: isBlitzSearching,
+    handleConnect: handleBlitzConnect,
+    handleCancelSearch: handleBlitzCancel,
+  } = useMatchmaking(false, true);
 
   return (
     <ScrollArea className="h-screen w-full">
@@ -45,8 +51,8 @@ export default function Page() {
             </div>
             <div className="flex flex-col items-center gap-3 transition-transform duration-200 hover:-translate-y-1">
               <Button
-                className="bg-[#682A43] hover:bg-[#571830] text-white px-8 py-6 rounded-xl text-xl font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled
+                className="bg-[#682A43] hover:bg-[#571830] text-white px-8 py-6 rounded-xl text-xl font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl"
+                onClick={handleBlitzConnect}
               >
                 Blitz Chat
               </Button>
@@ -56,7 +62,12 @@ export default function Page() {
             </div>
           </div>
         </div>
-        {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}
+        {isSearching && (
+          <LoadingScreen handleCancelSearch={handleCancelSearch} />
+        )}
+        {isBlitzSearching && (
+          <LoadingScreen handleCancelSearch={handleBlitzCancel} />
+        )}
       </div>
     </ScrollArea>
   );

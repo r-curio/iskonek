@@ -1,25 +1,30 @@
-import { useMatchmaking } from './use-matchmaking'
-import { useAppExit } from './use-app-exit'
-import { useRoomDeletion } from './use-room-delete'
+import { useMatchmaking } from "./use-matchmaking";
+import { useAppExit } from "./use-app-exit";
+import { useRoomDeletion } from "./use-room-delete";
+import { useEffect } from "react";
 
-export function useRandomChatHelpers(isRandom: boolean, roomId: string, setStatus: (status: string) => void) {
-    const matchmaking = isRandom ? useMatchmaking() : null
-    
-    // Only set up effects if this is a random chat
-    useEffect(() => {
-        if (!isRandom) return
+export function useRandomChatHelpers(
+  isRandom: boolean,
+  roomId: string,
+  setStatus: (status: string) => void
+) {
+  const matchmaking = isRandom ? useMatchmaking() : null;
 
-        const cleanup = useAppExit(roomId)
-        useRoomDeletion({ roomId, setStatus })
+  // Only set up effects if this is a random chat
+  useEffect(() => {
+    if (!isRandom) return;
 
-        return () => {
-            cleanup?.()
-        }
-    }, [isRandom, roomId, setStatus])
+    const cleanup = useAppExit(roomId);
+    useRoomDeletion({ roomId, setStatus });
 
-    return {
-        isSearching: matchmaking?.isSearching || false,
-        handleConnect: matchmaking?.handleConnect || (() => {}),
-        handleCancelSearch: matchmaking?.handleCancelSearch || (() => {})
-    }
+    return () => {
+      cleanup?.();
+    };
+  }, [isRandom, roomId, setStatus]);
+
+  return {
+    isSearching: matchmaking?.isSearching || false,
+    handleConnect: matchmaking?.handleConnect || (() => {}),
+    handleCancelSearch: matchmaking?.handleCancelSearch || (() => {}),
+  };
 }

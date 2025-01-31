@@ -1,57 +1,68 @@
-import { createClient as createAdminClient } from '@supabase/supabase-js'
-import { NextResponse } from 'next/server';
-import { createClient } from '@/utils/supabase/server';
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 
 export async function POST(request: Request) {
-
-    const supabaseAdmin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false
-        }
-      })
-    
-    const supabase = await createClient();
-
-    const { data: { user }, error: UserError } = await supabase.auth.getUser();
-    if (!user || UserError) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const supabaseAdmin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
     }
+  );
 
-    const body = await request.json();
-    const { password, confirmPassword } = body;
+  const supabase = await createClient();
 
-    if (!password || !confirmPassword) {
-        return NextResponse.json({ error: 'Missing password fields' }, { status: 400 });
-    }
+  const {
+    data: { user },
+    error: UserError,
+  } = await supabase.auth.getUser();
+  if (!user || UserError) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-    // Verify current password
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: user.email!,
-        password: password,
-    });
+  const body = await request.json();
+  const { password, confirmPassword } = body;
 
-    if (signInError) {
-        return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
-    }
-
-    // verify if passwords match
-    if (password !== confirmPassword) {
-        return NextResponse.json({ error: 'Passwords do not match' }, { status: 400 });
-    }
-
-    // Delete user
-    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
-        user.id
+  if (!password || !confirmPassword) {
+    return NextResponse.json(
+      { error: "Missing password fields" },
+      { status: 400 }
     );
+  }
 
-    if (deleteError) {
-        return NextResponse.json({ error: deleteError.message }, { status: 400 });
-    }
+  // Verify current password
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: password,
+  });
 
-    return NextResponse.json({ success: true });
+  if (signInError) {
+    return NextResponse.json(
+      { error: "Current password is incorrect" },
+      { status: 400 }
+    );
+  }
 
+  // verify if passwords match
+  if (password !== confirmPassword) {
+    return NextResponse.json(
+      { error: "Passwords do not match" },
+      { status: 400 }
+    );
+  }
+
+  // Delete user
+  const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+    user.id
+  );
+
+  if (deleteError) {
+    return NextResponse.json({ error: deleteError.message }, { status: 400 });
+  }
+
+  return NextResponse.json({ success: true });
 }
-
-
-

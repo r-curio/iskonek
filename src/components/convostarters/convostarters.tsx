@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Lightbulb, ChevronLeft, ChevronRight } from "lucide-react";
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { ConvoStartersSuggestionForm } from "./convoSuggestionsForm";
 
 const QUESTION_SETS = [
@@ -69,8 +69,6 @@ const QuestionButton = ({
   </div>
 );
 
-
-
 export function ConvoStarters({
   onSelect,
   onOpenChange,
@@ -123,7 +121,9 @@ export function ConvoStarters({
         </DialogHeader>
         <ScrollArea className="max-h-[310px] h-[310px]">
           {showSuggestionForm ? (
-            <ConvoStartersSuggestionForm onBack={() => setShowSuggestionForm(false)} />
+            <ConvoStartersSuggestionForm
+              onBack={() => setShowSuggestionForm(false)}
+            />
           ) : (
             <>
               <div className="flex flex-col gap-3 py-3">
@@ -140,12 +140,13 @@ export function ConvoStarters({
               </div>
               <div className="text-center text-sm text-[#682A43]/80 mt-4">
                 Got a suggestion in mind? Send it to us{" "}
-                <u 
+                <u
                   className="cursor-pointer hover:text-[#682A43]"
                   onClick={() => setShowSuggestionForm(true)}
                 >
                   here
-                </u>.
+                </u>
+                .
               </div>
             </>
           )}

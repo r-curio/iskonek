@@ -1,61 +1,70 @@
-import ChatWindow from '@/components/chat/chat-window';
-import { createClient } from '@/utils/supabase/server';
-import { createAvatar } from '@dicebear/core';
-import { funEmoji } from '@dicebear/collection';
+import ChatWindow from "@/components/chat/chat-window";
+import { createClient } from "@/utils/supabase/server";
+import { createAvatar } from "@dicebear/core";
+import { funEmoji } from "@dicebear/collection";
 
-export const dynamic = 'force-dynamic'; // Ensure dynamic rendering
+export const dynamic = "force-dynamic"; // Ensure dynamic rendering
 
 interface PageProps {
-    params: { id?: string };
-    searchParams: { 
-        username?: string;
-        isRandom?: string;
-    };
+  params: { id?: string };
+  searchParams: {
+    username?: string;
+    isRandom?: string;
+    isBlitz?: string;
+  };
 }
 
 export default async function ChatPage({ params, searchParams }: PageProps) {
-    const supabase = await createClient();
-    const { id } = params;
-    const { username, isRandom } = searchParams;
+  const supabase = await createClient();
+  const { id } = params;
+  const { username, isRandom, isBlitz } = searchParams;
 
-    if (!id) return <div>Invalid chat room ID</div>;
-    if (!username) return <div>Invalid recipient username</div>;
+  if (!id) return <div>Invalid chat room ID</div>;
+  if (!username) return <div>Invalid recipient username</div>;
 
-    try {
-        const { data: messages, error } = await supabase
-            .from('messages')
-            .select('*')
-            .eq('room_id', id)
-            .order('created_at', { ascending: true });
+  try {
+    const { data: messages, error } = await supabase
+      .from("messages")
+      .select("*")
+      .eq("room_id", id)
+      .order("created_at", { ascending: true });
 
-        if (error) throw error;
+    if (error) throw error;
 
-        const { data: user, error: userError } = await supabase
-            .from('profiles')
-            .select('avatar, department')
-            .ilike('username', username) // Case-insensitive search
-            .single();
+    const { data: user, error: userError } = await supabase
+      .from("profiles")
+      .select("avatar, department")
+      .ilike("username", username) // Case-insensitive search
+      .single();
 
-        if (userError) throw userError;
+    if (userError) throw userError;
 
-        const avatar = createAvatar(funEmoji, {
-            seed: user.avatar || username || 'Adrian', // Fallback seed
-        });
+    const avatar = createAvatar(funEmoji, {
+      seed: user.avatar || username || "Adrian", // Fallback seed
+    });
 
-        const profile = avatar.toDataUri();
+    const profile = avatar.toDataUri();
 
-        return (
-            <ChatWindow
-                recipientName={username}
-                recipientProfilePic={profile}
-                recipientDepartment={user.department ?? undefined}
-                messages={messages || []}
-                roomId={id}
-                isRandom={isRandom === 'true'}
-            />
-        );
-    } catch (err) {
-        console.error('Error:', err);
-        return <div>An error occurred. Please try again.</div>;
-    }
+    const { data: created_at } = await supabase
+      .from("chat_rooms")
+      .select("created_at")
+      .eq("id", id)
+      .single();
+
+    return (
+      <ChatWindow
+        recipientName={username}
+        recipientProfilePic={profile}
+        recipientDepartment={user.department ?? undefined}
+        messages={messages || []}
+        roomId={id}
+        isRandom={isRandom === "true"}
+        isBlitz={isBlitz === "true"}
+        createdAt={created_at?.created_at ?? undefined}
+      />
+    );
+  } catch (err) {
+    console.error("Error:", err);
+    return <div>An error occurred. Please try again.</div>;
+  }
 }

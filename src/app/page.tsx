@@ -1,19 +1,19 @@
-
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Shield, Users, MessageSquare } from "lucide-react"
-import { createClient } from "@/utils/supabase/server"
-import bgPattern from "@/images/bg.svg"
-import Logo from "@/images/logo.svg"
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Shield, Users, MessageSquare } from "lucide-react";
+import { createClient } from "@/utils/supabase/server";
+import bgPattern from "@/images/bg.svg";
+import Logo from "@/images/logo.svg";
 
 export default async function Home() {
+  const supabase = await createClient();
 
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   return (
     <ScrollArea className="h-screen w-full">
@@ -33,7 +33,14 @@ export default async function Home() {
 
           <div className="relative container mx-auto px-4 py-20 text-center z-10">
             <div className="mb-8 transform hover:scale-105 transition-transform duration-300">
-              <Image src={Logo.src} alt="Iskonek Logo" width={96} height={96} className="mx-auto pointer-events-none" priority />
+              <Image
+                src={Logo.src}
+                alt="Iskonek Logo"
+                width={96}
+                height={96}
+                className="mx-auto pointer-events-none"
+                priority
+              />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-[#702632] mb-6">
               Connect Anonymously
@@ -41,30 +48,35 @@ export default async function Home() {
               with Fellow PUP Students
             </h1>
             <p className="text-lg text-[#666] max-w-2xl mx-auto mb-12">
-              Join Iskonek and chat without revealing your identity. A safe space for PUP students to connect, share,
-              and support each other.
+              Join Iskonek and chat without revealing your identity. A safe
+              space for PUP students to connect, share, and support each other.
             </p>
             <div className="flex gap-6 justify-center">
-              <Link href="/auth/login" className="transform transition-all duration-300 hover:scale-105">
-                <Button 
-                  size="lg" 
+              <Link
+                href="/auth/login"
+                className="transform transition-all duration-300 hover:scale-105"
+              >
+                <Button
+                  size="lg"
                   className="bg-[#702632] hover:bg-[#5c1f28] text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out relative after:absolute after:inset-0 after:z-[-1] after:bg-[#702632] after:opacity-30 after:blur-lg after:transition-all after:duration-300 hover:after:opacity-60"
                 >
-                  { user ? 'Start Chatting' : 'Log In' }
+                  {user ? "Start Chatting" : "Log In"}
                 </Button>
               </Link>
-                { user ? null : (
-                    <Link href="/auth/register" className="transform transition-all duration-300 hover:scale-105">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-0.5"
-                      >
-                        Sign Up
-                      </Button>
-                    </Link>
-                  )
-                }
+              {user ? null : (
+                <Link
+                  href="/auth/register"
+                  className="transform transition-all duration-300 hover:scale-105"
+                >
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-[#702632] text-[#702632] hover:bg-[#702632] hover:text-white px-12 py-6 text-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out hover:-translate-y-0.5"
+                  >
+                    Sign Up
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </section>
@@ -79,21 +91,29 @@ export default async function Home() {
             <div className="grid md:grid-cols-3 gap-12 max-w-6xl mx-auto">
               <Card className="p-8 bg-gray-50 border-none hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-white">
                 <Shield className="w-16 h-16 text-[#702632] mb-6 mx-auto" />
-                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">Verified PUP Students Only</h3>
+                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">
+                  Verified PUP Students Only
+                </h3>
                 <p className="text-[#666] text-base text-center">
-                  Exclusive platform for PUP Students, verified through official PUP Webmail.
+                  Exclusive platform for PUP Students, verified through official
+                  PUP Webmail.
                 </p>
               </Card>
               <Card className="p-8 bg-gray-50 border-none hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-white">
                 <Users className="w-16 h-16 text-[#702632] mb-6 mx-auto" />
-                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">Stay Anonymous</h3>
+                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">
+                  Stay Anonymous
+                </h3>
                 <p className="text-[#666] text-base text-center">
-                  Chat freely without revealing your identity while maintaining a safe environment.
+                  Chat freely without revealing your identity while maintaining
+                  a safe environment.
                 </p>
               </Card>
               <Card className="p-8 bg-gray-50 border-none hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 hover:bg-white">
                 <MessageSquare className="w-16 h-16 text-[#702632] mb-6 mx-auto" />
-                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">Meaningful Connections</h3>
+                <h3 className="text-2xl font-semibold text-[#702632] mb-4 text-center">
+                  Meaningful Connections
+                </h3>
                 <p className="text-[#666] text-base text-center">
                   Connect with peers who share your interests and experiences.
                 </p>
@@ -108,5 +128,5 @@ export default async function Home() {
         </footer>
       </main>
     </ScrollArea>
-  )
+  );
 }

@@ -1,62 +1,72 @@
-'use client'
+"use client";
 
-import { Dialog, DialogContent, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
-import { useEffect, useState } from "react"
-import { createAvatar } from '@dicebear/core'
-import { funEmoji } from '@dicebear/collection'
-import { avatarsList } from "@/utils/avatars"
-import { Check } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
+import { createAvatar } from "@dicebear/core";
+import { funEmoji } from "@dicebear/collection";
+import { avatarsList } from "@/utils/avatars";
+import { Check } from "lucide-react";
 
 interface AvatarSelectViewProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   onClose?: () => void;
 }
 
-export default function AvatarSelectView({ open, onOpenChange, onClose }: AvatarSelectViewProps) {
-  const [selectedAvatarName, setSelectedAvatarName] = useState<string | null>(null)
+export default function AvatarSelectView({
+  open,
+  onOpenChange,
+  onClose,
+}: AvatarSelectViewProps) {
+  const [selectedAvatarName, setSelectedAvatarName] = useState<string | null>(
+    null
+  );
 
   const handleAvatarSelect = (avatarName: string) => {
-    setSelectedAvatarName(avatarName)
-    console.log('Selected avatar:', avatarName)
-  }
+    setSelectedAvatarName(avatarName);
+    console.log("Selected avatar:", avatarName);
+  };
 
   const handleConfirm = async () => {
     if (selectedAvatarName) {
-      onOpenChange(false)
+      onOpenChange(false);
     }
 
     // Send the selected avatar to the server
     try {
-      const response = await fetch('/api/profiles', {
-        method: 'PUT',
+      const response = await fetch("/api/profiles", {
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          avatar: selectedAvatarName
-        })
-      })
-      const data = await response.json()
-      console.log('Avatar update response:', data)
+          avatar: selectedAvatarName,
+        }),
+      });
+      const data = await response.json();
+      console.log("Avatar update response:", data);
     } catch (error) {
-      console.error('Error updating avatar:', error)
+      console.error("Error updating avatar:", error);
     }
-
-  }
+  };
 
   const handleClose = () => {
     onOpenChange(false);
-    onClose?.();  // Call onClose if provided
+    onClose?.(); // Call onClose if provided
   };
 
   useEffect(() => {
     if (!open) {
-      setSelectedAvatarName(null)
+      setSelectedAvatarName(null);
     }
-  }, [open])
+  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -66,9 +76,9 @@ export default function AvatarSelectView({ open, onOpenChange, onClose }: Avatar
         </DialogTitle>
         <div className="grid grid-cols-4 gap-6 py-6 px-2">
           {avatarsList.map((avatarName, index) => {
-            const avatarImage = createAvatar(funEmoji, { seed: avatarName })
-            const dataUri = avatarImage.toDataUri()
-            
+            const avatarImage = createAvatar(funEmoji, { seed: avatarName });
+            const dataUri = avatarImage.toDataUri();
+
             return (
               <div
                 key={avatarName}
@@ -77,12 +87,15 @@ export default function AvatarSelectView({ open, onOpenChange, onClose }: Avatar
                 <Avatar
                   className={`h-20 w-20 transition-all duration-200 cursor-pointer hover:scale-105 ${
                     selectedAvatarName === avatarName
-                      ? 'ring-4 ring-blue-500 ring-offset-2'
-                      : 'hover:ring-2 hover:ring-blue-300 hover:ring-offset-1'
+                      ? "ring-4 ring-blue-500 ring-offset-2"
+                      : "hover:ring-2 hover:ring-blue-300 hover:ring-offset-1"
                   }`}
                   onClick={() => handleAvatarSelect(avatarName)}
                 >
-                  <AvatarImage src={dataUri} alt={`Avatar option ${avatarName}`} />
+                  <AvatarImage
+                    src={dataUri}
+                    alt={`Avatar option ${avatarName}`}
+                  />
                   <AvatarFallback>{index + 1}</AvatarFallback>
                 </Avatar>
                 {selectedAvatarName === avatarName && (
@@ -91,15 +104,11 @@ export default function AvatarSelectView({ open, onOpenChange, onClose }: Avatar
                   </div>
                 )}
               </div>
-            )
+            );
           })}
         </div>
         <DialogFooter className="sm:justify-center mt-6">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            className="mr-2"
-          >
+          <Button variant="secondary" onClick={handleClose} className="mr-2">
             Cancel
           </Button>
           <Button
@@ -112,5 +121,5 @@ export default function AvatarSelectView({ open, onOpenChange, onClose }: Avatar
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

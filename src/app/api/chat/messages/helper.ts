@@ -1,16 +1,16 @@
 import OpenAI from "openai";
-import { translate } from '@vitalets/google-translate-api';
-import { HttpsProxyAgent } from 'https-proxy-agent';
+import { translate } from "@vitalets/google-translate-api";
+import { HttpsProxyAgent } from "https-proxy-agent";
 
 const openai = new OpenAI({
-  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
 // Define proxy configurations
 const proxyConfigs = [
-  'http://180.210.89.215:3128',
-  'http://89.19.215.223:80',
-  'http://168.205.255.238:80'
+  "http://180.210.89.215:3128",
+  "http://89.19.215.223:80",
+  "http://168.205.255.238:80",
 ];
 
 const getProxyAgent = (proxyUrl: string) => {
@@ -29,14 +29,14 @@ export async function checkModeration(text: string): Promise<{
       try {
         const agent = getProxyAgent(proxyUrl);
         const { text: translated } = await translate(text, {
-          from: 'fil',
-          to: 'en',
-          fetchOptions: { agent }
+          from: "fil",
+          to: "en",
+          fetchOptions: { agent },
         });
         translatedText = translated;
         break;
       } catch (e: unknown) {
-        if (e.name === 'TooManyRequestsError') {
+        if (e.name === "TooManyRequestsError") {
           continue; // Try next proxy
         }
         throw e; // Throw other errors
@@ -55,7 +55,10 @@ export async function checkModeration(text: string): Promise<{
 
     return {
       flagged,
-      categories: Object.fromEntries(Object.entries(categories)) as Record<string, boolean>
+      categories: Object.fromEntries(Object.entries(categories)) as Record<
+        string,
+        boolean
+      >,
     };
   } catch (error) {
     console.error("Error checking moderation:", error);
