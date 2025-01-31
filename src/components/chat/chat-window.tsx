@@ -42,7 +42,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
     const router = useRouter()
 
     useAppExit(roomId, isRandom)
-    useRoomDeletion({ roomId, setStatus, isRandom })
+    useRoomDeletion({ roomId, setStatus, isRandom, isBlitz })
 
     // Initialize messages with initialMessages
     useEffect(() => {
@@ -81,7 +81,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
                 body: JSON.stringify({ roomId }),
             });
             if (!response.ok) throw new Error("Failed to end conversation");
-            setStatus('ended');
+            setStatus('ended'); // This will trigger the ChatEndedOptions to appear
         } catch (error) {
             console.error("End conversation error:", error);
         }
@@ -89,7 +89,7 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
 
     return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} recipientDepartment={recipientDepartment} initialTime={isBlitz ? 300 : undefined} onTimerEnd={isBlitz ? handleTimerEnd : undefined} />
+            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} recipientDepartment={recipientDepartment} initialTime={isBlitz ? 30 : undefined} onTimerEnd={isBlitz ? handleTimerEnd : undefined} />
             <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble

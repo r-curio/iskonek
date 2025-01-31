@@ -23,10 +23,32 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
 
     const checkMatch = useCallback(async () => {
         try {
+
+            if (isBlitz) {
+                const response = await fetch('/api/chat/match/blitz', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                })
+        
+                const data = await response.json()
+                console.log('Match check response:', data)
+        
+                if (data.status === 'matched' && data.matchedUser) {
+                    setIsSearching(false)
+                    if (matchInterval) {
+                        clearInterval(matchInterval)
+                        setMatchInterval(null)
+                    }
+                    router.push(`/chat/${data.room_id}?username=${data.matchedUser.username}&isRandom=true&isBlitz=true`)
+                    return true
+                }
+        
+                return false
+            }
+
             const response = await fetch('/api/chat/match', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ isBlitz }),
             })
     
             const data = await response.json()
