@@ -35,7 +35,7 @@ export async function checkModeration(text: string): Promise<{
         });
         translatedText = translated;
         break;
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (e.name === 'TooManyRequestsError') {
           continue; // Try next proxy
         }
