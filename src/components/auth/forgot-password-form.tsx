@@ -31,23 +31,19 @@ export default function ForgotPasswordForm(): JSX.Element {
     async function onSubmit(formData: FormData) {
         const response = await forgotPassword(formData)
 
-        if (response?.error) {
-            toast({
-                title: "Error",
-                description: response.error.toString(),
-                variant: "destructive",
-            })
-            return
-        }
-
+    if (response?.error) {
         toast({
-            title: "Success",
-            description: "Password reset instructions sent to your email",
+            title: "Error",
+            description: response.error.toString(),
+            variant: "destructive",
         })
-        
-        setTimeout(() => {
-            router.push('/auth/reset-password')
-        }, 3000)
+        return
+    }
+
+    toast({
+        title: "Success",
+        description: "Password reset instructions sent to your email",
+    })
     }
 
     return (

@@ -1,4 +1,5 @@
 'use client'
+import { useEffect, useState } from 'react';
 import CardWrapper from "./card-wrapper"
 import { Button } from "@/components/ui/button"
 import {
@@ -14,12 +15,13 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from 'react-hook-form'
 import { resetPasswordSchema } from "@/schema"
 import { useToast } from "@/hooks/use-toast"
-import { resetPassword } from "@/app/auth/reset-password/action"
 import { useRouter } from "next/navigation"
+import { createClient } from '@/utils/supabase/client'
 
 export default function ResetPasswordForm(): JSX.Element {
     const router = useRouter()
     const { toast } = useToast()
+    const supabase = createClient()
     const form = useForm({
         resolver: zodResolver(resetPasswordSchema),
         defaultValues: {
@@ -28,26 +30,35 @@ export default function ResetPasswordForm(): JSX.Element {
         },
     })
 
-    async function onSubmit(formData: FormData) {
-        const response = await resetPassword(formData);
-    
-        if (response?.error) {
+    async function onSubmit(data: { newPassword: string, confirmPassword: string }) {
+        if (data.newPassword !== data.confirmPassword) {
             toast({
                 title: "Error",
-                description: response.error.toString(),
+                description: "Passwords do not match",
                 variant: "destructive",
             });
             return;
         }
-    
+
+        const { error } = await supabase.auth.updateUser({
+            password: data.newPassword,
+        });
+
+        if (error) {
+            toast({
+                title: "Error",
+                description: error.message,
+                variant: "destructive",
+            });
+            return;
+        }
+
         toast({
             title: "Success",
-            description: "Password reset successfully. Please go back to the Login Page.",
+            description: "Password reset successfully. Redirecting to login...",
         });
-    
-        setTimeout(() => {
-            router.push('/auth/login');
-        }, 3000);
+
+        router.push('/auth/login');
     }
 
     return (
@@ -59,7 +70,7 @@ export default function ResetPasswordForm(): JSX.Element {
             backButtonPath="/auth/login"
         >
             <Form {...form}>
-                <form action={onSubmit} className="space-y-8">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
                         name="newPassword"
