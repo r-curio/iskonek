@@ -38,11 +38,19 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
     const { isSearching, handleConnect, handleCancelSearch } = useMatchmaking(isRandom)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [status, setStatus] = useState('active')
+    const [isTimerActive, setIsTimerActive] = useState(true)
     const { toast } = useToast()
     const router = useRouter()
 
     useAppExit(roomId, isRandom)
     useRoomDeletion({ roomId, setStatus, isRandom, isBlitz })
+
+
+    useEffect(() => {
+        if (status === 'ended') {
+            setIsTimerActive(false)
+        }
+    }, [status])
 
     // Initialize messages with initialMessages
     useEffect(() => {
@@ -75,6 +83,9 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
 
     const handleTimerEnd = async () => {
         try {
+
+            if (status === 'ended') return
+            
             const response = await fetch("/api/chat/end_convo", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -89,7 +100,13 @@ export default function ChatWindow({ recipientName, recipientProfilePic, recipie
 
     return (
         <div className="flex flex-col h-screen w-full">
-            <ChatHeader recipientName={recipientName} recipientProfilePic={recipientProfilePic} recipientDepartment={recipientDepartment} initialTime={isBlitz ? 30 : undefined} onTimerEnd={isBlitz ? handleTimerEnd : undefined} />
+            <ChatHeader 
+                recipientName={recipientName} 
+                recipientProfilePic={recipientProfilePic} 
+                recipientDepartment={recipientDepartment} 
+                initialTime={isBlitz && isTimerActive ? 10 : undefined}    
+                onTimerEnd={isBlitz ? handleTimerEnd : undefined} 
+            />
             <ScrollArea className="flex-1 p-4">
                 {messages.map((message, index) => (
                     <MessageBubble
