@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Iskonek
+
+Iskonek is an anonymous chat application specifically designed for PUP (Polytechnic University of the Philippines) students to connect with fellow students in a safe and secure environment.
+
+## Features
+
+- **Anonymous Chat**: Connect and chat with other PUP students without revealing your identity
+- **Blitz Chat**: Quick chat sessions with time restrictions for spontaneous conversations
+- **Friend System**: Add friends and manage connections while maintaining anonymity
+- **Profile Customization**: Customize your avatar and profile settings
+- **Real-time Messaging**: Instant message delivery with typing indicators
+- **Conversation Starters**: Built-in conversation prompts to help break the ice
+- **PUP Email Verification**: Exclusive access for verified PUP students
+
+## Tech Stack
+
+- Frontend: Next.js 15.0, React 19, TypeScript
+- Styling: Tailwind CSS, Radix UI Components
+- Backend: Supabase (Authentication, Database, Real-time subscriptions)
+- AI Integration: OpenAI for content moderation
+- Avatars: DiceBear for generating unique user avatars
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Install dependencies:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+    ```bash
+    npm install
+    # or
+    yarn install
+    # or
+    pnpm install
+    # or
+    bun install
+    ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables: Create a `.env.local` file with the following:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+    ```text
+    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+    NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+    ```
 
-## Learn More
+4. Run the development server:
 
-To learn more about Next.js, take a look at the following resources:
+    ```bash
+    npm run dev
+    # or
+    yarn dev
+    # or
+    pnpm dev
+    # or
+    bun dev
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Open [http://localhost:3000](http://localhost:3000) with your browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Development
 
-## Deploy on Vercel
+The project structure follows Next.js 13+ App Router conventions:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `app`: Page routes and API endpoints
+- `components`: Reusable React components
+- `hooks`: Custom React hooks
+- `utils`: Utility functions and helpers
+- `lib`: Shared libraries and configurations
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Authentication
+
+The application uses Supabase Authentication with:
+
+- PUP email verification
+- Password reset functionality
+- Session management
+- Protected routes
+
+## Features in Detail
+
+### Chat System
+
+- Random matching with other online users
+- Timed chat sessions (Blitz mode)
+- Friend-to-friend direct messaging
+- Real-time message delivery
+- Content moderation using OpenAI
+
+### Profile Management
+
+- Customizable avatars
+- Department selection
+- Username customization
+- Profile color themes
+- Account security settings
