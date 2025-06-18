@@ -24,19 +24,19 @@ const QUESTION_SETS = [
   {
     title: "Personal Growth",
     questions: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "How do you handle pressure?",
+      "How do you improve your study habits?",
+      "If you'll be given a chance to change one thing in your life, what would it be?",
+      "Are you satisfied with your current academic performance?",
     ],
   },
   {
     title: "Technology",
     questions: [
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "Do you think AI will replace human jobs in the future?",
+      "Does technology make us smarter or lazier?",
+      "Do you think social media is beneficial or harmful to society?",
+      "Do you think AI detection tools are effective in preventing cheating?",
     ],
   },
 ] as const;
