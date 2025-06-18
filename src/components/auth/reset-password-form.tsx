@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CardWrapper from "./card-wrapper";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,11 +15,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { resetPasswordSchema } from "@/schema";
 import { useToast } from "@/hooks/use-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 
 export default function ResetPasswordForm(): JSX.Element {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const supabase = createClient();
   const form = useForm({
@@ -29,6 +30,19 @@ export default function ResetPasswordForm(): JSX.Element {
       confirmPassword: "",
     },
   });
+
+  useEffect(() => {
+    // Check if user came from recovery email
+    const type = searchParams.get("type");
+    if (type !== "recovery") {
+      toast({
+        title: "Error",
+        description: "Invalid password reset link",
+        variant: "destructive",
+      });
+      router.push("/auth/login");
+    }
+  }, [searchParams, router, toast]);
 
   async function onSubmit(data: {
     newPassword: string;
