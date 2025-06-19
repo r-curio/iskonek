@@ -46,7 +46,7 @@ export default function ChatWindow({
   const calculateRemainingTime = () => {
     if (!createdAt) return 0;
     const createdTime = new Date(createdAt).getTime();
-    const endTime = createdTime + 60 * 5;
+    const endTime = createdTime + 10 * 60 * 1;
     const remainingTime = endTime - createdTime;
     return remainingTime;
   };

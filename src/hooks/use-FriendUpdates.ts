@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@/types";
+import type { Tables } from "@/types/supabase";
+type User = Tables<"profiles">;
 
 export function useFriendUpdates(
   setFriendRequests: (users: User[]) => void,

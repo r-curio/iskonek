@@ -1,30 +1,22 @@
 import { useMatchmaking } from "./use-matchmaking";
 import { useAppExit } from "./use-app-exit";
 import { useRoomDeletion } from "./use-room-delete";
-import { useEffect } from "react";
 
 export function useRandomChatHelpers(
   isRandom: boolean,
   roomId: string,
   setStatus: (status: string) => void
 ) {
-  const matchmaking = isRandom ? useMatchmaking() : null;
+  // Always call useMatchmaking with required parameters
+  const matchmaking = useMatchmaking(isRandom, false);
 
-  // Only set up effects if this is a random chat
-  useEffect(() => {
-    if (!isRandom) return;
-
-    const cleanup = useAppExit(roomId);
-    useRoomDeletion({ roomId, setStatus });
-
-    return () => {
-      cleanup?.();
-    };
-  }, [isRandom, roomId, setStatus]);
+  // Always call useAppExit and useRoomDeletion hooks
+  useAppExit(roomId, isRandom);
+  useRoomDeletion({ roomId, setStatus, isRandom });
 
   return {
-    isSearching: matchmaking?.isSearching || false,
-    handleConnect: matchmaking?.handleConnect || (() => {}),
-    handleCancelSearch: matchmaking?.handleCancelSearch || (() => {}),
+    isSearching: matchmaking.isSearching,
+    handleConnect: matchmaking.handleConnect,
+    handleCancelSearch: matchmaking.handleCancelSearch,
   };
 }

@@ -2,6 +2,14 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { createAvatar } from "@dicebear/core";
 import { funEmoji } from "@dicebear/collection";
 
+interface ProfileWithAvatar {
+  id: string;
+  username: string;
+  avatar: string;
+  department: string | null;
+  avatarUrl?: string;
+}
+
 export async function getFriendRequests(
   supabase: SupabaseClient,
   userId: string,
@@ -30,15 +38,18 @@ export async function getFriendRequests(
     throw new Error("Failed to fetch friend profiles");
   }
 
-  for (const profile of friendProfiles) {
+  const profilesWithAvatars: ProfileWithAvatar[] = friendProfiles.map((profile) => {
     const avatar = createAvatar(funEmoji, {
       seed: profile.avatar || profile.username || "Adrian",
     });
 
-    profile.avatarUrl = avatar.toDataUri();
-  }
+    return {
+      ...profile,
+      avatarUrl: avatar.toDataUri(),
+    };
+  });
 
-  return friendProfiles;
+  return profilesWithAvatars;
 }
 
 export async function getAcceptedFriends(
@@ -71,13 +82,16 @@ export async function getAcceptedFriends(
     throw new Error("Failed to fetch friend profiles");
   }
 
-  for (const profile of friendProfiles) {
+  const profilesWithAvatars: ProfileWithAvatar[] = friendProfiles.map((profile) => {
     const avatar = createAvatar(funEmoji, {
       seed: profile.avatar || profile.username || "Adrian",
     });
 
-    profile.avatarUrl = avatar.toDataUri();
-  }
+    return {
+      ...profile,
+      avatarUrl: avatar.toDataUri(),
+    };
+  });
 
-  return friendProfiles;
+  return profilesWithAvatars;
 }

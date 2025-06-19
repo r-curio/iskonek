@@ -9,7 +9,7 @@ export default function Layout({
   return (
     <ToastProvider>
       <div>
-        <div className="w-full min-h-screen py-12 flex justify-center items-center bg-[url('@/images/bg.svg')] bg-cover bg-gray-100">
+        <div className="w-full min-h-screen py-12 flex justify-center items-center bg-[url('/images/bg.svg')] bg-cover bg-gray-100">
           {children}
         </div>
         <Toaster />

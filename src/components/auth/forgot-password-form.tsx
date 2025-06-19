@@ -16,10 +16,8 @@ import { useForm } from "react-hook-form";
 import { forgotPasswordSchema } from "@/schema";
 import { useToast } from "@/hooks/use-toast";
 import { forgotPassword } from "@/app/auth/forgot-password/action";
-import { useRouter } from "next/navigation";
 
 export default function ForgotPasswordForm(): JSX.Element {
-  const router = useRouter();
   const { toast } = useToast();
   const form = useForm({
     resolver: zodResolver(forgotPasswordSchema),
