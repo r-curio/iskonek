@@ -14,7 +14,9 @@ export function Timer({ initialTime, onTimeUp }: TimerProps) {
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      onTimeUp && onTimeUp();
+      if (onTimeUp) {
+        onTimeUp();
+      }
       return;
     }
 

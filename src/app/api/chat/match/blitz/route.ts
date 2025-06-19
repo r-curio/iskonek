@@ -110,7 +110,39 @@ export async function POST() {
         return NextResponse.json({ status: "waiting" });
       }
 
-      // Use the Postgres function to create the match
+      // Check if a chat room already exists between these two users (in either order)
+      const { data: existingPairRoom } = await supabase
+        .from("chat_rooms")
+        .select("*")
+        .or(
+          `and(user1_id.eq.${user.id},user2_id.eq.${matchQueue.user_id}),and(user1_id.eq.${matchQueue.user_id},user2_id.eq.${user.id})`
+        )
+        .eq("type", "blitz")
+        .single();
+
+      if (existingPairRoom) {
+        // Get matched user's profile
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("username")
+          .eq("id", matchQueue.user_id)
+          .single();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        return NextResponse.json({
+          status: "matched",
+          room_id: existingPairRoom.id,
+          matchedUser: {
+            id: matchQueue.user_id,
+            username: profile?.username,
+          },
+        });
+      }
+
+      // Use the Postgres function to create the blitz match atomically
       const { data: matchResult, error: matchError } = await supabase.rpc(
         "create_blitz_match",
         {

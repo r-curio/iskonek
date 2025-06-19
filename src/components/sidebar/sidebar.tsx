@@ -59,7 +59,18 @@ export default function Sidebar({ user }: { user: Profile }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  useFriendUpdates(setFriendRequests, setContacts);
+  useFriendUpdates(
+    (users) => setFriendRequests(users.map(u => ({
+      ...u,
+      avatarUrl: u.avatar ?? "",
+      department: u.department ?? undefined,
+    }))),
+    (users) => setContacts(users.map(u => ({
+      ...u,
+      avatarUrl: u.avatar ?? "",
+      department: u.department ?? undefined,
+    })))
+  );
 
   useEffect(() => {
     const fetchInitialData = async () => {

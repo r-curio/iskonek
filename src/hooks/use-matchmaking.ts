@@ -15,14 +15,6 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
     null
   );
 
-  if (!isRandom && !isBlitz) {
-    return {
-      isSearching: false,
-      handleConnect: async () => {},
-      handleCancelSearch: async () => {},
-    };
-  }
-
   const checkMatch = useCallback(async () => {
     try {
       if (isBlitz) {
@@ -77,6 +69,10 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
   }, [matchInterval, router, isBlitz]);
 
   const handleConnect = useCallback(async () => {
+    if (!isRandom && !isBlitz) {
+      return;
+    }
+    
     setIsSearching(true);
     const interval = setInterval(async () => {
       const matched = await checkMatch();
@@ -86,9 +82,13 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
       }
     }, 3000);
     setMatchInterval(interval);
-  }, [checkMatch]);
+  }, [checkMatch, isRandom, isBlitz]);
 
   const handleCancelSearch = useCallback(async () => {
+    if (!isRandom && !isBlitz) {
+      return;
+    }
+    
     setIsSearching(false);
     if (matchInterval) {
       clearInterval(matchInterval);
@@ -104,7 +104,7 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
     } catch (error) {
       console.error("Error cancelling search:", error);
     }
-  }, [matchInterval]);
+  }, [matchInterval, isRandom, isBlitz]);
 
   useEffect(() => {
     return () => {
@@ -113,6 +113,15 @@ export function useMatchmaking(isRandom: boolean, isBlitz = false): MatchState {
       }
     };
   }, [matchInterval]);
+
+  // Return early after all hooks have been called
+  if (!isRandom && !isBlitz) {
+    return {
+      isSearching: false,
+      handleConnect: async () => {},
+      handleCancelSearch: async () => {},
+    };
+  }
 
   return {
     isSearching,

@@ -6,18 +6,18 @@ import { funEmoji } from "@dicebear/collection";
 export const dynamic = "force-dynamic"; // Ensure dynamic rendering
 
 interface PageProps {
-  params: { id?: string };
-  searchParams: {
+  params: Promise<{ id?: string }>;
+  searchParams: Promise<{
     username?: string;
     isRandom?: string;
     isBlitz?: string;
-  };
+  }>;
 }
 
 export default async function ChatPage({ params, searchParams }: PageProps) {
   const supabase = await createClient();
-  const { id } = params;
-  const { username, isRandom, isBlitz } = searchParams;
+  const { id } = await params;
+  const { username, isRandom, isBlitz } = await searchParams;
 
   if (!id) return <div>Invalid chat room ID</div>;
   if (!username) return <div>Invalid recipient username</div>;
