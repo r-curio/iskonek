@@ -54,6 +54,17 @@ export async function POST(request: Request) {
       { status: 400 }
     );
   }
+  
+  // delete chatrooms related to the user
+  const { error: deleteChatroomsError } = await supabaseAdmin.from("chat_rooms").delete().or(`user1_id.eq.${user.id},user2_id.eq.${user.id}`);
+  if (deleteChatroomsError) {
+    console.error("Error deleting chatrooms:", deleteChatroomsError);
+    return NextResponse.json(
+      { error: deleteChatroomsError.message },
+      { status: 400 }
+    );
+  }
+
 
   // Delete user
   const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
@@ -61,6 +72,8 @@ export async function POST(request: Request) {
   );
 
   if (deleteError) {
+    console.log("Attempting to delete user with ID:", user.id);
+    console.error("Error deleting user:", deleteError);
     return NextResponse.json({ error: deleteError.message }, { status: 400 });
   }
 
