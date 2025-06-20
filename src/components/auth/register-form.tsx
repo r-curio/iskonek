@@ -17,6 +17,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -174,7 +175,7 @@ export default function RegisterForm(): JSX.Element {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} placeholder="******" />
+                  <PasswordInput {...field} placeholder="******" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -187,7 +188,7 @@ export default function RegisterForm(): JSX.Element {
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} placeholder="******" />
+                  <PasswordInput {...field} placeholder="******" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
