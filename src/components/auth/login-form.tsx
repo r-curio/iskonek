@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -86,7 +87,7 @@ export default function LoginForm(): JSX.Element {
                   Forgot Password?
                 </Link>
                 <FormControl>
-                  <Input type="password" placeholder="******" {...field} />
+                  <PasswordInput placeholder="******" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
