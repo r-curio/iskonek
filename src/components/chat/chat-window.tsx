@@ -20,6 +20,8 @@ interface message {
   room_id: string;
   content: string;
   sender_id: string;
+  is_inappropriate?: boolean;
+  categories?: Record<string, boolean>;
 }
 
 interface ChatWindowProps {
@@ -117,6 +119,21 @@ export default function ChatWindow({
     }
   };
 
+  const handleFlaggedMessage = (flaggedMessage: message) => {
+    // Replace the last optimistic message with the flagged message
+    setMessages((prevMessages) => {
+      const newMessages = [...prevMessages];
+      // Find and replace the last message from the current user
+      for (let i = newMessages.length - 1; i >= 0; i--) {
+        if (newMessages[i].sender_id === userId && !newMessages[i].is_inappropriate) {
+          newMessages[i] = flaggedMessage;
+          break;
+        }
+      }
+      return newMessages;
+    });
+  };
+
   return (
     <div className="flex flex-col h-screen w-full">
       <ChatHeader
@@ -137,6 +154,7 @@ export default function ChatWindow({
             timestamp={
               message.created_at ? new Date(message.created_at) : undefined
             }
+            is_inappropriate={message.is_inappropriate}
           />
         ))}
         {status === "ended" && (
@@ -155,6 +173,7 @@ export default function ChatWindow({
         <ChatInput
           roomId={roomId}
           onMessageSent={addNewMessage}
+          onFlaggedMessage={handleFlaggedMessage}
           recipientName={recipientName}
           isRandom={isRandom}
         />

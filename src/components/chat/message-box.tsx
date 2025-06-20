@@ -19,18 +19,22 @@ interface Message {
   created_at: string;
   sender_id: string;
   room_id: string;
+  is_inappropriate?: boolean;
+  categories?: Record<string, boolean>;
 }
 
 interface ChatInputProps {
   roomId: string;
   onMessageSent: (message: Message) => void;
+  onFlaggedMessage: (flaggedMessage: Message) => void;
   recipientName?: string;
   isRandom?: boolean;
 }
 
 const useChatInput = (
   roomId: string,
-  onMessageSent: (message: Message) => void
+  onMessageSent: (message: Message) => void,
+  onFlaggedMessage: (flaggedMessage: Message) => void
 ) => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +74,20 @@ const useChatInput = (
         body: JSON.stringify({ content: message.trim(), roomId }),
       });
 
+      const data = await response.json();
+
+      if (data.status === "flagged") {
+        // Replace optimistic message with flagged message
+        const flaggedMessage = {
+          ...data.message,
+          is_inappropriate: true,
+        };
+        // We need to update the message in the chat window
+        // This will be handled by the chat window component
+        onFlaggedMessage(flaggedMessage);
+        return true;
+      }
+
       if (!response.ok) {
         const error = await response.json();
         if (error.categories) {
@@ -96,6 +114,7 @@ const useChatInput = (
 const ChatInput: React.FC<ChatInputProps> = ({
   roomId,
   onMessageSent,
+  onFlaggedMessage,
   recipientName,
   isRandom,
 }) => {
@@ -104,7 +123,8 @@ const ChatInput: React.FC<ChatInputProps> = ({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { message, setMessage, sendMessage } = useChatInput(
     roomId,
-    onMessageSent
+    onMessageSent,
+    onFlaggedMessage
   );
 
   const adjustHeight = () => {

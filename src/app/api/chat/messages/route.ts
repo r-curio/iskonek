@@ -19,18 +19,28 @@ export async function POST(request: Request) {
     console.log("Checking moderation for:", content);
 
     // Check content moderation
+    const startTime = Date.now();
     const moderationResult = await checkModeration(content);
+    const endTime = Date.now();
+    console.log(`Moderation check took ${endTime - startTime}ms`);
 
     if (moderationResult.flagged) {
-      return NextResponse.json(
-        {
-          error: "Message contains inappropriate content",
+      // Return flagged message info instead of rejecting
+      return NextResponse.json({
+        status: "flagged",
+        message: {
+          id: Date.now().toString(),
+          content,
+          room_id: roomId,
+          sender_id: user.id,
+          created_at: new Date().toISOString(),
+          is_inappropriate: true,
           categories: moderationResult.categories,
         },
-        { status: 400 }
-      );
+      });
     }
 
+    // Message passed moderation - save to database
     const { error } = await supabase.from("messages").insert({
       content,
       room_id: roomId,
