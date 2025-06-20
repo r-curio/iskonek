@@ -23,7 +23,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div
       className={cn(
-        "flex w-full my-2",
+        "flex w-full my-2 group",
         isUser ? "justify-end" : "justify-start"
       )}
     >
@@ -49,7 +49,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
           </span>
         )}
         {timestamp && (
-          <span className="text-xs text-gray-500 mt-1">
+          <span className="text-xs text-gray-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ease-in-out">
             {formatTime(timestamp)}
           </span>
         )}

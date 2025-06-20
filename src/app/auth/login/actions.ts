@@ -21,10 +21,10 @@ export async function login(formData: FormData) {
   const { email, password } = result.data;
 
   // check if the user is signing in using the PUP Webmail Account
-  // const email_domain = email.split("@")[1];
-  // if (email_domain !== "iskolarngbayan.pup.edu.ph") {
-  //   return { error: "Enter your PUP Webmail Account" };
-  // }
+  const email_domain = email.split("@")[1];
+  if (email_domain !== "iskolarngbayan.pup.edu.ph") {
+    return { error: "Enter your PUP Webmail Account" };
+  }
 
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
