@@ -96,14 +96,15 @@ export async function POST() {
 
       // Add friend exclusion only if there are friends to exclude
       if (friendIds.length > 0) {
-        matchQuery = matchQuery.not("user_id", "in", friendIds);
+        const friendIdsString = `(${friendIds.join(",")})`;
+        matchQuery = matchQuery.not("user_id", "in", friendIdsString);
       }
       // Execute query
       const { data: matchQueue, error: matchQueueError } =
         await matchQuery.maybeSingle();
 
-      if (matchQueueError) {
-        throw new Error("Failed to find match");
+      if (matchQueueError && matchQueueError.code !== "PGRST116") {
+        throw matchQueueError;
       }
 
       if (!matchQueue) {

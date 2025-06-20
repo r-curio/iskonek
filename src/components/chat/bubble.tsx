@@ -23,15 +23,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   return (
     <div
       className={cn(
-        "flex my-2 group gap-2 w-full",
-        isUser ? "flex-row-reverse" : "flex-row"
+        "flex w-full my-2",
+        isUser ? "justify-end" : "justify-start"
       )}
     >
-      <div className="flex flex-col">
+      <div className={cn(
+        "flex flex-col max-w-[85%] md:max-w-[70%] lg:max-w-[50%]",
+        isUser ? "items-end" : "items-start"
+      )}>
         <div
           className={cn(
-            "max-w-[85%] md:max-w-[70%] lg:max-w-[50%] rounded-2xl px-4 py-2",
-            "break-words whitespace-pre-wrap",
+            "rounded-2xl px-4 py-2 break-words whitespace-pre-wrap",
             isUser
               ? is_inappropriate
                 ? "bg-red-500 text-white rounded-tr-none"
@@ -41,27 +43,17 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         >
           {text}
         </div>
-        
-        {/* Inappropriate message label */}
         {is_inappropriate && isUser && (
-          <div className="flex justify-end mt-1">
-            <span className="text-xs text-red-500 font-medium">
-              Inappropriate message
-            </span>
-          </div>
+          <span className="text-xs text-red-500 font-medium mt-1">
+            Inappropriate message
+          </span>
+        )}
+        {timestamp && (
+          <span className="text-xs text-gray-500 mt-1">
+            {formatTime(timestamp)}
+          </span>
         )}
       </div>
-
-      {/* Timestamp (closer to the bubble for user messages) */}
-      {timestamp && (
-        <span
-          className={cn(
-            "text-xs self-end opacity-0 group-hover:opacity-100 transition-opacity min-w-[45px] text-gray-500"
-          )}
-        >
-          {formatTime(timestamp)}
-        </span>
-      )}
     </div>
   );
 };
