@@ -8,6 +8,8 @@ interface Message {
   sender_id: string;
   created_at: string | null;
   room_id: string;
+  is_inappropriate?: boolean;
+  categories?: Record<string, boolean>;
 }
 
 export function useMessageSubscription(roomId: string) {

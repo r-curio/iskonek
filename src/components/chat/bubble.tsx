@@ -5,6 +5,7 @@ interface MessageBubbleProps {
   text: string;
   isUser: boolean;
   timestamp?: Date;
+  is_inappropriate?: boolean;
 }
 
 const formatTime = (date: Date): string => {
@@ -17,6 +18,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
   text,
   isUser,
   timestamp,
+  is_inappropriate = false,
 }) => {
   return (
     <div
@@ -25,16 +27,29 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
         isUser ? "flex-row-reverse" : "flex-row"
       )}
     >
-      <div
-        className={cn(
-          "max-w-[85%] md:max-w-[70%] lg:max-w-[50%] rounded-2xl px-4 py-2",
-          "break-words whitespace-pre-wrap",
-          isUser
-            ? "bg-[#682A43] text-white rounded-tr-none"
-            : "bg-[#B7B5B5] text-gray-800 rounded-tl-none"
+      <div className="flex flex-col">
+        <div
+          className={cn(
+            "max-w-[85%] md:max-w-[70%] lg:max-w-[50%] rounded-2xl px-4 py-2",
+            "break-words whitespace-pre-wrap",
+            isUser
+              ? is_inappropriate
+                ? "bg-red-500 text-white rounded-tr-none"
+                : "bg-[#682A43] text-white rounded-tr-none"
+              : "bg-[#B7B5B5] text-gray-800 rounded-tl-none"
+          )}
+        >
+          {text}
+        </div>
+        
+        {/* Inappropriate message label */}
+        {is_inappropriate && isUser && (
+          <div className="flex justify-end mt-1">
+            <span className="text-xs text-red-500 font-medium">
+              Inappropriate message
+            </span>
+          </div>
         )}
-      >
-        {text}
       </div>
 
       {/* Timestamp (closer to the bubble for user messages) */}
