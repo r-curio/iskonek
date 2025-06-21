@@ -95,7 +95,7 @@ export async function POST() {
         .limit(1);
 
       // Debug: Check what's in the queue
-      const { data: allQueue, error: allQueueError } = await supabase
+      const { data: allQueue } = await supabase
         .from("matching_queue")
         .select("*")
         .eq("status", "waiting")
