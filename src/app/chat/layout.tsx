@@ -1,56 +1,11 @@
-import Sidebar from "@/components/sidebar/sidebar";
-import { createClient } from "@/utils/supabase/server";
-import { createAvatar } from "@dicebear/core";
-import { funEmoji } from "@dicebear/collection";
+"use client";
 
-interface Profile {
-  id: string;
-  username: string;
-  avatar: string;
-  department: string;
-}
+import React from "react";
 
-export default async function Layout({
+export default function Layout({
   children,
 }: {
   children: React.ReactNode;
-}): Promise<JSX.Element> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-    error: UserError,
-  } = await supabase.auth.getUser();
-  if (!user || UserError) {
-    return <div>Unauthorized</div>;
-  }
-
-  // Fetch user profile of the logged-in user
-  const { data: profiles, error: ProfileError } = await supabase
-    .from("profiles")
-    .select("id, username, avatar, department, bgColor")
-    .eq("id", user.id)
-    .single<Profile>();
-
-  if (ProfileError) {
-    return <div>Error fetching profiles</div>;
-  }
-
-  if (!profiles) {
-    return <div>No profiles found</div>;
-  }
-
-  const avatar = createAvatar(funEmoji, {
-    seed: profiles.avatar || profiles.username || "Adrian",
-  });
-
-  profiles.avatar = avatar.toDataUri();
-
-  return (
-    <div className="flex h-screen w-full overflow-hidden">
-      <Sidebar user={profiles} />
-      <main className="flex-1 flex flex-col min-w-0">
-        {children}
-      </main>
-    </div>
-  );
+}) {
+  return <>{children}</>;
 }

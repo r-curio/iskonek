@@ -1,4 +1,5 @@
 "use client";
+
 import ChatHeader from "./chat-header";
 import MessageBubble from "./bubble";
 import ChatInput from "./message-box";
@@ -33,6 +34,7 @@ interface ChatWindowProps {
   isRandom: boolean;
   isBlitz?: boolean;
   createdAt?: string;
+  children?: React.ReactNode;
 }
 
 export default function ChatWindow({
@@ -44,13 +46,14 @@ export default function ChatWindow({
   isRandom,
   isBlitz,
   createdAt,
+  children,
 }: ChatWindowProps) {
   const calculateRemainingTime = () => {
     if (!createdAt) return 0;
     const createdTime = new Date(createdAt).getTime();
-    const endTime = createdTime + 10 * 60 * 1;
-    const remainingTime = endTime - createdTime;
-    return remainingTime;
+    const endTime = createdTime + 10 * 60 * 1000; // 10 minutes
+    const remainingTime = endTime - Date.now();
+    return remainingTime > 0 ? remainingTime : 0;
   };
   const { messages, userId, addNewMessage, setMessages } =
     useMessageSubscription(roomId);
@@ -58,77 +61,59 @@ export default function ChatWindow({
     isRandom,
     isBlitz
   );
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   const [status, setStatus] = useState("active");
   const [isTimerActive, setIsTimerActive] = useState(true);
-  const { toast } = useToast();
   const router = useRouter();
-
-  useAppExit(roomId, isRandom);
-  useRoomDeletion({ roomId, setStatus, isRandom, isBlitz });
-
-  useEffect(() => {
-    if (status === "ended") {
-      setIsTimerActive(false);
-    }
-  }, [status]);
-
-  // Initialize messages with initialMessages
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages, setMessages]);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const handleTimerEnd = () => {
+    setIsTimerActive(false);
+    setStatus("ended");
+  };
+
+  const handleFriendRequest = async () => {
+    if (recipientName) {
+      const result = await handleAddFriend({ recipientUsername: recipientName });
+      if (result?.success) {
+        toast({
+          title: "Friend Request Sent!",
+          description: `Your friend request to ${recipientName} has been sent.`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: String(result?.error),
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages, setMessages]);
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
-  const handleFriendRequest = async () => {
-    try {
-      await handleAddFriend({ recipientUsername: recipientName });
-      toast({
-        title: "Friend Request Sent!",
-        description: `Friend request sent to ${recipientName}`,
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error ? error.message : "An unknown error occurred",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleTimerEnd = async () => {
-    try {
-      if (status === "ended") return;
-
-      const response = await fetch("/api/chat/end_convo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roomId }),
-      });
-      if (!response.ok) throw new Error("Failed to end conversation");
-      setStatus("ended"); // This will trigger the ChatEndedOptions to appear
-    } catch (error) {
-      console.error("End conversation error:", error);
-    }
-  };
+  useAppExit(roomId, isRandom);
+  useRoomDeletion({ roomId, setStatus, isRandom, isBlitz });
 
   const handleFlaggedMessage = (flaggedMessage: message) => {
     // Replace the last optimistic message with the flagged message
     setMessages((prevMessages) => {
       const newMessages = [...prevMessages];
-      // Find and replace the last message from the current user
-      for (let i = newMessages.length - 1; i >= 0; i--) {
-        if (newMessages[i].sender_id === userId && !newMessages[i].is_inappropriate) {
-          newMessages[i] = flaggedMessage;
-          break;
-        }
+      const index = newMessages.findIndex(
+        (m) => m.id === flaggedMessage.id && m.sender_id === userId
+      );
+      if (index !== -1) {
+        newMessages[index] = flaggedMessage;
       }
       return newMessages;
     });
@@ -144,7 +129,9 @@ export default function ChatWindow({
           isBlitz && isTimerActive ? calculateRemainingTime() : undefined
         }
         onTimerEnd={isBlitz ? handleTimerEnd : undefined}
-      />
+      >
+        {children}
+      </ChatHeader>
       <ScrollArea className="flex-1 p-2 sm:p-4">
         {messages.map((message, index) => (
           <MessageBubble
@@ -169,18 +156,18 @@ export default function ChatWindow({
         )}
         <div ref={messagesEndRef} />
       </ScrollArea>
+      {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}
       {status !== "ended" && (
         <div className="p-2 sm:p-4 border-t bg-white">
           <ChatInput
             roomId={roomId}
             onMessageSent={addNewMessage}
             onFlaggedMessage={handleFlaggedMessage}
-            recipientName={recipientName}
+            recipientName={recipientName as string}
             isRandom={isRandom}
           />
         </div>
       )}
-      {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}
     </div>
   );
 }

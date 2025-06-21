@@ -25,6 +25,7 @@ import { createClient } from "@/utils/supabase/client";
 import { usePathname, useRouter } from "next/navigation";
 import { createAvatar } from "@dicebear/core";
 import { funEmoji } from "@dicebear/collection";
+import { MobileMenuButton } from "../ui/mobile-menu-button";
 
 interface RandomChat {
   roomId: string;
@@ -46,7 +47,15 @@ interface Profile {
   bgColor?: string;
 }
 
-export default function Sidebar({ user }: { user: Profile }) {
+export default function Sidebar({ 
+  user,
+  isMobileMenuOpen,
+  onToggleMenu,
+}: { 
+  user: Profile,
+  isMobileMenuOpen: boolean,
+  onToggleMenu: () => void,
+}) {
   const [contacts, setContacts] = useState<User[]>([]);
   const [selectedContactId, setSelectedContactId] = useState<string | null>(
     null
@@ -56,7 +65,6 @@ export default function Sidebar({ user }: { user: Profile }) {
   const [friendRequests, setFriendRequests] = useState<User[]>([]);
   const [activeRandomChats, setActiveRandomChats] = useState<RandomChat[]>([]);
   const [userProfile, setUserProfile] = useState(user);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchParams = useSearchParams();
   const supabase = createClient();
   const pathname = usePathname();
@@ -190,32 +198,16 @@ export default function Sidebar({ user }: { user: Profile }) {
 
   // Close mobile menu when route changes
   useEffect(() => {
-    setIsMobileMenuOpen(false);
+    onToggleMenu();
   }, [pathname]);
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="bg-white shadow-lg rounded-lg"
-        >
-          {isMobileMenuOpen ? (
-            <BsX className="h-6 w-6" />
-          ) : (
-            <BsList className="h-6 w-6" />
-          )}
-        </Button>
-      </div>
-
       {/* Mobile Overlay */}
       {isMobileMenuOpen && (
         <div 
           className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsMobileMenuOpen(false)}
+          onClick={onToggleMenu}
         />
       )}
 
@@ -227,7 +219,7 @@ export default function Sidebar({ user }: { user: Profile }) {
         transform transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
+        <header className="flex items-center justify-between z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
           <Link href="/" className="flex items-center gap-3">
             <Image
               src={Logo}
@@ -240,6 +232,12 @@ export default function Sidebar({ user }: { user: Profile }) {
               Isko<span className="text-[#C6980F]">nek</span>
             </h1>
           </Link>
+          <div className="lg:hidden">
+            <MobileMenuButton
+              isOpen={isMobileMenuOpen}
+              onToggle={onToggleMenu}
+            />
+          </div>
         </header>
 
         <nav className="p-4 flex flex-col gap-2">

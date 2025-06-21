@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Timer } from "./timer";
+import { useRouter } from "next/navigation";
+import { ActionModal } from "./actionModal";
 
 interface ChatHeaderProps {
   recipientName: string | undefined;
@@ -8,6 +10,10 @@ interface ChatHeaderProps {
   recipientDepartment?: string;
   initialTime?: number;
   onTimerEnd?: () => void;
+  isRandom?: boolean;
+  roomId?: string;
+  onEndChat?: () => void;
+  children?: React.ReactNode;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -16,12 +22,23 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   initialTime,
   recipientDepartment,
   onTimerEnd,
+  isRandom,
+  children
 }) => {
+  const router = useRouter();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const shouldShowTimer = initialTime !== undefined && initialTime > 0;
+
+  const handleEndChat = async () => {
+    setIsModalOpen(false);
+    // Logic to end chat
+  };
 
   return (
     <div className="flex items-center justify-between p-3 sm:p-4 border-b max-h-16 shadow-lg bg-white">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+        {children}
         <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
           {recipientProfilePic ? (
             <AvatarImage src={recipientProfilePic} alt={recipientName} />
