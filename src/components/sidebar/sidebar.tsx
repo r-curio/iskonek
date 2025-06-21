@@ -9,8 +9,6 @@ import {
   BsPersonFillAdd,
   BsSearch,
   BsFillPeopleFill,
-  BsList,
-  BsX,
 } from "react-icons/bs";
 import { CustomInput } from "./custom-input";
 import { SectionDivider } from "../ui/section-divider";
@@ -199,7 +197,7 @@ export default function Sidebar({
   // Close mobile menu when route changes
   useEffect(() => {
     onToggleMenu();
-  }, [pathname]);
+  }, [pathname, onToggleMenu]);
 
   return (
     <>

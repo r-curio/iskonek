@@ -2,7 +2,7 @@
 
 import ChatWindow from "@/components/chat/chat-window";
 import { MobileMenuButton } from "@/components/ui/mobile-menu-button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { createAvatar } from "@dicebear/core";
 import { funEmoji } from "@dicebear/collection";
@@ -41,6 +41,10 @@ export default function ChatPage() {
   const [createdAt, setCreatedAt] = useState<string | undefined>(undefined);
   const [currentUserProfile, setCurrentUserProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,7 +136,7 @@ export default function ChatPage() {
         <Sidebar 
             user={currentUserProfile}
             isMobileMenuOpen={isMobileMenuOpen}
-            onToggleMenu={() => setMobileMenuOpen(!isMobileMenuOpen)}
+            onToggleMenu={toggleMobileMenu}
         />
         <main className="flex-1 flex flex-col min-w-0">
             <ChatWindow
@@ -148,7 +152,7 @@ export default function ChatPage() {
                 <div className="lg:hidden">
                     <MobileMenuButton
                         isOpen={isMobileMenuOpen}
-                        onToggle={() => setMobileMenuOpen(!isMobileMenuOpen)}
+                        onToggle={toggleMobileMenu}
                     />
                 </div>
             </ChatWindow>

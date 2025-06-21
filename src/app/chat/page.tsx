@@ -8,7 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import LoadingScreen from "./searching";
 import Sidebar from "@/components/sidebar/sidebar";
 import { MobileMenuButton } from "@/components/ui/mobile-menu-button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { createAvatar } from "@dicebear/core";
 import { funEmoji } from "@dicebear/collection";
@@ -33,6 +33,10 @@ export default function Page() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev);
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -72,13 +76,13 @@ export default function Page() {
         <Sidebar 
             user={profile}
             isMobileMenuOpen={isMobileMenuOpen}
-            onToggleMenu={() => setMobileMenuOpen(!isMobileMenuOpen)}
+            onToggleMenu={toggleMobileMenu}
         />
         {!isMobileMenuOpen && (
             <div className="absolute top-4 left-4 z-50 lg:hidden">
                 <MobileMenuButton
                 isOpen={isMobileMenuOpen}
-                onToggle={() => setMobileMenuOpen(!isMobileMenuOpen)}
+                onToggle={toggleMobileMenu}
                 />
             </div>
         )}
