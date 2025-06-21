@@ -56,8 +56,9 @@ const useChatInput = (
     if (!message.trim() || isLoading || !userId) return false;
     setIsLoading(true);
 
+    const messageId = Date.now().toString();
     const optimisticMessage = {
-      id: Date.now().toString(),
+      id: messageId,
       content: message.trim(),
       created_at: new Date().toISOString(),
       sender_id: userId,
@@ -80,6 +81,7 @@ const useChatInput = (
         // Replace optimistic message with flagged message
         const flaggedMessage = {
           ...data.message,
+          id: messageId, // Use the same ID as the optimistic message
           is_inappropriate: true,
         };
         // We need to update the message in the chat window
