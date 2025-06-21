@@ -87,8 +87,8 @@ export default function SettingsView({
       <VisuallyHidden.Root>
         <DialogTitle>Settings</DialogTitle>
       </VisuallyHidden.Root>
-      <DialogContent className="max-w-3xl p-0 gap-0 h-[550px] rounded-lg overflow-hidden border-none">
-        <div className="flex h-full bg-white">
+      <DialogContent className="max-w-3xl w-[95vw] sm:w-full p-0 gap-0 h-[90vh] sm:h-[550px] rounded-lg overflow-hidden border-none">
+        <div className="flex flex-col sm:flex-row h-full bg-white">
           <ProfileSettings
             activeView={activeView}
             onViewChange={handleViewChange}

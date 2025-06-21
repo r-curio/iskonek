@@ -94,16 +94,31 @@ export async function POST() {
         .order("joined_at", { ascending: true })
         .limit(1);
 
+      // Debug: Check what's in the queue
+      const { data: allQueue } = await supabase
+        .from("matching_queue")
+        .select("*")
+        .eq("status", "waiting")
+        .eq("chat_mode", "blitz");
+
+      // Check if there are other users in the queue besides the current user
+      const otherUsersInQueue = allQueue?.filter(q => q.user_id !== user.id) || [];
+
+      if (otherUsersInQueue.length === 0) {
+        return NextResponse.json({ status: "waiting" });
+      }
+
       // Add friend exclusion only if there are friends to exclude
       if (friendIds.length > 0) {
-        matchQuery = matchQuery.not("user_id", "in", friendIds);
+        // Use not with "in" operator for friend exclusion
+        matchQuery = matchQuery.not("user_id", "in", `(${friendIds.join(",")})`);
       }
       // Execute query
       const { data: matchQueue, error: matchQueueError } =
         await matchQuery.maybeSingle();
 
       if (matchQueueError) {
-        throw new Error("Failed to find match");
+        throw matchQueueError;
       }
 
       if (!matchQueue) {
@@ -111,7 +126,7 @@ export async function POST() {
       }
 
       // Check if a chat room already exists between these two users (in either order)
-      const { data: existingPairRoom } = await supabase
+      const { data: existingPairRoom, error: pairRoomError } = await supabase
         .from("chat_rooms")
         .select("*")
         .or(
@@ -119,6 +134,10 @@ export async function POST() {
         )
         .eq("type", "blitz")
         .single();
+
+      if (pairRoomError && pairRoomError.code !== "PGRST116") {
+        throw pairRoomError;
+      }
 
       if (existingPairRoom) {
         // Get matched user's profile

@@ -94,6 +94,19 @@ export async function POST() {
         .order("joined_at", { ascending: true })
         .limit(1);
 
+      // Check if there are other users in the queue besides the current user
+      const { data: allQueue } = await supabase
+        .from("matching_queue")
+        .select("*")
+        .eq("status", "waiting")
+        .eq("chat_mode", "normal");
+
+      const otherUsersInQueue = allQueue?.filter(q => q.user_id !== user.id) || [];
+
+      if (otherUsersInQueue.length === 0) {
+        return NextResponse.json({ status: "waiting" });
+      }
+
       // Add friend exclusion only if there are friends to exclude
       if (friendIds.length > 0) {
         const friendIdsString = `(${friendIds.join(",")})`;
@@ -155,6 +168,7 @@ export async function POST() {
           {
             user_id: user.id,
             status: "waiting",
+            chat_mode: "normal",
             joined_at: new Date().toISOString(),
           },
         ]);

@@ -9,6 +9,8 @@ import {
   BsPersonFillAdd,
   BsSearch,
   BsFillPeopleFill,
+  BsList,
+  BsX,
 } from "react-icons/bs";
 import { CustomInput } from "./custom-input";
 import { SectionDivider } from "../ui/section-divider";
@@ -54,6 +56,7 @@ export default function Sidebar({ user }: { user: Profile }) {
   const [friendRequests, setFriendRequests] = useState<User[]>([]);
   const [activeRandomChats, setActiveRandomChats] = useState<RandomChat[]>([]);
   const [userProfile, setUserProfile] = useState(user);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const searchParams = useSearchParams();
   const supabase = createClient();
   const pathname = usePathname();
@@ -185,101 +188,139 @@ export default function Sidebar({ user }: { user: Profile }) {
     contact.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
-    <aside className="h-screen flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden w-[280px] flex-shrink-0">
-      <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
-        <Link href="/" className="flex items-center gap-3">
-          <Image
-            src={Logo}
-            alt="logo"
-            width={40}
-            height={40}
-            className="object-contain pointer-events-none"
-          />
-          <h1 className="text-2xl font-bold text-accent">
-            Isko<span className="text-[#C6980F]">nek</span>
-          </h1>
-        </Link>
-      </header>
-
-      <nav className="p-4 flex flex-col gap-2">
+    <>
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
         <Button
           variant="ghost"
-          className={`flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start ${
-            pathname === "/chat" ? "bg-[#682A43] text-white" : ""
-          }`}
-          onClick={() => router.push("/chat")}
+          size="icon"
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="bg-white shadow-lg rounded-lg"
         >
-          <BsChatLeftFill className="text-lg" />
-          <span>New Chat</span>
-        </Button>
-        <Button
-          variant="ghost"
-          className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
-          onClick={() => setDisplayFriendRequests((prev) => !prev)}
-        >
-          {displayFriendRequests ? (
-            <>
-              <BsFillPeopleFill className="text-2xl" />
-              <span>Contacts</span>
-            </>
+          {isMobileMenuOpen ? (
+            <BsX className="h-6 w-6" />
           ) : (
-            <>
-              <div className="flex items-center justify-between w-full">
-                <div className="flex gap-3">
-                  <BsPersonFillAdd className="text-2xl" />
-                  <span>Friend Requests</span>
-                </div>
-                {friendRequests.length > 0 && (
-                  <Badge variant="destructive" className="">
-                    {friendRequests.length}
-                  </Badge>
-                )}
-              </div>
-            </>
+            <BsList className="h-6 w-6" />
           )}
         </Button>
-      </nav>
-
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="px-4 py-2">
-          <SectionDivider text="Direct Messages" />
-          <div className="mt-2">
-            <CustomInput
-              icon={BsSearch}
-              placeholder="Search contacts..."
-              className="bg-gray-100 border-gray-300 focus:border-accent transition-colors"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-        <ScrollArea className="px-4">
-          {displayFriendRequests ? (
-            <FriendRequestList
-              friendRequests={friendRequests}
-              onFriendRequestHandled={(id) =>
-                setFriendRequests((prev) => prev.filter((req) => req.id !== id))
-              }
-            />
-          ) : (
-            <ContactsList
-              contacts={filteredContacts}
-              onSelectContact={(contact) => setSelectedContactId(contact.id)}
-              selectedContactId={selectedContactId}
-            />
-          )}
-        </ScrollArea>
       </div>
 
-      <footer className="h-16 border-t bg-white">
-        <UserProfile
-          avatarUrl={userProfile.avatar}
-          name={userProfile.username ?? "Anonymous"}
-          department={userProfile.department ?? "No Department"}
-          bgColor={userProfile.bgColor ?? "#F9FAFB"}
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          onClick={() => setIsMobileMenuOpen(false)}
         />
-      </footer>
-    </aside>
+      )}
+
+      {/* Sidebar */}
+      <aside className={`
+        fixed lg:relative inset-y-0 left-0 z-40
+        flex flex-col bg-[#FAF9F6] shadow-lg overflow-hidden
+        w-[280px] flex-shrink-0
+        transform transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+      `}>
+        <header className="flex items-center z-10 shadow-md h-16 gap-3 px-4 py-3 bg-white">
+          <Link href="/" className="flex items-center gap-3">
+            <Image
+              src={Logo}
+              alt="logo"
+              width={40}
+              height={40}
+              className="object-contain pointer-events-none"
+            />
+            <h1 className="text-xl lg:text-2xl font-bold text-accent">
+              Isko<span className="text-[#C6980F]">nek</span>
+            </h1>
+          </Link>
+        </header>
+
+        <nav className="p-4 flex flex-col gap-2">
+          <Button
+            variant="ghost"
+            className={`flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start ${
+              pathname === "/chat" ? "bg-[#682A43] text-white" : ""
+            }`}
+            onClick={() => router.push("/chat")}
+          >
+            <BsChatLeftFill className="text-lg" />
+            <span>New Chat</span>
+          </Button>
+          <Button
+            variant="ghost"
+            className="flex gap-3 rounded-lg hover:bg-[#682A43] hover:text-white transition-colors w-full justify-start"
+            onClick={() => setDisplayFriendRequests((prev) => !prev)}
+          >
+            {displayFriendRequests ? (
+              <>
+                <BsFillPeopleFill className="text-2xl" />
+                <span>Contacts</span>
+              </>
+            ) : (
+              <>
+                <div className="flex items-center justify-between w-full">
+                  <div className="flex gap-3">
+                    <BsPersonFillAdd className="text-2xl" />
+                    <span>Friend Requests</span>
+                  </div>
+                  {friendRequests.length > 0 && (
+                    <Badge variant="destructive" className="">
+                      {friendRequests.length}
+                    </Badge>
+                  )}
+                </div>
+              </>
+            )}
+          </Button>
+        </nav>
+
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="px-4 py-2">
+            <SectionDivider text="Direct Messages" />
+            <div className="mt-2">
+              <CustomInput
+                icon={BsSearch}
+                placeholder="Search contacts..."
+                className="bg-gray-100 border-gray-300 focus:border-accent transition-colors"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+          </div>
+          <ScrollArea className="px-4">
+            {displayFriendRequests ? (
+              <FriendRequestList
+                friendRequests={friendRequests}
+                onFriendRequestHandled={(id) =>
+                  setFriendRequests((prev) => prev.filter((req) => req.id !== id))
+                }
+              />
+            ) : (
+              <ContactsList
+                contacts={filteredContacts}
+                onSelectContact={(contact) => setSelectedContactId(contact.id)}
+                selectedContactId={selectedContactId}
+              />
+            )}
+          </ScrollArea>
+        </div>
+
+        <footer className="h-16 border-t bg-white">
+          <UserProfile
+            avatarUrl={userProfile.avatar}
+            name={userProfile.username ?? "Anonymous"}
+            department={userProfile.department ?? "No Department"}
+            bgColor={userProfile.bgColor ?? "#F9FAFB"}
+          />
+        </footer>
+      </aside>
+    </>
   );
 }

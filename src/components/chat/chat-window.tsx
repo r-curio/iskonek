@@ -145,7 +145,7 @@ export default function ChatWindow({
         }
         onTimerEnd={isBlitz ? handleTimerEnd : undefined}
       />
-      <ScrollArea className="flex-1 p-4">
+      <ScrollArea className="flex-1 p-2 sm:p-4">
         {messages.map((message, index) => (
           <MessageBubble
             key={index}
@@ -158,7 +158,7 @@ export default function ChatWindow({
           />
         ))}
         {status === "ended" && (
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-8 px-4">
             <ChatEndedOptions
               onGoHome={() => router.push("/chat")}
               onAddFriend={() => handleFriendRequest()}
@@ -170,13 +170,15 @@ export default function ChatWindow({
         <div ref={messagesEndRef} />
       </ScrollArea>
       {status !== "ended" && (
-        <ChatInput
-          roomId={roomId}
-          onMessageSent={addNewMessage}
-          onFlaggedMessage={handleFlaggedMessage}
-          recipientName={recipientName}
-          isRandom={isRandom}
-        />
+        <div className="p-2 sm:p-4 border-t bg-white">
+          <ChatInput
+            roomId={roomId}
+            onMessageSent={addNewMessage}
+            onFlaggedMessage={handleFlaggedMessage}
+            recipientName={recipientName}
+            isRandom={isRandom}
+          />
+        </div>
       )}
       {isSearching && <LoadingScreen handleCancelSearch={handleCancelSearch} />}
     </div>

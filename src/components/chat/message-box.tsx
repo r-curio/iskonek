@@ -160,25 +160,26 @@ const ChatInput: React.FC<ChatInputProps> = ({
   };
 
   return (
-    <div className="flex items-end p-4 border-t min-h-[5rem] gap-2">
-      <div className="flex gap-2">
+    <div className="flex flex-col sm:flex-row items-end p-2 sm:p-4 border-t min-h-[5rem] gap-2">
+      <div className="flex gap-2 w-full sm:w-auto">
         {isRandom && (
           <Button
-            className="bg-[#682A43] text-white rounded-md p-2 focus:outline-none"
+            className="bg-[#682A43] text-white rounded-md p-2 sm:p-3 focus:outline-none text-sm sm:text-base min-h-[44px]"
             onClick={() => setIsConfirmEndOpen(true)}
           >
-            <span className="flex items-center gap-x-2">
-              <BsSkipEndFill /> Skip
+            <span className="flex items-center gap-x-1 sm:gap-x-2">
+              <BsSkipEndFill className="text-sm sm:text-base" /> 
+              <span className="hidden sm:inline">Skip</span>
             </span>
           </Button>
         )}
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#C6980F] text-white rounded-md p-2 focus:outline-none">
-              <span className="flex items-center gap-x-2">
-                <BsFillLightbulbFill />
-                ConvoStarters
+            <Button className="bg-[#C6980F] text-white rounded-md p-2 sm:p-3 focus:outline-none text-sm sm:text-base min-h-[44px]">
+              <span className="flex items-center gap-x-1 sm:gap-x-2">
+                <BsFillLightbulbFill className="text-sm sm:text-base" />
+                <span className="hidden sm:inline">ConvoStarters</span>
               </span>
             </Button>
           </DialogTrigger>
@@ -190,14 +191,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
         </Dialog>
       </div>
 
-      <div className="flex-1 flex items-end">
+      <div className="flex-1 flex items-end w-full">
         <Textarea
           ref={textareaRef}
-          className="flex-1 border rounded-l-md p-2 focus:outline-none resize-none overflow-y-auto"
+          className="flex-1 border rounded-l-md p-2 sm:p-3 focus:outline-none resize-none overflow-y-auto text-sm sm:text-base min-h-[44px]"
           placeholder="Type a message..."
           value={message}
           rows={1}
-          style={{ minHeight: "40px", maxHeight: "150px" }}
+          style={{ minHeight: "44px", maxHeight: "150px" }}
           onChange={handleMessageChange}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -206,14 +207,14 @@ const ChatInput: React.FC<ChatInputProps> = ({
             }
           }}
         />
-
-        <button
-          className="bg-[#682A43] text-white rounded-r-md p-3 focus:outline-none"
+        <Button
+          className="bg-[#682A43] text-white rounded-r-md p-2 sm:p-3 focus:outline-none min-h-[44px] min-w-[44px]"
           onClick={sendMessage}
         >
-          <BsFillSendFill />
-        </button>
+          <BsFillSendFill className="text-sm sm:text-base" />
+        </Button>
       </div>
+
       <ActionModal
         isOpen={isConfirmEndOpen}
         onClose={() => setIsConfirmEndOpen(false)}
