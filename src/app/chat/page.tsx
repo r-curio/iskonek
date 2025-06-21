@@ -20,7 +20,7 @@ export default function Page() {
     <ScrollArea className="h-screen w-full">
       <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden">
         <div className="text-center max-w-4xl mx-auto px-4 z-1">
-          <div className="relative h-24 w-24 mx-auto mb-6">
+          <div className="relative h-20 w-20 sm:h-24 sm:w-24 mx-auto mb-4 sm:mb-6">
             <Image
               src={Logo}
               alt="Iskonek Logo"
@@ -31,13 +31,13 @@ export default function Page() {
               onContextMenu={(e) => e.preventDefault()}
             />
           </div>
-          <h1 className="text-5xl font-bold text-[#682A43] mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#682A43] mb-3 sm:mb-4">
             Isko<span className="text-[#C6980F]">nek</span>
           </h1>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
             Explore two ways to connect with fellow Iskolars:
           </p>
-          <div className="flex flex-col md:flex-row justify-center gap-8">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 sm:gap-8 max-w-2xl mx-auto">
             <div className="flex flex-col items-center gap-3 transition-transform duration-200 hover:-translate-y-1">
               <Button
                 className="bg-[#682A43] hover:bg-[#571830] text-white px-8 py-6 rounded-xl text-xl font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl"

@@ -28,12 +28,12 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({
       )}
     >
       <div className={cn(
-        "flex flex-col max-w-[85%] md:max-w-[70%] lg:max-w-[50%]",
+        "flex flex-col max-w-[90%] sm:max-w-[85%] md:max-w-[70%] lg:max-w-[50%]",
         isUser ? "items-end" : "items-start"
       )}>
         <div
           className={cn(
-            "rounded-2xl px-4 py-2 break-words whitespace-pre-wrap",
+            "rounded-2xl px-3 py-2 sm:px-4 sm:py-2 break-words whitespace-pre-wrap text-sm sm:text-base",
             isUser
               ? is_inappropriate
                 ? "bg-red-500 text-white rounded-tr-none"

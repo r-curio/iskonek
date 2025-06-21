@@ -46,9 +46,11 @@ export default async function Layout({
   profiles.avatar = avatar.toDataUri();
 
   return (
-    <div className="flex">
+    <div className="flex h-screen w-full overflow-hidden">
       <Sidebar user={profiles} />
-      {children}
+      <main className="flex-1 flex flex-col min-w-0">
+        {children}
+      </main>
     </div>
   );
 }
