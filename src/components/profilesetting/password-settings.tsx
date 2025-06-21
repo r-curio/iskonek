@@ -74,15 +74,15 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
   };
 
   return (
-    <div className="flex-1 p-6">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="flex-1 p-4 sm:p-6">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
         <Button variant="ghost" size="icon" onClick={onCancel}>
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h2 className="text-xl font-semibold">Change Password</h2>
+        <h2 className="text-lg sm:text-xl font-semibold">Change Password</h2>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {error && <div className="text-red-500 text-sm">{error}</div>}
 
         <div className="space-y-2">
@@ -91,6 +91,7 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
             type="password"
             value={currentPassword}
             onChange={(e) => setCurrentPassword(e.target.value)}
+            className="h-10 sm:h-11 text-sm sm:text-base"
           />
         </div>
 
@@ -100,6 +101,7 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
             type="password"
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
+            className="h-10 sm:h-11 text-sm sm:text-base"
           />
         </div>
 
@@ -109,14 +111,15 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            className="h-10 sm:h-11 text-sm sm:text-base"
           />
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end gap-2">
+      <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row justify-end gap-2 sm:gap-2">
         <Button
           onClick={onCancel}
-          className="hover:bg-[#919192] hover:text-white"
+          className="hover:bg-[#919192] hover:text-white text-sm w-full sm:w-auto h-10 sm:h-11"
           variant="secondary"
           disabled={isLoading}
         >
@@ -124,7 +127,7 @@ export default function PasswordSettings({ onCancel }: PasswordSettingsProps) {
         </Button>
         <Button
           onClick={handleSave}
-          className="bg-[#682A43] text-white hover:bg-[#532e40]"
+          className="bg-[#682A43] text-white hover:bg-[#532e40] text-sm w-full sm:w-auto h-10 sm:h-11"
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save"}

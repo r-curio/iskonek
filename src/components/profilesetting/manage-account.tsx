@@ -44,34 +44,34 @@ export default function ManageAccount() {
   };
 
   return (
-    <div className="flex-1 p-8">
-      <div className="space-y-6">
+    <div className="flex-1 p-4 sm:p-8">
+      <div className="space-y-4 sm:space-y-6">
         <div className="space-y-2">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             Account Deletion
           </h2>
-          <p className="text-sm text-gray-600">This action cannot be undone.</p>
+          <p className="text-xs sm:text-sm text-gray-600">This action cannot be undone.</p>
         </div>
 
-        <div className="flex items-start space-x-3 p-4 bg-red-50 rounded-lg border border-red-100">
-          <AlertTriangle className="h-5 w-5 text-red-500 mt-0.5" />
+        <div className="flex items-start space-x-3 p-3 sm:p-4 bg-red-50 rounded-lg border border-red-100">
+          <AlertTriangle className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 mt-0.5 flex-shrink-0" />
           <div className="space-y-1">
             <p className="text-sm font-medium text-red-800">Warning</p>
-            <p className="text-sm text-red-600">
+            <p className="text-xs sm:text-sm text-red-600">
               Deleting your account will permanently remove all your data,
               including your profile, settings, and activity history.
             </p>
           </div>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
               Password
             </label>
             <Input
               type="password"
-              className="h-11 border-gray-200 focus:border-red-300 focus:ring-red-200"
+              className="h-10 sm:h-11 border-gray-200 focus:border-red-300 focus:ring-red-200 text-sm sm:text-base"
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
             />
@@ -83,21 +83,22 @@ export default function ManageAccount() {
             </label>
             <Input
               type="password"
-              className="h-11 border-gray-200 focus:border-red-300 focus:ring-red-200"
+              className="h-10 sm:h-11 border-gray-200 focus:border-red-300 focus:ring-red-200 text-sm sm:text-base"
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Re-enter your password"
             />
           </div>
 
-          <div className="flex items-center space-x-2 pt-2">
+          <div className="flex items-start space-x-2 pt-2">
             <Checkbox
               id="confirm"
               checked={isConfirmed}
               onCheckedChange={(checked) => setIsConfirmed(checked as boolean)}
+              className="mt-0.5"
             />
             <label
               htmlFor="confirm"
-              className="text-sm text-gray-600 leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-xs sm:text-sm text-gray-600 leading-relaxed peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
             >
               I understand that this action is permanent and irreversible
             </label>
@@ -105,10 +106,10 @@ export default function ManageAccount() {
         </div>
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-6 sm:mt-8 flex justify-end">
         <Button
           disabled={!isConfirmed}
-          className="bg-red-600 text-white hover:bg-red-700 h-11 px-8 transition-colors"
+          className="bg-red-600 text-white hover:bg-red-700 h-10 sm:h-11 px-6 sm:px-8 transition-colors text-sm w-full sm:w-auto"
           onClick={handleDeleteAccount}
         >
           Delete Account

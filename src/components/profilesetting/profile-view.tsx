@@ -103,18 +103,18 @@ export default function ProfileView({
   };
 
   return (
-    <div className="flex-1 p-8 flex flex-col h-full">
+    <div className="flex-1 p-4 sm:p-8 flex flex-col h-full">
       {/* Top section with banner and avatar */}
-      <div className="space-y-4 mb-8">
+      <div className="space-y-4 mb-6 sm:mb-8">
         <div className="relative">
           <div
-            className="w-full h-28 rounded-xl shadow-sm"
+            className="w-full h-20 sm:h-28 rounded-xl shadow-sm"
             style={{ backgroundColor: bgColor }}
           />
-          <div className="absolute right-4 top-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm">
+          <div className="absolute right-2 sm:right-4 top-2 sm:top-4 flex items-center gap-2 bg-white/90 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-2 rounded-lg shadow-sm">
             <label
               htmlFor="colorPicker"
-              className="text-sm font-medium text-gray-700"
+              className="text-xs sm:text-sm font-medium text-gray-700"
             >
               Banner Color:
             </label>
@@ -123,29 +123,29 @@ export default function ProfileView({
               type="color"
               value={bgColor}
               onChange={handleColorChange}
-              className="w-8 h-8 p-0 border-0 rounded cursor-pointer"
+              className="w-6 h-6 sm:w-8 sm:h-8 p-0 border-0 rounded cursor-pointer"
             />
           </div>
-          <div className="absolute -bottom-12 left-6 border-4 border-white rounded-full bg-white shadow-md transition-transform hover:scale-105">
+          <div className="absolute -bottom-8 sm:-bottom-12 left-4 sm:left-6 border-4 border-white rounded-full bg-white shadow-md transition-transform hover:scale-105">
             <Avatar
               onClick={onAvatarClick}
-              className="cursor-pointer w-24 h-24"
+              className="cursor-pointer w-16 h-16 sm:w-24 sm:h-24"
             >
               <AvatarImage src={avatarUrl} alt={name} />
-              <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
+              <AvatarFallback className="text-sm sm:text-base">{name.slice(0, 2).toUpperCase()}</AvatarFallback>
             </Avatar>
           </div>
         </div>
       </div>
 
       {/* Middle section with form fields */}
-      <div className="flex-1 space-y-8 mt-8">
+      <div className="flex-1 space-y-6 sm:space-y-8 mt-6 sm:mt-8">
         {/* Username section */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-gray-700">Username</label>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             <Input
-              className="flex-1 h-11 rounded-lg border-gray-200 focus:border-[#693d52] focus:ring-[#693d52]"
+              className="flex-1 h-10 sm:h-11 rounded-lg border-gray-200 focus:border-[#693d52] focus:ring-[#693d52] text-sm sm:text-base"
               type="text"
               value={username}
               onChange={handleUsernameChange}
@@ -153,7 +153,7 @@ export default function ProfileView({
             />
             <Button
               onClick={() => setIsUsernameEditing(!isUsernameEditing)}
-              className="hover:bg-[#919192] hover:text-white"
+              className="hover:bg-[#919192] hover:text-white w-full sm:w-auto text-sm"
               variant="secondary"
             >
               {isUsernameEditing ? "Cancel" : "Edit"}
@@ -166,14 +166,14 @@ export default function ProfileView({
           <label className="text-sm font-medium text-gray-700">
             Department
           </label>
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             {isDepartmentEditing ? (
               <>
                 <Select
                   value={collegeDepartment}
                   onValueChange={handleDepartmentChange}
                 >
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full h-10 sm:h-11 text-sm sm:text-base">
                     <SelectValue placeholder="Select Department" />
                   </SelectTrigger>
                   <SelectContent>
@@ -222,7 +222,7 @@ export default function ProfileView({
                 </Select>
                 <Button
                   onClick={() => setIsDepartmentEditing(false)}
-                  className="hover:bg-[#919192] hover:text-white"
+                  className="hover:bg-[#919192] hover:text-white w-full sm:w-auto text-sm"
                   variant="secondary"
                 >
                   Cancel
@@ -230,10 +230,10 @@ export default function ProfileView({
               </>
             ) : (
               <>
-                <Input className="flex-1" value={collegeDepartment} disabled />
+                <Input className="flex-1 h-10 sm:h-11 text-sm sm:text-base" value={collegeDepartment} disabled />
                 <Button
                   onClick={() => setIsDepartmentEditing(true)}
-                  className="hover:bg-[#919192] hover:text-white"
+                  className="hover:bg-[#919192] hover:text-white w-full sm:w-auto text-sm"
                   variant="secondary"
                 >
                   Edit
@@ -245,10 +245,10 @@ export default function ProfileView({
       </div>
 
       {/* Bottom section with buttons */}
-      <div className="pt-6 mt-auto border-t flex justify-end space-x-3">
+      <div className="pt-4 sm:pt-6 mt-auto border-t flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
         <Button
           onClick={onPasswordEdit}
-          className="h-11 px-6 hover:bg-[#919192] hover:text-white transition-colors"
+          className="h-10 sm:h-11 px-4 sm:px-6 hover:bg-[#919192] hover:text-white transition-colors text-sm w-full sm:w-auto"
           variant="secondary"
         >
           Change Password
@@ -256,7 +256,7 @@ export default function ProfileView({
         <Button
           onClick={handleSaveChanges}
           disabled={!hasChanges || isLoading}
-          className="h-11 px-8 bg-[#682A43] text-white hover:bg-[#532e40] transition-colors"
+          className="h-10 sm:h-11 px-6 sm:px-8 bg-[#682A43] text-white hover:bg-[#532e40] transition-colors text-sm w-full sm:w-auto"
         >
           {isLoading ? "Saving..." : "Save Changes"}
         </Button>

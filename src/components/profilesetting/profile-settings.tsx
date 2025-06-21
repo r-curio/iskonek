@@ -58,74 +58,74 @@ export default function ProfileSettings({
   };
 
   return (
-    <div className="w-64 border-r border-gray-100 h-full bg-[#FAF9F6] flex flex-col">
+    <div className="w-full sm:w-64 border-b sm:border-b-0 sm:border-r border-gray-100 h-auto sm:h-full bg-[#FAF9F6] flex flex-col">
       <div className="p-4">
-        <h2 className="text-xl font-semibold px-4 py-4 text-gray-800">
+        <h2 className="text-lg sm:text-xl font-semibold px-2 sm:px-4 py-2 sm:py-4 text-gray-800">
           Settings
         </h2>
       </div>
 
       {/* Fixed height container for navigation buttons */}
-      <div className="flex-1 px-4 pb-4">
+      <div className="flex-1 px-2 sm:px-4 pb-4">
         <div className="space-y-2">
           <Button
-            className={`w-full justify-start h-12 rounded-lg transition-all duration-200 ${
+            className={`w-full justify-start h-10 sm:h-12 rounded-lg transition-all duration-200 text-sm sm:text-base ${
               activeView === "profile"
                 ? "bg-[#682A43] text-white shadow-md"
                 : "bg-transparent text-gray-700 hover:bg-[#682A43] hover:text-white"
             }`}
             onClick={() => handleViewChange("profile")}
           >
-            <CgProfile className="mr-3 h-5 w-5" />
+            <CgProfile className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
             Profile
           </Button>
           <Button
-            className={`w-full justify-start h-12 rounded-lg transition-all duration-200 ${
+            className={`w-full justify-start h-10 sm:h-12 rounded-lg transition-all duration-200 text-sm sm:text-base ${
               activeView === "manage-account"
                 ? "bg-[#682A43] text-white shadow-md"
                 : "bg-transparent text-gray-700 hover:bg-[#682A43] hover:text-white"
             }`}
             onClick={() => handleViewChange("manage-account")}
           >
-            <FaUserGear className="mr-3 h-5 w-5" />
+            <FaUserGear className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
             Manage Account
           </Button>
         </div>
       </div>
 
       {/* Fixed bottom section */}
-      <div className="p-4 border-t border-gray-100 mt-auto">
+      <div className="p-2 sm:p-4 border-t border-gray-100 mt-auto">
         <Button
           variant="ghost"
-          className="w-full justify-start h-12 text-[#693d52] hover:bg-[#532e40] hover:text-white transition-colors rounded-lg"
+          className="w-full justify-start h-10 sm:h-12 text-[#693d52] hover:bg-[#532e40] hover:text-white transition-colors rounded-lg text-sm sm:text-base"
           onClick={handleLogoutClick}
           disabled={isLoading}
         >
-          <CiLogout className="mr-3 h-5 w-5" />
+          <CiLogout className="mr-2 sm:mr-3 h-4 w-4 sm:h-5 sm:w-5" />
           {isLoading ? "Logging out..." : "Logout"}
         </Button>
       </div>
 
       {isLogoutModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 animate-in fade-in-0 duration-200">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full mx-4 p-6 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 rounded-full bg-red-50">
-                <CiLogout className="h-6 w-6 text-red-600" />
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 animate-in fade-in-0 duration-200 p-4">
+          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-4 sm:p-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <div className="p-2 sm:p-3 rounded-full bg-red-50">
+                <CiLogout className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
                   Sign Out
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-xs sm:text-sm text-gray-500 mt-1">
                   Are you sure you want to sign out of your account?
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-3">
+            <div className="flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
               <Button
-                className="min-w-[100px] bg-gray-100 hover:bg-gray-200 text-gray-700"
+                className="w-full sm:min-w-[100px] bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm"
                 variant="secondary"
                 onClick={handleCancelClick}
                 disabled={isLoading}
@@ -133,13 +133,13 @@ export default function ProfileSettings({
                 Cancel
               </Button>
               <Button
-                className="min-w-[100px] bg-[#693d52] hover:bg-[#532e40]"
+                className="w-full sm:min-w-[100px] bg-[#693d52] hover:bg-[#532e40] text-sm"
                 onClick={handleConfirmClick}
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 border-2 border-white/30 border-t-white animate-spin rounded-full" />
+                    <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-white/30 border-t-white animate-spin rounded-full" />
                     <span>Signing out...</span>
                   </div>
                 ) : (
