@@ -8,6 +8,7 @@ interface ChatHeaderProps {
   recipientDepartment?: string;
   initialTime?: number;
   onTimerEnd?: () => void;
+  children?: React.ReactNode;
 }
 
 const ChatHeader: React.FC<ChatHeaderProps> = ({
@@ -16,12 +17,14 @@ const ChatHeader: React.FC<ChatHeaderProps> = ({
   initialTime,
   recipientDepartment,
   onTimerEnd,
+  children
 }) => {
   const shouldShowTimer = initialTime !== undefined && initialTime > 0;
 
   return (
     <div className="flex items-center justify-between p-3 sm:p-4 border-b max-h-16 shadow-lg bg-white">
       <div className="flex items-center gap-2 sm:gap-4 min-w-0 flex-1">
+        {children}
         <Avatar className="w-8 h-8 sm:w-10 sm:h-10 flex-shrink-0">
           {recipientProfilePic ? (
             <AvatarImage src={recipientProfilePic} alt={recipientName} />
